@@ -1,14 +1,15 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 import json
-import sys
 import os
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_ytdlpgui(object):
     def setupUi(self, ytdlpgui):
         ytdlpgui.setObjectName("ytdlpgui")
         ytdlpgui.setEnabled(True)
         ytdlpgui.setFixedSize(700, 539)
-        self.setWindowIcon(QtGui.QIcon(Ui_ytdlpgui.absolute_path("icons/yt-dlp-gui.ico")))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(os.environ.get("PROJECT_PATH"), 'icons', 'yt-dlp-gui.ico')))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         ytdlpgui.setFont(font)
@@ -44,7 +45,7 @@ class Ui_ytdlpgui(object):
         self.folderpath.setReadOnly(True)
         self.folderpath.setGeometry(QtCore.QRect(80, 70, 305, 20))
         self.folderpath.setObjectName("folderpath")
-        self.choose_path = QtWidgets.QToolButton(self.gb_params, clicked= self.get_folder_path)
+        self.choose_path = QtWidgets.QToolButton(self.gb_params, clicked=self.get_folder_path)
         self.choose_path.setGeometry(QtCore.QRect(390, 70, 22, 20))
         self.choose_path.setObjectName("choose_path")
         self.cb_format = QtWidgets.QComboBox(self.gb_params)
@@ -84,21 +85,27 @@ class Ui_ytdlpgui(object):
         self.add_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.add_btn)
         self.add_btn.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(Ui_ytdlpgui.absolute_path("icons/add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "icons", "add.png")),
+                       QtGui.QIcon.Normal,
+                       QtGui.QIcon.Off)
         self.add_btn.setIcon(icon)
         self.add_btn.setObjectName("add_btn")
         self.cpanel_layout.addWidget(self.add_btn)
         self.clear_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.clear_btn)
         self.clear_btn.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(Ui_ytdlpgui.absolute_path("icons/clear.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "icons", "clear.png")),
+                        QtGui.QIcon.Normal,
+                        QtGui.QIcon.Off)
         self.clear_btn.setIcon(icon1)
         self.clear_btn.setObjectName("clear_btn")
         self.cpanel_layout.addWidget(self.clear_btn)
         self.download_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.dl_btn)
         self.download_btn.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(Ui_ytdlpgui.absolute_path("icons/download.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "icons", "download.png")),
+                        QtGui.QIcon.Normal,
+                        QtGui.QIcon.Off)
         self.download_btn.setIcon(icon2)
         self.download_btn.setObjectName("download_btn")
         self.cpanel_layout.addWidget(self.download_btn)
@@ -111,12 +118,12 @@ class Ui_ytdlpgui(object):
         self.treew.headerItem().setTextAlignment(5, QtCore.Qt.AlignCenter)
         self.treew.headerItem().setTextAlignment(6, QtCore.Qt.AlignLeft)
         self.treew.setAlternatingRowColors(True)
-        self.treew.setColumnWidth(0,200)
-        self.treew.setColumnWidth(1,80)
-        self.treew.setColumnWidth(2,80)
-        self.treew.setColumnWidth(3,80)
-        self.treew.setColumnWidth(5,80)
-        self.treew.setColumnWidth(6,80)
+        self.treew.setColumnWidth(0, 200)
+        self.treew.setColumnWidth(1, 80)
+        self.treew.setColumnWidth(2, 80)
+        self.treew.setColumnWidth(3, 80)
+        self.treew.setColumnWidth(5, 80)
+        self.treew.setColumnWidth(6, 80)
         ytdlpgui.setCentralWidget(self.centralwidget)
         self.retranslateUi(ytdlpgui)
         self.startup_config()
@@ -129,7 +136,8 @@ class Ui_ytdlpgui(object):
         self.link_label.setText(_translate("ytdlpgui", "Link:"))
         self.path_label.setText(_translate("ytdlpgui", "Path:"))
         self.format_label.setText(_translate("ytdlpgui", "Format:"))
-        self.link_entry.setPlaceholderText(_translate("ytdlpgui", "Example: https://www.youtube.com/watch?v=KewM8VgPF2E"))
+        self.link_entry.setPlaceholderText(
+            _translate("ytdlpgui", "Example: https://www.youtube.com/watch?v=KewM8VgPF2E"))
         self.choose_path.setText(_translate("ytdlpgui", "..."))
         self.cb_format.setItemText(0, _translate("ytdlpgui", "best"))
         self.cb_format.setItemText(1, _translate("ytdlpgui", "mp4"))
@@ -139,14 +147,15 @@ class Ui_ytdlpgui(object):
         self.cb_thumb.setText(_translate("ytdlpgui", "Thumbnail"))
         self.cb_subs.setText(_translate("ytdlpgui", "Subtitles"))
         self.gb_cpanel.setTitle(_translate("ytdlpgui", "Control"))
-        
+
     def startup_config(self):
         try:
-            with open('config.json', 'r') as f:
+            with open(os.path.join(os.environ.get("PROJECT_PATH"), 'config.json'), 'r') as f:
                 config = json.load(f)
         except (FileNotFoundError, json.decoder.JSONDecodeError):
-            with open('config.json', 'w') as f:
-                config = {"path": "", "geo_x": 625, "geo_y": 290, "format": 0, "metadata": 0, "subtitles": 0, "thumbnail": 0}
+            with open(os.path.join(os.environ.get("PROJECT_PATH"), 'config.json'), 'w') as f:
+                config = {"path": "", "geo_x": 625, "geo_y": 290, "format": 0, "metadata": 0, "subtitles": 0,
+                          "thumbnail": 0}
                 json.dump(config, f, indent=4)
         self.folderpath.setText(config["path"])
         self.setGeometry(QtCore.QRect(config["geo_x"], config["geo_y"], 700, 539))
@@ -154,5 +163,3 @@ class Ui_ytdlpgui(object):
         self.cb_meta.setCheckState(config["metadata"])
         self.cb_subs.setCheckState(config["subtitles"])
         self.cb_thumb.setCheckState(config["thumbnail"])
-        
-    absolute_path = staticmethod(lambda x: os.path.join(os.getcwd(), x))   

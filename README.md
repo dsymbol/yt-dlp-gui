@@ -4,12 +4,13 @@
 <i>yt-dlp-gui in action</i>
 </div>
 
-## Prerequisites
+## Dependencies
 
 - [Python](https://www.python.org/downloads/)
+- [PyQt5](https://pypi.org/project/PyQt5/)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp/)
 - [ffmpeg](https://ffmpeg.org/download.html)
-- [PyQt5](https://pypi.org/project/PyQt5/)
+- [ffprobe](https://ffmpeg.org/download.html)
 
 ## Install
 
@@ -20,12 +21,13 @@ There are two ways to begin using yt-dlp-gui, depending on your preference:
 ```bash
 git clone https://github.com/dsymbol/yt-dlp-gui
 cd yt-dlp-gui
-pip install pyqt5
+pip install -r requirements.txt
 python main.py
 ```
 
-### Portable
+### Portable (Windows)
 
-1. Download the portable version from the [releases](https://github.com/dsymbol/yt-dlp-gui/releases) section
-2. Extract the zip file
-3. Launch yt-dlp-gui.exe
+**Includes all dependencies**
+- Download the portable version from the [releases](https://github.com/dsymbol/yt-dlp-gui/releases/latest) section
+- Extract the zip file 
+- Launch yt-dlp-gui.exe

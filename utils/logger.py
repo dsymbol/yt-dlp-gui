@@ -1,15 +1,23 @@
 import logging
+import os
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
-file_handler = logging.FileHandler('err.log')
-formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%d-%b-%y %H:%M:%S')
-file_handler.setFormatter(formatter)
-file_handler.setLevel(logging.ERROR)
+def mk_logger(name="my_logger", file="err.log"):
+    if not os.path.exists(os.path.join(os.environ.get("PROJECT_PATH"), "logs")):
+        os.mkdir(os.path.join(os.environ.get("PROJECT_PATH"), "logs"))
 
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
 
-log.addHandler(file_handler)
-log.addHandler(stream_handler)
+    ch = logging.StreamHandler()
+    formatter = logging.Formatter('%(message)s')
+    ch.setFormatter(formatter)
+
+    fh = logging.FileHandler(os.path.join(os.environ.get("PROJECT_PATH"), "logs", file))
+    fh.setLevel(logging.ERROR)
+    formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    fh.setFormatter(formatter)
+
+    logger.addHandler(ch)
+    logger.addHandler(fh)
+    return logger
