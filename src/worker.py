@@ -4,7 +4,7 @@ import sys
 
 from PyQt5 import QtCore
 
-from utils.logger import mk_logger
+from logger import get_logger
 
 
 class WorkerThread(QtCore.QObject):
@@ -13,7 +13,7 @@ class WorkerThread(QtCore.QObject):
     def __init__(self, entry):
         super().__init__()
         self.entry = entry
-        self.log = mk_logger("worker_log")
+        self.log = get_logger("worker_log")
 
     def get_args(self):
         if self.entry[3] == "best":
@@ -37,8 +37,7 @@ class WorkerThread(QtCore.QObject):
     @QtCore.pyqtSlot()
     def run(self):
         create_window = 0
-        if sys.platform == 'win32':
-            create_window = subprocess.CREATE_NO_WINDOW
+        if sys.platform == 'win32': create_window = subprocess.CREATE_NO_WINDOW
         with subprocess.Popen(self.get_args(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               universal_newlines=True, creationflags=create_window) as p:
             for line in p.stdout:

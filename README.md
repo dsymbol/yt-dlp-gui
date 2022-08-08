@@ -22,12 +22,13 @@ There are two ways to begin using yt-dlp-gui, depending on your preference:
 git clone https://github.com/dsymbol/yt-dlp-gui
 cd yt-dlp-gui
 pip install -r requirements.txt
-python main.py
+python3 src/main.py
 ```
 
 ### Portable (Windows)
 
 **Includes all dependencies**
+
 - Download the portable version from the [releases](https://github.com/dsymbol/yt-dlp-gui/releases/latest) section
-- Extract the zip file 
+- Extract the zip file
 - Launch yt-dlp-gui.exe
