@@ -1,18 +1,17 @@
 <div align="center">
 <h1>yt-dlp-gui</h1>
 <img src="https://user-images.githubusercontent.com/88138099/161420294-70837630-a7f1-42d0-84bd-05efb0eeee5e.gif"/></br>
-<i>yt-dlp-gui in action</i>
-</div>
+<p><a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a> is a program to download videos from YouTube.com and a few more sites.</p>
+</div>  
 
-## Dependencies
-
+## Requirements
 - [Python](https://www.python.org/downloads/)
 - [PyQt5](https://pypi.org/project/PyQt5/)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp/)
 - [ffmpeg](https://ffmpeg.org/download.html)
 - [ffprobe](https://ffmpeg.org/download.html)
 
-## Install
+## Installation
 
 There are two ways to begin using yt-dlp-gui, depending on your preference:
 
@@ -29,6 +28,6 @@ python3 src/main.py
 
 **Includes all dependencies**
 
-- Download the portable version from the [releases](https://github.com/dsymbol/yt-dlp-gui/releases/latest) section
-- Extract the zip file
-- Launch yt-dlp-gui.exe
+1. Download the portable version from the [releases](https://github.com/dsymbol/yt-dlp-gui/releases/latest) section
+2. Extract the zip file
+3. Launch yt-dlp-gui.exe

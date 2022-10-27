@@ -20,7 +20,7 @@ class WorkerThread(QtCore.QObject):
             ytdlp_args = ['yt-dlp', '--newline', '-i', '-o', f'{self.entry[2]}/%(title)s.%(ext)s', '--ignore-config',
                           '--hls-prefer-native', self.entry[1]]
         elif self.entry[3] == "mp4":
-            ytdlp_args = ['yt-dlp', '--newline', '-i', '-o', f'{self.entry[2]}/%(title)s.%(ext)s', '-f mp4',
+            ytdlp_args = ['yt-dlp', '--newline', '-i', '-o', f'{self.entry[2]}/%(title)s.%(ext)s', '-S', 'ext:mp4:m4a',
                           '--ignore-config', '--hls-prefer-native', self.entry[1]]
         elif self.entry[3] == "mp3":
             ytdlp_args = ['yt-dlp', '--newline', '-i', '-o', f'{self.entry[2]}/%(title)s.%(ext)s', '-x',
@@ -36,8 +36,7 @@ class WorkerThread(QtCore.QObject):
 
     @QtCore.pyqtSlot()
     def run(self):
-        create_window = 0
-        if sys.platform == 'win32': create_window = subprocess.CREATE_NO_WINDOW
+        create_window = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
         with subprocess.Popen(self.get_args(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               universal_newlines=True, creationflags=create_window) as p:
             for line in p.stdout:

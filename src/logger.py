@@ -17,7 +17,7 @@ def get_logger(name="logger", file="error.log"):
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
     ch.setFormatter(formatter)
 
-    fh = logging.FileHandler(os.path.join(os.environ.get("PROJECT_PATH"), "logs", file))
+    fh = logging.FileHandler(os.path.join(os.environ.get("PROJECT_PATH"), "logs", file), delay=True)
     fh.setLevel(logging.ERROR)
     formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
     fh.setFormatter(formatter)

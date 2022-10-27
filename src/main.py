@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import sys
 import traceback
 from pathlib import Path
@@ -16,6 +17,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
+        self.check_bin()
         self.to_download = []
 
     def closeEvent(self, event):
@@ -100,6 +102,14 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
             self.error_box("yt-dlp executable not found")
         log.error(tb)
         QtWidgets.QApplication.quit()
+
+    def check_bin(self):
+        progs = {'yt-dlp': None, 'ffmpeg': None, 'ffprobe': None}
+        status = {k: shutil.which(k) for k, v in progs.items()}
+        if not all(status.values()):
+            missing = ", ".join([k for k, v in status.items() if not v])
+            self.error_box(f"Missing dependencies: {missing}")
+            sys.exit()
 
     @staticmethod
     def update_tree(entry, index, update):
