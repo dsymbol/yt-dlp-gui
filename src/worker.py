@@ -1,70 +1,92 @@
+import json
 import os
 import subprocess
 import sys
+from dataclasses import dataclass
 
 from PyQt5 import QtCore
 
 from logger import get_logger
 
 
+@dataclass
+class TreeDex:
+    TITLE: int = 0
+    FORMAT: int = 1
+    SIZE: int = 2
+    PROGRESS: int = 3
+    STATUS: int = 4
+    SPEED: int = 5
+    ETA: int = 6
+
+
 class WorkerThread(QtCore.QObject):
     update_progress = QtCore.pyqtSignal(object, int, str)
 
-    def __init__(self, entry):
+    def __init__(self, tree_item, link, folder, video_fmt, metadata, thumbnail, subtitles):
         super().__init__()
-        self.entry = entry
+        self.tree_item = tree_item
+        self.link = link
+        self.folder = folder
+        self.video_fmt = video_fmt
+        self.metadata = metadata
+        self.thumbnail = thumbnail
+        self.subtitles = subtitles
         self.log = get_logger("worker_log")
 
     def get_args(self):
-        if self.entry[3] == "best":
-            ytdlp_args = ['yt-dlp', '--newline', '-i', '-o', f'{self.entry[2]}/%(title)s.%(ext)s', '--ignore-config',
-                          '--hls-prefer-native', self.entry[1]]
-        elif self.entry[3] == "mp4":
-            ytdlp_args = ['yt-dlp', '--newline', '-i', '-o', f'{self.entry[2]}/%(title)s.%(ext)s', '-S', 'ext:mp4:m4a',
-                          '--ignore-config', '--hls-prefer-native', self.entry[1]]
-        elif self.entry[3] == "mp3":
-            ytdlp_args = ['yt-dlp', '--newline', '-i', '-o', f'{self.entry[2]}/%(title)s.%(ext)s', '-x',
-                          '--audio-format',
-                          'mp3', '--ignore-config', '--hls-prefer-native', self.entry[1]]
-        if self.entry[4] > 0:
-            ytdlp_args.insert(len(ytdlp_args) - 1, '--embed-metadata')
-        if self.entry[5] > 0:
-            ytdlp_args.insert(len(ytdlp_args) - 1, '--embed-thumbnail')
-        if self.entry[6] > 0:
-            ytdlp_args.insert(len(ytdlp_args) - 1, '--write-auto-subs')
-        return ytdlp_args
+        if self.video_fmt == "best":
+            _args = ['yt-dlp', '--newline', '-i', '-o', f'{self.folder}/%(title)s.%(ext)s', '--ignore-config',
+                     '--hls-prefer-native', self.link]
+        elif self.video_fmt == "mp4":
+            _args = ['yt-dlp', '--newline', '-i', '-o', f'{self.folder}/%(title)s.%(ext)s', '-S', 'ext:mp4:m4a',
+                     '--ignore-config', '--hls-prefer-native', self.link]
+        elif self.video_fmt == "mp3":
+            _args = ['yt-dlp', '--newline', '-i', '-o', f'{self.folder}/%(title)s.%(ext)s', '-x',
+                     '--audio-format', 'mp3', '--audio-quality', '0', '--ignore-config', '--hls-prefer-native',
+                     self.link]
+        if self.metadata > 0:
+            _args.insert(len(_args) - 1, '--embed-metadata')
+        if self.thumbnail > 0:
+            _args.insert(len(_args) - 1, '--embed-thumbnail')
+        if self.subtitles > 0:
+            _args.insert(len(_args) - 1, '--write-auto-subs')
+        return _args
 
     @QtCore.pyqtSlot()
     def run(self):
         create_window = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+        result = subprocess.run(['yt-dlp', '--dump-json', self.link], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True, creationflags=create_window)
+        info_dict = json.loads(result.stdout)
+        self.update_progress.emit(self.tree_item, TreeDex.TITLE, info_dict['title'])
         with subprocess.Popen(self.get_args(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               universal_newlines=True, creationflags=create_window) as p:
+            err = False
+
             for line in p.stdout:
                 if "[youtube]" in line:
-                    self.update_progress.emit(self.entry[0], 4, "Processing")
-                elif "[download]" in line and "Destination" in line:
-                    title = line.replace("[download] Destination: ", "")
-                    title = os.path.split(title)[1]
-                    title = os.path.splitext(title)[0]
-                    self.update_progress.emit(self.entry[0], 0, title)
+                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Processing")
+
                 elif "[download]" in line and "100%" not in line and "ETA" in line:
-                    self.update_progress.emit(self.entry[0], 4, "Downloading")
-                    line_split = line.split()
-                    self.update_progress.emit(self.entry[0], 2, line_split[3])
-                    self.update_progress.emit(self.entry[0], 3, line_split[1])
-                    self.update_progress.emit(self.entry[0], 6, line_split[7])
-                    self.update_progress.emit(self.entry[0], 5, line_split[5])
+                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Downloading")
+                    data = line.split()
+                    self.update_progress.emit(self.tree_item, TreeDex.SIZE, data[3])
+                    self.update_progress.emit(self.tree_item, TreeDex.PROGRESS, data[1])
+                    self.update_progress.emit(self.tree_item, TreeDex.ETA, data[7])
+                    self.update_progress.emit(self.tree_item, TreeDex.SPEED, data[5])
+
+                elif "[Merger]" in line or "[ExtractAudio]" in line:
+                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Converting")
 
                 if "error" in line.lower() and "warning" not in line.lower():
                     err = True
                     self.log.error(line)
-                    self.update_progress.emit(self.entry[0], 2, "ERROR")
-                    self.update_progress.emit(self.entry[0], 3, "ERROR")
-                    self.update_progress.emit(self.entry[0], 4, "ERROR")
-                    self.update_progress.emit(self.entry[0], 5, "ERROR")
-                else:
-                    err = False
+                    self.update_progress.emit(self.tree_item, TreeDex.SIZE, "ERROR")
+                    self.update_progress.emit(self.tree_item, TreeDex.PROGRESS, "ERROR")
+                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "ERROR")
+                    self.update_progress.emit(self.tree_item, TreeDex.SPEED, "ERROR")
 
             if not err:
-                self.update_progress.emit(self.entry[0], 3, "100%")
-                self.update_progress.emit(self.entry[0], 4, "Finished")
+                self.update_progress.emit(self.tree_item, TreeDex.PROGRESS, "100%")
+                self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Finished")
