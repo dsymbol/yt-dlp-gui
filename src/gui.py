@@ -9,7 +9,7 @@ class Ui_ytdlpgui(object):
         ytdlpgui.setObjectName("ytdlpgui")
         ytdlpgui.setEnabled(True)
         ytdlpgui.setFixedSize(700, 539)
-        self.setWindowIcon(QtGui.QIcon(os.path.join(os.environ.get("PROJECT_PATH"), 'icons', 'yt-dlp-gui.ico')))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(os.environ.get("PROJECT_PATH"), 'assets', 'yt-dlp-gui.ico')))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         ytdlpgui.setFont(font)
@@ -85,7 +85,7 @@ class Ui_ytdlpgui(object):
         self.add_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.add_btn)
         self.add_btn.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "icons", "add.png")),
+        icon.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "assets", "add.png")),
                        QtGui.QIcon.Normal,
                        QtGui.QIcon.Off)
         self.add_btn.setIcon(icon)
@@ -94,7 +94,7 @@ class Ui_ytdlpgui(object):
         self.clear_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.clear_btn)
         self.clear_btn.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "icons", "clear.png")),
+        icon1.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "assets", "clear.png")),
                         QtGui.QIcon.Normal,
                         QtGui.QIcon.Off)
         self.clear_btn.setIcon(icon1)
@@ -103,7 +103,7 @@ class Ui_ytdlpgui(object):
         self.download_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.dl_btn)
         self.download_btn.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "icons", "download.png")),
+        icon2.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "assets", "download.png")),
                         QtGui.QIcon.Normal,
                         QtGui.QIcon.Off)
         self.download_btn.setIcon(icon2)
@@ -126,41 +126,36 @@ class Ui_ytdlpgui(object):
         self.treew.setColumnWidth(5, 80)
         self.treew.setColumnWidth(6, 80)
         ytdlpgui.setCentralWidget(self.centralwidget)
-        self.retranslateUi(ytdlpgui)
-        self.startup_config()
+        self.startup_settings()
         QtCore.QMetaObject.connectSlotsByName(ytdlpgui)
+        ytdlpgui.setWindowTitle("yt-dlp-gui")
+        self.gb_params.setTitle("Parameters")
+        self.link_label.setText("Link:")
+        self.path_label.setText("Path:")
+        self.format_label.setText("Format:")
+        self.link_entry.setPlaceholderText("https://www.youtube.com/watch?v=KewM8VgPF2E")
+        self.choose_path.setText("...")
+        self.cb_format.setItemText(0, "best")
+        self.cb_format.setItemText(1, "mp4")
+        self.cb_format.setItemText(2, "mp3")
+        self.gb_embeds.setTitle("Optional Embeds")
+        self.cb_meta.setText("Metadata")
+        self.cb_thumb.setText("Thumbnail")
+        self.cb_subs.setText("Subtitles")
+        self.gb_cpanel.setTitle("Control")
 
-    def retranslateUi(self, ytdlpgui):
-        _translate = QtCore.QCoreApplication.translate
-        ytdlpgui.setWindowTitle(_translate("ytdlpgui", "yt-dlp-gui"))
-        self.gb_params.setTitle(_translate("ytdlpgui", "Parameters"))
-        self.link_label.setText(_translate("ytdlpgui", "Link:"))
-        self.path_label.setText(_translate("ytdlpgui", "Path:"))
-        self.format_label.setText(_translate("ytdlpgui", "Format:"))
-        self.link_entry.setPlaceholderText(
-            _translate("ytdlpgui", "Example: https://www.youtube.com/watch?v=KewM8VgPF2E"))
-        self.choose_path.setText(_translate("ytdlpgui", "..."))
-        self.cb_format.setItemText(0, _translate("ytdlpgui", "best"))
-        self.cb_format.setItemText(1, _translate("ytdlpgui", "mp4"))
-        self.cb_format.setItemText(2, _translate("ytdlpgui", "mp3"))
-        self.gb_embeds.setTitle(_translate("ytdlpgui", "Optional Embeds"))
-        self.cb_meta.setText(_translate("ytdlpgui", "Metadata"))
-        self.cb_thumb.setText(_translate("ytdlpgui", "Thumbnail"))
-        self.cb_subs.setText(_translate("ytdlpgui", "Subtitles"))
-        self.gb_cpanel.setTitle(_translate("ytdlpgui", "Control"))
-
-    def startup_config(self):
+    def startup_settings(self):
         try:
-            with open(os.path.join(os.environ.get("PROJECT_PATH"), 'config.json'), 'r') as f:
-                config = json.load(f)
+            with open(os.path.join(os.environ.get("PROJECT_PATH"), 'settings.json'), 'r') as f:
+                settings = json.load(f)
         except (FileNotFoundError, json.decoder.JSONDecodeError):
-            with open(os.path.join(os.environ.get("PROJECT_PATH"), 'config.json'), 'w') as f:
-                config = {"path": "", "geo_x": 625, "geo_y": 290, "format": 0, "metadata": 0, "subtitles": 0,
-                          "thumbnail": 0}
-                json.dump(config, f, indent=4)
-        self.folderpath.setText(config["path"])
-        self.setGeometry(QtCore.QRect(config["geo_x"], config["geo_y"], 700, 539))
-        self.cb_format.setCurrentIndex(config["format"])
-        self.cb_meta.setCheckState(config["metadata"])
-        self.cb_subs.setCheckState(config["subtitles"])
-        self.cb_thumb.setCheckState(config["thumbnail"])
+            with open(os.path.join(os.environ.get("PROJECT_PATH"), 'settings.json'), 'w') as f:
+                settings = {"path": "", "geo_x": 625, "geo_y": 290, "format": 0, "metadata": 0, "subtitles": 0,
+                            "thumbnail": 0}
+                json.dump(settings, f, indent=4)
+        self.folderpath.setText(settings["path"])
+        self.setGeometry(QtCore.QRect(settings["geo_x"], settings["geo_y"], 700, 539))
+        self.cb_format.setCurrentIndex(settings["format"])
+        self.cb_meta.setCheckState(settings["metadata"])
+        self.cb_subs.setCheckState(settings["subtitles"])
+        self.cb_thumb.setCheckState(settings["thumbnail"])
