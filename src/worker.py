@@ -1,10 +1,9 @@
 import json
-import os
 import subprocess
 import sys
 from dataclasses import dataclass
 
-from PyQt5 import QtCore
+from PyQt5.QtCore import QObject, pyqtSignal
 
 from logger import get_logger
 
@@ -20,8 +19,9 @@ class TreeDex:
     ETA: int = 6
 
 
-class WorkerThread(QtCore.QObject):
-    update_progress = QtCore.pyqtSignal(object, int, str)
+class Worker(QObject):
+    progress = pyqtSignal(object, int, str)
+    finished = pyqtSignal()
 
     def __init__(self, tree_item, link, folder, video_fmt, metadata, thumbnail, subtitles):
         super().__init__()
@@ -53,40 +53,42 @@ class WorkerThread(QtCore.QObject):
             _args.insert(len(_args) - 1, '--write-auto-subs')
         return _args
 
-    @QtCore.pyqtSlot()
     def run(self):
         create_window = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+
         result = subprocess.run(['yt-dlp', '--dump-json', self.link], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 text=True, creationflags=create_window)
         info_dict = json.loads(result.stdout)
-        self.update_progress.emit(self.tree_item, TreeDex.TITLE, info_dict['title'])
+        self.progress.emit(self.tree_item, TreeDex.TITLE, info_dict['title'])
+
         with subprocess.Popen(self.get_args(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               universal_newlines=True, creationflags=create_window) as p:
             err = False
 
             for line in p.stdout:
                 if "[youtube]" in line:
-                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Processing")
+                    self.progress.emit(self.tree_item, TreeDex.STATUS, "Processing")
 
                 elif "[download]" in line and "100%" not in line and "ETA" in line:
-                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Downloading")
+                    self.progress.emit(self.tree_item, TreeDex.STATUS, "Downloading")
                     data = line.split()
-                    self.update_progress.emit(self.tree_item, TreeDex.SIZE, data[3])
-                    self.update_progress.emit(self.tree_item, TreeDex.PROGRESS, data[1])
-                    self.update_progress.emit(self.tree_item, TreeDex.ETA, data[7])
-                    self.update_progress.emit(self.tree_item, TreeDex.SPEED, data[5])
+                    self.progress.emit(self.tree_item, TreeDex.SIZE, data[3])
+                    self.progress.emit(self.tree_item, TreeDex.PROGRESS, data[1])
+                    self.progress.emit(self.tree_item, TreeDex.ETA, data[7])
+                    self.progress.emit(self.tree_item, TreeDex.SPEED, data[5])
 
                 elif "[Merger]" in line or "[ExtractAudio]" in line:
-                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Converting")
+                    self.progress.emit(self.tree_item, TreeDex.STATUS, "Converting")
 
                 if "error" in line.lower() and "warning" not in line.lower():
                     err = True
                     self.log.error(line)
-                    self.update_progress.emit(self.tree_item, TreeDex.SIZE, "ERROR")
-                    self.update_progress.emit(self.tree_item, TreeDex.PROGRESS, "ERROR")
-                    self.update_progress.emit(self.tree_item, TreeDex.STATUS, "ERROR")
-                    self.update_progress.emit(self.tree_item, TreeDex.SPEED, "ERROR")
+                    self.progress.emit(self.tree_item, TreeDex.SIZE, "ERROR")
+                    self.progress.emit(self.tree_item, TreeDex.PROGRESS, "ERROR")
+                    self.progress.emit(self.tree_item, TreeDex.STATUS, "ERROR")
+                    self.progress.emit(self.tree_item, TreeDex.SPEED, "ERROR")
 
             if not err:
-                self.update_progress.emit(self.tree_item, TreeDex.PROGRESS, "100%")
-                self.update_progress.emit(self.tree_item, TreeDex.STATUS, "Finished")
+                self.progress.emit(self.tree_item, TreeDex.PROGRESS, "100%")
+                self.progress.emit(self.tree_item, TreeDex.STATUS, "Finished")
+            self.finished.emit()
