@@ -3,7 +3,6 @@ import os
 import shutil
 import sys
 import traceback
-from pathlib import Path
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
@@ -11,6 +10,9 @@ from PyQt5.QtWidgets import QMessageBox
 from gui import Ui_ytdlpgui
 from logger import get_logger
 from worker import WorkerThread
+
+os.environ["PROJECT_PATH"] = os.path.dirname(__file__)
+os.environ['PATH'] += os.pathsep + os.path.join(os.environ["PROJECT_PATH"], "bin")
 
 
 class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
@@ -22,7 +24,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
 
     def closeEvent(self, event):
         self.quit_threads()
-        config = {
+        settings = {
             "path": self.folderpath.text(),
             "geo_x": self.geometry().x(),
             "geo_y": self.geometry().y(),
@@ -31,8 +33,8 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
             "subtitles": self.cb_subs.checkState(),
             "thumbnail": self.cb_thumb.checkState()
         }
-        with open(os.path.join(os.environ.get("PROJECT_PATH"), 'config.json'), 'w') as f:
-            json.dump(config, f, indent=4)
+        with open(os.path.join(os.environ.get("PROJECT_PATH"), 'settings.json'), 'w') as f:
+            json.dump(settings, f, indent=4)
         event.accept()
 
     def get_folder_path(self):
@@ -57,10 +59,10 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
             self.cb_subs.checkState()
         )
         if link and folder and video_fmt:
-            item = QtWidgets.QTreeWidgetItem(self.treew, [link, video_fmt, '-', '0%', 'Queued', '-', '-', link])
-            [item.setTextAlignment(i, QtCore.Qt.AlignCenter) for i in range(1, 6)]
+            tree_item = QtWidgets.QTreeWidgetItem(self.treew, [link, video_fmt, '-', '0%', 'Queued', '-', '-', link])
+            [tree_item.setTextAlignment(i, QtCore.Qt.AlignCenter) for i in range(1, 6)]
             self.link_entry.setText("")
-            self.to_download.append([item, link, folder, video_fmt, metadata, thumbnail, subtitles, link])
+            self.to_download.append([tree_item, link, folder, video_fmt, metadata, thumbnail, subtitles])
         else:
             self.error_box("Missing fields")
 
@@ -86,7 +88,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
         self.worker_thread = {}
         if self.to_download:
             for i, entry in enumerate(self.to_download):
-                self.worker[i] = WorkerThread(entry)
+                self.worker[i] = WorkerThread(*entry)
                 self.worker_thread[i] = QtCore.QThread(parent=self)
                 self.worker_thread[i].started.connect(self.worker[i].run)
                 self.worker[i].update_progress.connect(self.update_tree)
@@ -98,8 +100,6 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
 
     def excepthook(self, exc_type, exc_value, exc_tb):
         tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-        if "No such file or directory: 'yt-dlp'" in str(tb):
-            self.error_box("yt-dlp executable not found")
         log.error(tb)
         QtWidgets.QApplication.quit()
 
@@ -117,8 +117,6 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
 
 
 if __name__ == "__main__":
-    os.environ["PROJECT_PATH"] = str(Path(__file__).parent)
-    os.environ['PATH'] += os.pathsep + os.path.join(os.environ.get("PROJECT_PATH"), "bin")
     log = get_logger("gui_logger")
     sys.excepthook = Main.excepthook
     app = QtWidgets.QApplication(sys.argv)
