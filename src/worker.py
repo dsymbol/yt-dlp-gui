@@ -32,7 +32,7 @@ class Worker(QObject):
         self.metadata = metadata
         self.thumbnail = thumbnail
         self.subtitles = subtitles
-        self.log = get_logger("worker_log")
+        self.log = get_logger("Worker")
 
     def get_args(self):
         if self.video_fmt == "best":
@@ -46,11 +46,11 @@ class Worker(QObject):
                      '--audio-format', 'mp3', '--audio-quality', '0', '--ignore-config', '--hls-prefer-native',
                      self.link]
         if self.metadata > 0:
-            _args.insert(len(_args) - 1, '--embed-metadata')
+            _args.insert(1, '--embed-metadata')
         if self.thumbnail > 0:
-            _args.insert(len(_args) - 1, '--embed-thumbnail')
+            _args.insert(1, '--embed-thumbnail')
         if self.subtitles > 0:
-            _args.insert(len(_args) - 1, '--write-auto-subs')
+            _args.insert(1, '--write-auto-subs')
         return _args
 
     def run(self):
@@ -58,10 +58,15 @@ class Worker(QObject):
 
         result = subprocess.run(['yt-dlp', '--dump-json', self.link], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 text=True, creationflags=create_window)
-        info_dict = json.loads(result.stdout)
-        self.progress.emit(self.tree_item, TreeDex.TITLE, info_dict['title'])
+        if result.stdout:
+            info_dict = json.loads(result.stdout)
+            self.progress.emit(self.tree_item, TreeDex.TITLE, info_dict['title'])
+        else:
+            self.log.error(result.stderr)
 
-        with subprocess.Popen(self.get_args(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        args = self.get_args()
+        self.log.info(f"`{info_dict['title']}` download started: " + " ".join(args))
+        with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               universal_newlines=True, creationflags=create_window) as p:
             err = False
 
