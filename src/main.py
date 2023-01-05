@@ -19,6 +19,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
+        self.log = get_logger("Main")
         self.check_bin()
         self.to_download = []
         self.worker = {}
@@ -37,6 +38,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
         }
         with open(os.path.join(os.environ.get("PROJECT_PATH"), 'settings.json'), 'w') as f:
             json.dump(settings, f, indent=4)
+        self.log.info(f"Saved settings: {settings}")
         event.accept()
 
     def get_folder_path(self):
@@ -51,7 +53,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
         elif fmt == "mp4" or fmt == "best":
             self.cb_subs.setEnabled(True)
 
-    def add_btn(self):
+    def add_download(self):
         link, folder, video_fmt, metadata, thumbnail, subtitles = (
             self.link_entry.text(),
             self.folderpath.text(),
@@ -65,24 +67,25 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
             [tree_item.setTextAlignment(i, QtCore.Qt.AlignCenter) for i in range(1, 6)]
             self.link_entry.setText("")
             self.to_download.append([tree_item, link, folder, video_fmt, metadata, thumbnail, subtitles])
+            self.log.info(f'Added download to list: {link} as {video_fmt} to the `{folder}` directory.')
         else:
             self.show_error_box("Unable to add the download because some required fields are missing. "
                                 "Please ensure that all necessary fields have been filled out and try again.")
 
-    def clear_btn(self):
+    def clear_list(self):
         for w in self.thread.values():
             try:
                 w.isFinished()
-                return self.show_error_box(
-                    "Unable to perform the requested action because there are active downloads in progress.")
+                return self.show_error_box("Unable to clear list because there are active downloads in progress.")
             except RuntimeError:
                 continue
 
         self.treew.clear()
         self.to_download, self.worker, self.thread = [], {}, {}
         self.twi = 0
+        self.log.info("Successfully cleared download list.")
 
-    def dl_btn(self):
+    def download_list(self):
         if not self.to_download:
             return self.show_error_box("Unable to perform the requested action because there are no links in the list. "
                                        "Please add some downloads before trying again")
@@ -102,6 +105,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
         self.to_download = []
 
     def show_error_box(self, text, icon="Critical"):
+        self.log.error(text)
         qmb = QMessageBox(self)
         qmb.setText(text)
         qmb.setWindowTitle('Error: yt-dlp-gui')
@@ -127,10 +131,9 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
             sys.exit(self.show_error_box(f"Unable to proceed because required dependencies `{missing}` are missing. "
                                          f"Please install the missing dependencies and try again."))
 
-    @staticmethod
-    def excepthook(exc_type, exc_value, exc_tb):
+    def excepthook(self, exc_type, exc_value, exc_tb):
         tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-        log.error(tb)
+        self.log.error(tb)
         QtWidgets.QApplication.quit()
 
     @staticmethod
@@ -139,7 +142,6 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
 
 
 if __name__ == "__main__":
-    log = get_logger("gui_logger")
     sys.excepthook = Main.excepthook
     app = QtWidgets.QApplication(sys.argv)
     window = Main()
