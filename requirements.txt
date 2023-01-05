@@ -1,2 +1,4 @@
 PyQt5
 pyinstaller
+requests
+tqdm
