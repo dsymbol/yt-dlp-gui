@@ -82,7 +82,7 @@ class Ui_ytdlpgui(object):
         self.cpanel_layout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_3)
         self.cpanel_layout.setContentsMargins(0, 0, 0, 0)
         self.cpanel_layout.setObjectName("cpanel_layout")
-        self.add_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.add_btn)
+        self.add_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.add_download)
         self.add_btn.setText("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "assets", "add.png")),
@@ -91,7 +91,7 @@ class Ui_ytdlpgui(object):
         self.add_btn.setIcon(icon)
         self.add_btn.setObjectName("add_btn")
         self.cpanel_layout.addWidget(self.add_btn)
-        self.clear_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.clear_btn)
+        self.clear_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.clear_list)
         self.clear_btn.setText("")
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "assets", "clear.png")),
@@ -100,7 +100,7 @@ class Ui_ytdlpgui(object):
         self.clear_btn.setIcon(icon1)
         self.clear_btn.setObjectName("clear_btn")
         self.cpanel_layout.addWidget(self.clear_btn)
-        self.download_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.dl_btn)
+        self.download_btn = QtWidgets.QPushButton(self.verticalLayoutWidget_3, clicked=self.download_list)
         self.download_btn.setText("")
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(os.path.join(os.environ.get("PROJECT_PATH"), "assets", "download.png")),
