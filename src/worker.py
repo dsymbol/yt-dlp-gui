@@ -23,7 +23,7 @@ class Worker(QObject):
     progress = pyqtSignal(object, int, str)
     finished = pyqtSignal()
 
-    def __init__(self, tree_item, link, folder, video_fmt, metadata, thumbnail, subtitles):
+    def __init__(self, tree_item, link, folder, video_fmt, metadata, thumbnail, subtitles, num):
         super().__init__()
         self.tree_item = tree_item
         self.link = link
@@ -32,46 +32,42 @@ class Worker(QObject):
         self.metadata = metadata
         self.thumbnail = thumbnail
         self.subtitles = subtitles
-        self.log = get_logger("Worker")
+        self.log = get_logger(f"Worker {num}")
 
     def get_args(self):
+        args = ['yt-dlp', '--newline', '-i', '--ignore-config', '--hls-prefer-native', '--print-json']
         if self.video_fmt == "best":
-            _args = ['yt-dlp', '--newline', '-i', '-o', f'{self.folder}/%(title)s.%(ext)s', '--ignore-config',
-                     '--hls-prefer-native', self.link]
+            args.extend(['-o', f'{self.folder}/%(title)s.%(ext)s', self.link])
         elif self.video_fmt == "mp4":
-            _args = ['yt-dlp', '--newline', '-i', '-o', f'{self.folder}/%(title)s.%(ext)s', '-S', 'ext:mp4:m4a',
-                     '--ignore-config', '--hls-prefer-native', self.link]
+            args.extend(['-o', f'{self.folder}/%(title)s.%(ext)s', '-S', 'ext:mp4:m4a', self.link])
         elif self.video_fmt == "mp3":
-            _args = ['yt-dlp', '--newline', '-i', '-o', f'{self.folder}/%(title)s.%(ext)s', '-x',
-                     '--audio-format', 'mp3', '--audio-quality', '0', '--ignore-config', '--hls-prefer-native',
-                     self.link]
+            args.extend(
+                ['-o', f'{self.folder}/%(title)s.%(ext)s', '-x', '--audio-format', 'mp3', '--audio-quality', '0',
+                 self.link])
+
         if self.metadata > 0:
-            _args.insert(1, '--embed-metadata')
+            args.append('--embed-metadata')
         if self.thumbnail > 0:
-            _args.insert(1, '--embed-thumbnail')
+            args.append('--embed-thumbnail')
         if self.subtitles > 0:
-            _args.insert(1, '--write-auto-subs')
-        return _args
+            args.append('--write-auto-subs')
+        return args
 
     def run(self):
         create_window = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 
-        result = subprocess.run(['yt-dlp', '--dump-json', self.link], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                text=True, creationflags=create_window)
-        if result.stdout:
-            info_dict = json.loads(result.stdout)
-            self.progress.emit(self.tree_item, TreeDex.TITLE, info_dict['title'])
-        else:
-            self.log.error(result.stderr)
-
         args = self.get_args()
-        self.log.info(f"`{info_dict['title']}` download started: " + " ".join(args))
+        err = False
+
         with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               universal_newlines=True, creationflags=create_window) as p:
-            err = False
-
             for line in p.stdout:
-                if "[youtube]" in line:
+                if line.startswith('{'):
+                    info_dict = json.loads(line)
+                    self.log.info(f"`{info_dict['title']}` download started: " + " ".join(args))
+                    self.progress.emit(self.tree_item, TreeDex.TITLE, info_dict['title'])
+
+                elif "[youtube]" in line:
                     self.progress.emit(self.tree_item, TreeDex.STATUS, "Processing")
 
                 elif "[download]" in line and "100%" not in line and "ETA" in line:

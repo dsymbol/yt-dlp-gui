@@ -82,8 +82,6 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
 
         self.treew.clear()
         self.to_download, self.worker, self.thread = [], {}, {}
-        self.twi = 0
-        self.log.info("Successfully cleared download list.")
 
     def download_list(self):
         if not self.to_download:
@@ -92,7 +90,7 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
 
         for download in self.to_download:
             self.thread[self.twi] = QtCore.QThread()
-            self.worker[self.twi] = Worker(*download)
+            self.worker[self.twi] = Worker(*download, self.twi)
             self.worker[self.twi].moveToThread(self.thread[self.twi])
             self.thread[self.twi].started.connect(self.worker[self.twi].run)
             self.worker[self.twi].finished.connect(self.thread[self.twi].quit)
