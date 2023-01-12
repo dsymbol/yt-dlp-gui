@@ -8,9 +8,9 @@
 
 There are three ways to begin using yt-dlp-gui, depending on your preference and system:
 
-* [`Portable`](https://github.com/dsymbol/yt-dlp-gui/edit/main/README.md#portable) (Windows only)
-* [`Build`](https://github.com/dsymbol/yt-dlp-gui/edit/main/README.md#build) (Windows, Linux & MacOS)
-* [`Python`](https://github.com/dsymbol/yt-dlp-gui/edit/main/README.md#python)
+* [`Portable`](#portable) (Windows only)
+* [`Build`](#build) (Windows, Linux & MacOS)
+* [`Manual`](#manual)
 
 ### Portable
 
@@ -50,7 +50,7 @@ python build.py
 ./dist/yt-dlp-gui
 ```
 
-### Python
+### Manual
 
 You **must** have [Python](https://www.python.org/downloads/) 3.9+ installed.
 
