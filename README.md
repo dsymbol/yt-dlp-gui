@@ -1,8 +1,9 @@
-<div align="center">
-<h1>yt-dlp-gui</h1>
-<p>yt-dlp-gui is a graphical interface for the command line tool <a href=https://github.com/yt-dlp/yt-dlp>yt-dlp</a>, which allows users to download videos from various <a href=https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md>websites</a>, including YouTube. It is designed to be more user-friendly and accessible for those who are not comfortable using the command line. With yt-dlp-gui, users can simply enter the URL of the video they want to download and initiate the download process through a simple interface.</p>
-<img src="https://user-images.githubusercontent.com/88138099/211172534-e582b29b-ceb7-43e4-8370-b76b798ad069.gif"></br>
-</div>
+# yt-dlp-gui
+Graphical interface for the command line tool [yt-dlp](https://github.com/yt-dlp/yt-dlp), which allows users to download videos from various [websites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md), including YouTube. It is designed to be more user-friendly and accessible for those who are not comfortable using the command line. With yt-dlp-gui, users can simply enter the URL of the video they want to download and initiate the download process through a simple interface.
+
+## Demo
+
+![](https://user-images.githubusercontent.com/88138099/211172534-e582b29b-ceb7-43e4-8370-b76b798ad069.gif)
 
 ## Getting Started
 
@@ -90,5 +91,6 @@ pip install -r requirements.txt
 4. Run the program:
 
 ```bash
+cd src
 python main.py
 ```
