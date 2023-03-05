@@ -142,6 +142,8 @@ class Main(QtWidgets.QMainWindow, Ui_ytdlpgui):
 if __name__ == "__main__":
     sys.excepthook = Main.excepthook
     app = QtWidgets.QApplication(sys.argv)
+    # display scaling fix
+    app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
     window = Main()
     window.show()
     sys.exit(app.exec_())
