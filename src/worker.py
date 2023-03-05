@@ -35,22 +35,22 @@ class Worker(QObject):
         self.log = get_logger(f"Worker {num}")
 
     def get_args(self):
-        args = ['yt-dlp', '--newline', '-i', '--ignore-config', '--hls-prefer-native', '--print-json']
+        args = ['yt-dlp', '--newline', '-i', '--ignore-config', '--hls-prefer-native', '--dump-json', '--no-simulate',
+                '--progress']
         if self.video_fmt == "best":
-            args.extend(['-o', f'{self.folder}/%(title)s.%(ext)s', self.link])
+            args += ['-o', f'{self.folder}/%(title)s.%(ext)s', self.link]
         elif self.video_fmt == "mp4":
-            args.extend(['-o', f'{self.folder}/%(title)s.%(ext)s', '-S', 'ext:mp4:m4a', self.link])
+            args += ['-o', f'{self.folder}/%(title)s.%(ext)s', '-S', 'ext:mp4:m4a', self.link]
         elif self.video_fmt == "mp3":
-            args.extend(
-                ['-o', f'{self.folder}/%(title)s.%(ext)s', '-x', '--audio-format', 'mp3', '--audio-quality', '0',
-                 self.link])
+            args += ['-o', f'{self.folder}/%(title)s.%(ext)s', '-x', '--audio-format', 'mp3', '--audio-quality', '0',
+                     self.link]
 
         if self.metadata > 0:
-            args.append('--embed-metadata')
+            args += ['--embed-metadata']
         if self.thumbnail > 0:
-            args.append('--embed-thumbnail')
+            args += ['--embed-thumbnail']
         if self.subtitles > 0:
-            args.append('--write-auto-subs')
+            args += ['--write-auto-subs']
         return args
 
     def run(self):
@@ -73,10 +73,10 @@ class Worker(QObject):
                 elif "[download]" in line and "100%" not in line and "ETA" in line:
                     self.progress.emit(self.tree_item, TreeDex.STATUS, "Downloading")
                     data = line.split()
-                    self.progress.emit(self.tree_item, TreeDex.SIZE, data[3])
+                    self.progress.emit(self.tree_item, TreeDex.SIZE, data[4])
                     self.progress.emit(self.tree_item, TreeDex.PROGRESS, data[1])
-                    self.progress.emit(self.tree_item, TreeDex.ETA, data[7])
-                    self.progress.emit(self.tree_item, TreeDex.SPEED, data[5])
+                    self.progress.emit(self.tree_item, TreeDex.ETA, data[8])
+                    self.progress.emit(self.tree_item, TreeDex.SPEED, data[6])
 
                 elif "[Merger]" in line or "[ExtractAudio]" in line:
                     self.progress.emit(self.tree_item, TreeDex.STATUS, "Converting")
