@@ -2,7 +2,7 @@ import logging
 import os
 
 
-def get_logger(name="logger", file="error.log"):
+def get_logger(name="logger", file="debug.log"):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
