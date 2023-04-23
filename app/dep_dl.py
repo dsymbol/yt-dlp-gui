@@ -95,7 +95,7 @@ class DownloaderUi(QWidget, Ui_w_Downloader):
 
             for exe in exes:
                 if exe == 'yt-dlp':
-                    url = "https://github.com/yt-dlp/yt-dlp/releases/download/2023.03.04/" + binaries[os_][exe]
+                    url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/" + binaries[os_][exe]
                 else:
                     url = "https://github.com/imageio/imageio-binaries/raw/master/ffmpeg/" + binaries[os_][exe]
 
