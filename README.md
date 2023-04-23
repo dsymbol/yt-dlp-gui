@@ -1,23 +1,26 @@
 # yt-dlp-gui
-Graphical interface for the command line tool [yt-dlp](https://github.com/yt-dlp/yt-dlp), which allows users to download videos from various [websites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md), including YouTube. It is designed to be more user-friendly and accessible for those who are not comfortable using the command line. With yt-dlp-gui, users can simply enter the URL of the video they want to download and initiate the download process through a simple interface.
+Graphical interface for the command line tool [yt-dlp](https://github.com/yt-dlp/yt-dlp), which allows users to download 
+videos from various [websites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md), including YouTube. 
+It is designed to be more user-friendly and accessible for those who are not comfortable using the command line.
 
-## Demo
+## Screenshot
 
-![](https://user-images.githubusercontent.com/88138099/211172534-e582b29b-ceb7-43e4-8370-b76b798ad069.gif)
+![yt-dlp-gui_zbZQfeo6oa](https://user-images.githubusercontent.com/88138099/233844477-00c3821c-38a3-4601-9ba4-0bd7467ce635.png)
 
 ## Getting Started
 
-There are three ways to begin using yt-dlp-gui, depending on your preference and system:
+There are three ways to get started, depending on your preference and system:
 
-* [`Portable`](#portable) (Windows only)
-* [`Build`](#build) (Windows, Linux & MacOS)
+* [`Portable`](#portable) (Windows, Linux)
+* [`Build`](#build)
 * [`Manual`](#manual)
 
 ### Portable
 
-1. Download the latest portable version from the [releases](https://github.com/dsymbol/yt-dlp-gui/releases/latest) section. This will download a ZIP file containing the program files and all necessary dependencies.
-2. Extract the files from the ZIP file.
-3. Double-click on the `yt-dlp-gui.exe` file to launch the program.
+Download the latest portable version from the [releases](https://github.com/dsymbol/yt-dlp-gui/releases/latest) section. 
+This will download a ZIP file containing the program files and all necessary dependencies.
+
+*All releases are built and released using GitHub Workflow*
 
 ### Build
 
@@ -38,11 +41,22 @@ cd yt-dlp-gui
 pip install -r requirements.txt
 ```
 
-3. Use the provided build script to compile the program:
+3. Use PyInstaller to compile the program:
 
 ```bash
-cd src
-python build.py
+cd app
+```
+
+#### Linux
+
+```bash
+pyinstaller --name=yt-dlp-gui --clean -y app.py
+```
+
+#### Windows & MacOS
+
+```pwsh
+pyinstaller --name=yt-dlp-gui --clean -y app.py --icon ./ui/assets/yt-dlp-gui.ico --noconsole
 ```
 
 4. The executable will be ready at:
@@ -55,42 +69,22 @@ python build.py
 
 You **must** have [Python](https://www.python.org/downloads/) 3.9+ installed.
 
-1. When running using a Python interpreter you must install the executable dependencies first:
-
-* [`ffmpeg`](https://ffmpeg.org/)
-* [`ffprobe`](https://ffmpeg.org/)
-* [`yt-dlp`](https://github.com/yt-dlp/yt-dlp/)
-
-***Unix***
-
-Use the package manager to install ffmpeg and yt-dlp:
-
-```bash
-sudo apt update && sudo apt install ffmpeg yt-dlp
-```
-
-***Windows***
-
-Follow the instructions at [windowsloop](https://windowsloop.com/install-ffmpeg-windows-10/) to install ffmpeg on Windows.
-
-Download [yt-dlp](https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe) executable and add it to the Windows Path environment variable
-
-2. Clone the repository onto your local machine:
+1. Clone the repository onto your local machine:
 
 ```bash
 git clone https://github.com/dsymbol/yt-dlp-gui
 cd yt-dlp-gui
 ```
 
-3. Install the necessary dependencies:
+2. Install the necessary dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Run the program:
+3. Run the program:
 
 ```bash
-cd src
-python main.py
+cd app
+python app.py
 ```
