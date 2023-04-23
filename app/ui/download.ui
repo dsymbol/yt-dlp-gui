@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>w_Downloader</class>
+ <widget class="QWidget" name="w_Downloader">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>441</width>
+    <height>73</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Fetching dependency...</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="assets/icons.qrc">
+    <normaloff>:/icon/yt-dlp-gui.ico</normaloff>:/icon/yt-dlp-gui.ico</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QLabel" name="lb_progress">
+     <property name="text">
+      <string>?: 0/0 [00:00&lt;?, ?KB/s]</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="pb">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="assets/icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

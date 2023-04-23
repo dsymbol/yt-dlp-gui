@@ -1,4 +1,4 @@
-PyQt5
-pyinstaller
+pyside6
 requests
 tqdm
+pyinstaller

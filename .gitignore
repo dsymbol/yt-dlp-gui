@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 .idea/
-settings.json
 bin/
-err.log
+
+conf.json
+debug.log

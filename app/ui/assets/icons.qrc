@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="buttons">
+    <file>add.png</file>
+    <file>clear.png</file>
+    <file>download.png</file>
+  </qresource>
+  <qresource prefix="icon">
+    <file>yt-dlp-gui.ico</file>
+  </qresource>
+</RCC>
