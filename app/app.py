@@ -74,13 +74,21 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.dl_list += [[item, link, path, format_, cargs, metadata, thumbnail, subtitles]]
             log.info(f'Added download to list: {link} as {format_} to the `{path}` directory.')
         else:
-            self.error_box("Unable to add the download because some required fields are missing.")
+            qtw.QMessageBox.information(
+                self,
+                'Application Message',
+                "Unable to add the download because some required fields are missing."
+            )
 
     def button_clear(self):
         for w in self.worker.values():
             try:
                 w.isFinished()
-                return self.error_box("Unable to clear list because there are active downloads in progress.")
+                return qtw.QMessageBox.warning(
+                    self,
+                    'Application Message',
+                    "Unable to clear list because there are active downloads in progress."
+                )
             except RuntimeError:
                 continue
 
@@ -90,7 +98,11 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
 
     def button_download(self):
         if not self.dl_list:
-            return self.error_box("Unable to download because there are no links in the list.")
+            return qtw.QMessageBox.information(
+                self,
+                'Application Message',
+                "Unable to download because there are no links in the list."
+            )
 
         for dl in self.dl_list:
             self.worker[self.wi] = Worker(*dl)
@@ -136,25 +148,6 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         with open(Path(__file__).parent / 'conf.json', 'w') as f:
             json.dump(settings, f, indent=4)
         event.accept()
-
-    def error_box(self, text, icon="Critical"):
-        log.error(text)
-        qmb = qtw.QMessageBox(self)
-        qmb.setText(text)
-        qmb.setWindowTitle('Application Error')
-        if icon == "NoIcon":
-            qmb.setIcon(qtw.QMessageBox.NoIcon)
-        if icon == "Information":
-            qmb.setIcon(qtw.QMessageBox.Information)
-        if icon == "Warning":
-            qmb.setIcon(qtw.QMessageBox.Warning)
-        if icon == "Critical":
-            qmb.setIcon(qtw.QMessageBox.Critical)
-        if icon == "Question":
-            qmb.setIcon(qtw.QMessageBox.Question)
-        qmb.setDetailedText("An error occurred while processing your request. Please check your input and try again.")
-        qmb.setStandardButtons(qtw.QMessageBox.Ok)
-        qmb.exec()
 
     @staticmethod
     def update_progress(item, emit_data):
