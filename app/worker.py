@@ -1,10 +1,11 @@
 import json
+import logging
 import subprocess as sp
 import sys
 from dataclasses import dataclass
 
-from PySide6.QtCore import QThread, Signal
-import logging
+import PySide6.QtCore as qtc
+from psutil import Process
 
 log = logging.getLogger(__name__)
 
@@ -20,8 +21,9 @@ class TreeDex:
     ETA: int = 6
 
 
-class Worker(QThread):
-    progress = Signal(object, list)
+class Worker(qtc.QThread):
+    finished = qtc.Signal(int)
+    progress = qtc.Signal(object, list)
 
     def __init__(self, item, link, path, format_, cargs, metadata, thumbnail, subtitles):
         super().__init__()
@@ -33,6 +35,8 @@ class Worker(QThread):
         self.metadata = metadata
         self.thumbnail = thumbnail
         self.subtitles = subtitles
+
+        self.stop = False
 
     def build_command(self):
         args = [
@@ -64,10 +68,16 @@ class Worker(QThread):
         with sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT, text=True,
                       universal_newlines=True, creationflags=create_window) as p:
             for line in p.stdout:
+                if self.stop:
+                    for child in Process(p.pid).children(recursive=True):
+                        child.kill()
+                    p.kill()
+                    break
+
                 if line.startswith('{'):
                     info_dict = json.loads(line)
                     title = info_dict['title']
-                    log.info(f"`{title}` download started: " + " ".join(command))
+                    log.info(f"`{title}` with id {self.item.id} download started with args: " + " ".join(command))
                     self.progress.emit(
                         self.item,
                         [
@@ -114,3 +124,5 @@ class Worker(QThread):
                         [TreeDex.STATUS, "Finished"],
                     ]
                 )
+
+        self.finished.emit(self.item.id)

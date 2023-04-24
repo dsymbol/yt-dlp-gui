@@ -31,15 +31,33 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.form.finished.connect(self.form.close)
         self.form.finished.connect(self.show)
 
-        self.dl_list = []
+        self.to_dl = {}
         self.worker = {}
-        self.wi = 0
+        self.index = 0
 
         self.tb_path.clicked.connect(self.button_path)
         self.dd_format.currentTextChanged.connect(self.format_change)
         self.pb_add.clicked.connect(self.button_add)
         self.pb_clear.clicked.connect(self.button_clear)
         self.pb_download.clicked.connect(self.button_download)
+        self.tw.itemClicked.connect(self.remove_item)
+
+    def remove_item(self, item, column):
+        ret = qtw.QMessageBox.question(
+            self,
+            'Application Message',
+            f"Would you like to remove {item.text(0)} ?",
+            qtw.QMessageBox.Yes | qtw.QMessageBox.No,
+            qtw.QMessageBox.No
+        )
+        if ret == qtw.QMessageBox.Yes:
+            if self.to_dl.get(item.id):
+                log.info(f"Removing queued {item.text(0)} download with id {item.id} ")
+                self.to_dl.pop(item.id)
+            elif worker := self.worker.get(item.id):
+                log.info(f"Stopping and removing {item.text(0)} download with id {item.id}")
+                worker.stop = True
+            self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item))
 
     def button_path(self):
         path = qtw.QFileDialog.getExistingDirectory(self, "Select a folder", qtc.QDir.homePath(),
@@ -69,9 +87,11 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         if link and path and format_:
             item = qtw.QTreeWidgetItem(self.tw, [link, format_, '-', '0%', 'Queued', '-', '-'])
             [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
+            item.id = self.index
             self.le_link.setText("")
             self.le_cargs.setText("")
-            self.dl_list += [[item, link, path, format_, cargs, metadata, thumbnail, subtitles]]
+            self.to_dl[self.index] = [item, link, path, format_, cargs, metadata, thumbnail, subtitles]
+            self.index += 1
             log.info(f'Added download to list: {link} as {format_} to the `{path}` directory.')
         else:
             qtw.QMessageBox.information(
@@ -81,37 +101,34 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             )
 
     def button_clear(self):
-        for w in self.worker.values():
-            try:
-                w.isFinished()
-                return qtw.QMessageBox.warning(
-                    self,
-                    'Application Message',
-                    "Unable to clear list because there are active downloads in progress."
-                )
-            except RuntimeError:
-                continue
+        if self.worker:
+            return qtw.QMessageBox.critical(
+                self,
+                'Application Message',
+                "Unable to clear list because there are active downloads in progress.\n"
+                "Remove a download by clicking on it."
+            )
 
         self.worker = {}
-        self.dl_list = []
+        self.to_dl = {}
         self.tw.clear()
 
     def button_download(self):
-        if not self.dl_list:
+        if not self.to_dl:
             return qtw.QMessageBox.information(
                 self,
                 'Application Message',
                 "Unable to download because there are no links in the list."
             )
 
-        for dl in self.dl_list:
-            self.worker[self.wi] = Worker(*dl)
-            self.worker[self.wi].finished.connect(self.worker[self.wi].deleteLater)
-            self.worker[self.wi].progress.connect(self.update_progress)
-            self.worker[self.wi].start()
-            self.wi += 1
+        for k, v in self.to_dl.items():
+            self.worker[k] = Worker(*v)
+            self.worker[k].finished.connect(self.worker[k].deleteLater)
+            self.worker[k].finished.connect(lambda x: self.worker.pop(x))
+            self.worker[k].progress.connect(self.update_progress)
+            self.worker[k].start()
 
-        self.dl_list = []
+        self.to_dl = {}
 
     def conf(self):
         file = Path(__file__).parent / 'conf.json'
