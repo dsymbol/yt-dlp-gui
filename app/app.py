@@ -56,7 +56,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
                 self.to_dl.pop(item.id)
             elif worker := self.worker.get(item.id):
                 log.info(f"Stopping and removing {item.text(0)} download with id {item.id}")
-                worker.stop = True
+                worker.stop()
             self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item))
 
     def button_path(self):

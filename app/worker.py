@@ -36,7 +36,8 @@ class Worker(qtc.QThread):
         self.thumbnail = thumbnail
         self.subtitles = subtitles
 
-        self.stop = False
+        self.mutex = qtc.QMutex()
+        self._stop = False
 
     def build_command(self):
         args = [
@@ -60,6 +61,10 @@ class Worker(qtc.QThread):
             args += ['--write-auto-subs']
         return args
 
+    def stop(self):
+        with qtc.QMutexLocker(self.mutex):
+            self._stop = True
+
     def run(self):
         create_window = sp.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
         command = self.build_command()
@@ -68,11 +73,12 @@ class Worker(qtc.QThread):
         with sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT, text=True,
                       universal_newlines=True, creationflags=create_window) as p:
             for line in p.stdout:
-                if self.stop:
-                    for child in Process(p.pid).children(recursive=True):
-                        child.kill()
-                    p.kill()
-                    break
+                with qtc.QMutexLocker(self.mutex):
+                    if self._stop:
+                        for child in Process(p.pid).children(recursive=True):
+                            child.kill()
+                        p.kill()
+                        break
 
                 if line.startswith('{'):
                     info_dict = json.loads(line)
