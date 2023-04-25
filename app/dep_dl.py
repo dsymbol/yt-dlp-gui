@@ -32,29 +32,28 @@ class Downloader(QThread):
             self.filename = os.path.basename(parsed_url.path)
 
         r = requests.get(self.url, stream=True)
-        try:
-            file_size = int(r.headers['Content-Length'])
-        except KeyError:
-            file_size = 1000
+        file_size = int(r.headers.get('content-length', 0))
+        chunk_size = 1024
 
         self.total_progress.emit(file_size)
 
         data = StringIO()
         chunk_size = 1024
         read_bytes = 0
-        num_bars = int(file_size / chunk_size)
 
-        with NamedTemporaryFile(mode='wb', delete=False) as temp:
-            for chunk in tqdm(
-                    r.iter_content(chunk_size=chunk_size),
-                    total=num_bars,
-                    unit='KB',
-                    desc=os.path.basename(self.filename),
-                    file=data,
-                    bar_format='{desc}: {n_fmt}/{total_fmt} [{elapsed}/{remaining}, {rate_fmt}{postfix}]',
-                    leave=True
-            ):
+        with NamedTemporaryFile(mode='wb', delete=False) as temp, tqdm(
+                desc=os.path.basename(self.filename),
+                total=file_size,
+                unit='iB',
+                unit_scale=True,
+                unit_divisor=1024,
+                file=data,
+                bar_format='{desc}: {n_fmt}/{total_fmt} [{elapsed}/{remaining}, {rate_fmt}{postfix}]',
+                leave=True
+        ) as bar:
+            for chunk in r.iter_content(chunk_size=chunk_size):
                 temp.write(chunk)
+                bar.update(chunk_size)
                 read_bytes += chunk_size
                 self.progress.emit(read_bytes, data.getvalue().split('\r')[-1].strip())
             self.progress.emit(read_bytes, data.getvalue().split('\r')[-1].strip())
