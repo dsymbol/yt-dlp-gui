@@ -152,6 +152,7 @@ class Ui_mw_Main(object):
         self.dd_format = QComboBox(self.gb_args)
         self.dd_format.addItem("")
         self.dd_format.addItem("")
+        self.dd_format.addItem("")
         self.dd_format.setObjectName(u"dd_format")
         self.dd_format.setMinimumSize(QSize(70, 0))
 
@@ -167,6 +168,8 @@ class Ui_mw_Main(object):
 
         self.lo_format.addWidget(self.le_cargs)
 
+        self.lo_format.setStretch(1, 1)
+        self.lo_format.setStretch(3, 2)
 
         self.verticalLayout_4.addLayout(self.lo_format)
 
@@ -231,6 +234,7 @@ class Ui_mw_Main(object):
         self.lb_format.setText(QCoreApplication.translate("mw_Main", u"Format", None))
         self.dd_format.setItemText(0, QCoreApplication.translate("mw_Main", u"mp4", None))
         self.dd_format.setItemText(1, QCoreApplication.translate("mw_Main", u"mp3", None))
+        self.dd_format.setItemText(2, QCoreApplication.translate("mw_Main", u"wav", None))
 
         self.lb_cargs.setText(QCoreApplication.translate("mw_Main", u"Custom Args", None))
         ___qtreewidgetitem = self.tw.headerItem()

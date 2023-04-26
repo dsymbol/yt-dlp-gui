@@ -67,10 +67,10 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.le_path.setText(path)
 
     def format_change(self, fmt):
-        if fmt == "mp3":
+        if fmt in ["mp3", "wav"]:
             self.cb_subtitles.setEnabled(False)
             self.cb_subtitles.setChecked(False)
-        elif fmt == "mp4":
+        else:
             self.cb_subtitles.setEnabled(True)
 
     def button_add(self):

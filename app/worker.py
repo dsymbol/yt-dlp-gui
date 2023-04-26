@@ -43,13 +43,15 @@ class Worker(qtc.QThread):
         args = [
             'yt-dlp', '--newline', '--ignore-errors', '--ignore-config', '--hls-prefer-native', '--no-simulate',
             '--progress', '--progress-template', '%(progress.status)s %(progress._total_bytes_estimate_str)s '
-            '%(progress._percent_str)s %(progress._speed_str)s %(progress._eta_str)s', '--dump-json', '-v'
+            '%(progress._percent_str)s %(progress._speed_str)s %(progress._eta_str)s', '--dump-json', '-v',
+            '-o', f'{self.path}/%(title)s.%(ext)s', self.link
         ]
         if self.format_ == "mp4":
-            args += ['-o', f'{self.path}/%(title)s.%(ext)s', '--format-sort', 'ext:mp4:m4a', self.link]
+            args += ['--format-sort', 'ext:mp4:m4a']
         elif self.format_ == "mp3":
-            args += ['-o', f'{self.path}/%(title)s.%(ext)s', '--extract-audio', '--audio-format', 'mp3',
-                     '--audio-quality', '0', self.link]
+            args += ['--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0']
+        elif self.format_ == "wav":
+            args += ['--extract-audio', '--audio-format', 'wav', '--audio-quality', '0']
 
         if self.cargs:
             args += self.cargs.split()

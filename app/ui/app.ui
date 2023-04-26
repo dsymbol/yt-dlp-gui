@@ -197,7 +197,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="lo_format">
+        <layout class="QHBoxLayout" name="lo_format" stretch="0,1,0,2">
          <item>
           <widget class="QLabel" name="lb_format">
            <property name="minimumSize">
@@ -227,6 +227,11 @@
            <item>
             <property name="text">
              <string>mp3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>wav</string>
             </property>
            </item>
           </widget>
