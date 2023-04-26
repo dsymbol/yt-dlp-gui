@@ -168,6 +168,16 @@ class Ui_mw_Main(object):
 
         self.lo_format.addWidget(self.le_cargs)
 
+        self.lb_filename = QLabel(self.gb_args)
+        self.lb_filename.setObjectName(u"lb_filename")
+
+        self.lo_format.addWidget(self.lb_filename)
+
+        self.le_filename = QLineEdit(self.gb_args)
+        self.le_filename.setObjectName(u"le_filename")
+
+        self.lo_format.addWidget(self.le_filename)
+
         self.lo_format.setStretch(1, 1)
         self.lo_format.setStretch(3, 2)
 
@@ -246,6 +256,8 @@ class Ui_mw_Main(object):
         self.dd_format.setItemText(2, QCoreApplication.translate("mw_Main", u"wav", None))
 
         self.lb_cargs.setText(QCoreApplication.translate("mw_Main", u"Custom Args", None))
+        self.lb_filename.setText(QCoreApplication.translate("mw_Main", u"Filename", None))
+        self.le_filename.setPlaceholderText(QCoreApplication.translate("mw_Main", u"%(title)s.%(ext)s", None))
         ___qtreewidgetitem = self.tw.headerItem()
         ___qtreewidgetitem.setText(6, QCoreApplication.translate("mw_Main", u"ETA", None));
         ___qtreewidgetitem.setText(5, QCoreApplication.translate("mw_Main", u"Speed", None));

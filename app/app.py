@@ -74,11 +74,12 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.cb_subtitles.setEnabled(True)
 
     def button_add(self):
-        link, path, format_, cargs, metadata, thumbnail, subtitles = [
+        link, path, format_, cargs, filename, metadata, thumbnail, subtitles = [
             self.le_link.text(),
             self.le_path.text(),
             self.dd_format.currentText(),
             self.le_cargs.text(),
+            self.le_filename.text(),
             self.cb_metadata.isChecked(),
             self.cb_thumbnail.isChecked(),
             self.cb_subtitles.isChecked()
@@ -88,11 +89,13 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             item = qtw.QTreeWidgetItem(self.tw, [link, format_, '-', '0%', 'Queued', '-', '-'])
             [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
             item.id = self.index
-            self.le_link.setText("")
-            self.le_cargs.setText("")
-            self.to_dl[self.index] = [item, link, path, format_, cargs, metadata, thumbnail, subtitles]
+            filename = filename if filename else "%(title)s.%(ext)s"
+            self.le_link.clear()
+            self.le_cargs.clear()
+            self.le_filename.clear()
+            self.to_dl[self.index] = [item, link, path, format_, cargs, filename, metadata, thumbnail, subtitles]
             self.index += 1
-            log.info(f'Added download to list: {link} as {format_} to the `{path}` directory.')
+            log.info(f'Queued download added: link: {link}, format: {format_}, path: {path}/{filename}')
         else:
             qtw.QMessageBox.information(
                 self,

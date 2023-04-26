@@ -206,7 +206,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="lo_format" stretch="0,1,0,2">
+        <layout class="QHBoxLayout" name="lo_format" stretch="0,1,0,2,0,0">
          <item>
           <widget class="QLabel" name="lb_format">
            <property name="minimumSize">
@@ -254,6 +254,20 @@
          </item>
          <item>
           <widget class="QLineEdit" name="le_cargs"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="lb_filename">
+           <property name="text">
+            <string>Filename</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="le_filename">
+           <property name="placeholderText">
+            <string>%(title)s.%(ext)s</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

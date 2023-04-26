@@ -25,13 +25,14 @@ class Worker(qtc.QThread):
     finished = qtc.Signal(int)
     progress = qtc.Signal(object, list)
 
-    def __init__(self, item, link, path, format_, cargs, metadata, thumbnail, subtitles):
+    def __init__(self, item, link, path, format_, cargs, filename, metadata, thumbnail, subtitles):
         super().__init__()
         self.item = item
         self.link = link
         self.path = path
         self.format_ = format_
         self.cargs = cargs
+        self.filename = filename
         self.metadata = metadata
         self.thumbnail = thumbnail
         self.subtitles = subtitles
@@ -44,7 +45,7 @@ class Worker(qtc.QThread):
             'yt-dlp', '--newline', '--ignore-errors', '--ignore-config', '--hls-prefer-native', '--no-simulate',
             '--progress', '--progress-template', '%(progress.status)s %(progress._total_bytes_estimate_str)s '
             '%(progress._percent_str)s %(progress._speed_str)s %(progress._eta_str)s', '--dump-json', '-v',
-            '-o', f'{self.path}/%(title)s.%(ext)s', self.link
+            '-o', f'{self.path}/{self.filename}', self.link
         ]
         if self.format_ == "mp4":
             args += ['--format-sort', 'ext:mp4:m4a']
