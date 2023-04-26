@@ -100,7 +100,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             qtw.QMessageBox.information(
                 self,
                 'Application Message',
-                "Unable to add the download because some required fields are missing."
+                "Unable to add the download because some required fields are missing.\nRequired fields: Link and Path."
             )
 
     def button_clear(self):
