@@ -67,11 +67,17 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.le_path.setText(path)
 
     def format_change(self, fmt):
-        if fmt in ["mp3", "wav"]:
+        if fmt == 'mp4':
+            self.cb_subtitles.setEnabled(True)
+            self.cb_thumbnail.setEnabled(True)
+        else:
+            if fmt in ['mp3', 'flac']:
+                self.cb_thumbnail.setEnabled(True)
+            else:
+                self.cb_thumbnail.setEnabled(False)
+                self.cb_thumbnail.setChecked(False)
             self.cb_subtitles.setEnabled(False)
             self.cb_subtitles.setChecked(False)
-        else:
-            self.cb_subtitles.setEnabled(True)
 
     def button_add(self):
         link, path, format_, cargs, filename, metadata, thumbnail, subtitles = [

@@ -206,7 +206,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="lo_format" stretch="0,1,0,2,0,0">
+        <layout class="QHBoxLayout" name="lo_format" stretch="0,1,0,0,0,2">
          <item>
           <widget class="QLabel" name="lb_format">
            <property name="minimumSize">
@@ -243,17 +243,12 @@
              <string>wav</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>flac</string>
+            </property>
+           </item>
           </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="lb_cargs">
-           <property name="text">
-            <string>Custom Args</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="le_cargs"/>
          </item>
          <item>
           <widget class="QLabel" name="lb_filename">
@@ -268,6 +263,16 @@
             <string>%(title)s.%(ext)s</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lb_cargs">
+           <property name="text">
+            <string>Custom Args</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="le_cargs"/>
          </item>
         </layout>
        </item>

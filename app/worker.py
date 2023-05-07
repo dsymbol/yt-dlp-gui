@@ -30,7 +30,7 @@ class Worker(qtc.QThread):
         self.item = item
         self.link = link
         self.path = path
-        self.format_ = format_
+        self.format = format_
         self.cargs = cargs
         self.filename = filename
         self.metadata = metadata
@@ -47,12 +47,10 @@ class Worker(qtc.QThread):
             '%(progress._percent_str)s %(progress._speed_str)s %(progress._eta_str)s', '--dump-json', '-v',
             '-o', f'{self.path}/{self.filename}', self.link
         ]
-        if self.format_ == "mp4":
+        if self.format == "mp4":
             args += ['--format-sort', 'ext:mp4:m4a']
-        elif self.format_ == "mp3":
-            args += ['--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0']
-        elif self.format_ == "wav":
-            args += ['--extract-audio', '--audio-format', 'wav', '--audio-quality', '0']
+        else:
+            args += ['--extract-audio', '--audio-format', self.format, '--audio-quality', '0']
 
         if self.cargs:
             args += self.cargs.split()

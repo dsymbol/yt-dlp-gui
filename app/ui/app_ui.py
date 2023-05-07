@@ -153,20 +153,11 @@ class Ui_mw_Main(object):
         self.dd_format.addItem("")
         self.dd_format.addItem("")
         self.dd_format.addItem("")
+        self.dd_format.addItem("")
         self.dd_format.setObjectName(u"dd_format")
         self.dd_format.setMinimumSize(QSize(70, 0))
 
         self.lo_format.addWidget(self.dd_format)
-
-        self.lb_cargs = QLabel(self.gb_args)
-        self.lb_cargs.setObjectName(u"lb_cargs")
-
-        self.lo_format.addWidget(self.lb_cargs)
-
-        self.le_cargs = QLineEdit(self.gb_args)
-        self.le_cargs.setObjectName(u"le_cargs")
-
-        self.lo_format.addWidget(self.le_cargs)
 
         self.lb_filename = QLabel(self.gb_args)
         self.lb_filename.setObjectName(u"lb_filename")
@@ -178,8 +169,18 @@ class Ui_mw_Main(object):
 
         self.lo_format.addWidget(self.le_filename)
 
+        self.lb_cargs = QLabel(self.gb_args)
+        self.lb_cargs.setObjectName(u"lb_cargs")
+
+        self.lo_format.addWidget(self.lb_cargs)
+
+        self.le_cargs = QLineEdit(self.gb_args)
+        self.le_cargs.setObjectName(u"le_cargs")
+
+        self.lo_format.addWidget(self.le_cargs)
+
         self.lo_format.setStretch(1, 1)
-        self.lo_format.setStretch(3, 2)
+        self.lo_format.setStretch(5, 2)
 
         self.verticalLayout_4.addLayout(self.lo_format)
 
@@ -254,10 +255,11 @@ class Ui_mw_Main(object):
         self.dd_format.setItemText(0, QCoreApplication.translate("mw_Main", u"mp4", None))
         self.dd_format.setItemText(1, QCoreApplication.translate("mw_Main", u"mp3", None))
         self.dd_format.setItemText(2, QCoreApplication.translate("mw_Main", u"wav", None))
+        self.dd_format.setItemText(3, QCoreApplication.translate("mw_Main", u"flac", None))
 
-        self.lb_cargs.setText(QCoreApplication.translate("mw_Main", u"Custom Args", None))
         self.lb_filename.setText(QCoreApplication.translate("mw_Main", u"Filename", None))
         self.le_filename.setPlaceholderText(QCoreApplication.translate("mw_Main", u"%(title)s.%(ext)s", None))
+        self.lb_cargs.setText(QCoreApplication.translate("mw_Main", u"Custom Args", None))
         ___qtreewidgetitem = self.tw.headerItem()
         ___qtreewidgetitem.setText(6, QCoreApplication.translate("mw_Main", u"ETA", None));
         ___qtreewidgetitem.setText(5, QCoreApplication.translate("mw_Main", u"Speed", None));
