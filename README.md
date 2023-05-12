@@ -5,15 +5,15 @@ It is designed to be more user-friendly and accessible for those who are not com
 
 ## Screenshot
 
-![yt-dlp-gui_zbZQfeo6oa](https://user-images.githubusercontent.com/88138099/233844477-00c3821c-38a3-4601-9ba4-0bd7467ce635.png)
+![](https://github.com/dsymbol/yt-dlp-gui/assets/88138099/ba9ee6f0-99fe-46c5-b3b8-f63d5ea124fc)
 
 ## Getting Started
 
 There are three ways to get started, depending on your preference and system:
 
-* [`Portable`](#portable) (Windows, Linux)
-* [`Build`](#build)
-* [`Manual`](#manual)
+* [`Portable`](#portable) ~ *Windows & Linux*
+* [`Build`](#build) ~ *Windows & Linux*
+* [`Manual`](#manual) ~ *Platform independent*
 
 ### Portable
 
@@ -53,7 +53,7 @@ cd app
 pyinstaller --name=yt-dlp-gui --clean -y app.py
 ```
 
-#### Windows & MacOS
+#### Windows
 
 ```pwsh
 pyinstaller --name=yt-dlp-gui --clean -y app.py --icon ./ui/assets/yt-dlp-gui.ico --noconsole
