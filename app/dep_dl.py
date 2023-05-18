@@ -59,7 +59,7 @@ class Downloader(QThread):
             self.progress.emit(read_bytes, data.getvalue().split('\r')[-1].strip())
 
         data.close()
-        os.rename(temp.name, self.filename)
+        shutil.move(temp.name, self.filename)
 
 
 class DownloaderUi(QWidget, Ui_w_Downloader):
