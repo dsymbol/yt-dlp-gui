@@ -108,7 +108,6 @@ class Worker(qtc.QThread):
                         self.item,
                         [
                             [TreeDex.SIZE, "ERROR"],
-                            [TreeDex.PROGRESS, "ERROR"],
                             [TreeDex.STATUS, "ERROR"],
                             [TreeDex.SPEED, "ERROR"]
                         ]
