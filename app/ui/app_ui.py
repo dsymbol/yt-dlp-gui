@@ -26,7 +26,7 @@ class Ui_mw_Main(object):
     def setupUi(self, mw_Main):
         if not mw_Main.objectName():
             mw_Main.setObjectName(u"mw_Main")
-        mw_Main.resize(758, 581)
+        mw_Main.resize(841, 622)
         icon = QIcon()
         icon.addFile(u":/icon/yt-dlp-gui.ico", QSize(), QIcon.Normal, QIcon.Off)
         mw_Main.setWindowIcon(icon)
