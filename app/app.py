@@ -93,6 +93,12 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
 
         if link and path and format_:
             item = qtw.QTreeWidgetItem(self.tw, [link, format_, '-', '0%', 'Queued', '-', '-'])
+            pb = qtw.QProgressBar()
+            pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
+            pb.setTextVisible(False)
+            pb.setValue(0)
+            pb.setRange(0, 100)
+            self.tw.setItemWidget(item, 3, pb)
             [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
             item.id = self.index
             filename = filename if filename else "%(title)s.%(ext)s"
@@ -175,11 +181,17 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             json.dump(settings, f, indent=4)
         event.accept()
 
-    @staticmethod
-    def update_progress(item, emit_data):
-        for data in emit_data:
-            index, update = data
-            item.setText(index, update)
+    def update_progress(self, item, emit_data):
+        try:
+            for data in emit_data:
+                index, update = data
+                if index != 3:
+                    item.setText(index, update)
+                else:
+                    pb = self.tw.itemWidget(item, index)
+                    pb.setValue(round(float(update.replace('%',''))))
+        except AttributeError:
+            log.info(f'Item {item.id} no longer exists')
 
 
 if __name__ == '__main__':

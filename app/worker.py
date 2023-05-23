@@ -92,7 +92,7 @@ class Worker(qtc.QThread):
                             [TreeDex.STATUS, "Processing"]
                         ]
                     )
-                elif line.startswith('downloading'):
+                elif line.lower().startswith('downloading'):
                     data = line.split()
                     self.progress.emit(
                         self.item,
