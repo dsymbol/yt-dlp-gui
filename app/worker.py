@@ -76,9 +76,6 @@ class Worker(qtc.QThread):
             for line in p.stdout:
                 with qtc.QMutexLocker(self.mutex):
                     if self._stop:
-                        for child in Process(p.pid).children(recursive=True):
-                            child.kill()
-                        p.kill()
                         break
 
                 if line.startswith('{'):
