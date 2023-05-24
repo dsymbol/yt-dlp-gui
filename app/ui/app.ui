@@ -280,12 +280,9 @@
      </widget>
     </item>
     <item row="1" column="0" colspan="3">
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+     <widget class="QGroupBox" name="gb_status">
+      <property name="title">
+       <string>Status</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
@@ -347,6 +344,7 @@
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <tabstops>
   <tabstop>le_path</tabstop>

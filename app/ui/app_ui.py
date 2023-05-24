@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
-    QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
-    QLabel, QLayout, QLineEdit, QMainWindow,
-    QPushButton, QSizePolicy, QToolButton, QTreeWidget,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLayout, QLineEdit, QMainWindow, QPushButton,
+    QSizePolicy, QStatusBar, QToolButton, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget)
 import ui.icons_rc
 
@@ -187,13 +187,11 @@ class Ui_mw_Main(object):
 
         self.gridLayout.addWidget(self.gb_args, 0, 0, 1, 1)
 
-        self.frame = QFrame(self.centralwidget)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.gridLayout_3 = QGridLayout(self.frame)
+        self.gb_status = QGroupBox(self.centralwidget)
+        self.gb_status.setObjectName(u"gb_status")
+        self.gridLayout_3 = QGridLayout(self.gb_status)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.tw = QTreeWidget(self.frame)
+        self.tw = QTreeWidget(self.gb_status)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setTextAlignment(5, Qt.AlignCenter);
         __qtreewidgetitem.setTextAlignment(4, Qt.AlignCenter);
@@ -206,13 +204,16 @@ class Ui_mw_Main(object):
         self.gridLayout_3.addWidget(self.tw, 0, 0, 1, 1)
 
 
-        self.gridLayout.addWidget(self.frame, 1, 0, 1, 3)
+        self.gridLayout.addWidget(self.gb_status, 1, 0, 1, 3)
 
         self.gridLayout.setRowStretch(0, 2)
         self.gridLayout.setRowStretch(1, 5)
         self.gridLayout.setColumnStretch(0, 5)
         self.gridLayout.setColumnStretch(1, 1)
         mw_Main.setCentralWidget(self.centralwidget)
+        self.statusBar = QStatusBar(mw_Main)
+        self.statusBar.setObjectName(u"statusBar")
+        mw_Main.setStatusBar(self.statusBar)
         QWidget.setTabOrder(self.le_path, self.le_cargs)
         QWidget.setTabOrder(self.le_cargs, self.cb_metadata)
         QWidget.setTabOrder(self.cb_metadata, self.cb_thumbnail)
@@ -260,6 +261,7 @@ class Ui_mw_Main(object):
         self.lb_filename.setText(QCoreApplication.translate("mw_Main", u"Filename", None))
         self.le_filename.setPlaceholderText(QCoreApplication.translate("mw_Main", u"%(title)s.%(ext)s", None))
         self.lb_cargs.setText(QCoreApplication.translate("mw_Main", u"Custom Args", None))
+        self.gb_status.setTitle(QCoreApplication.translate("mw_Main", u"Status", None))
         ___qtreewidgetitem = self.tw.headerItem()
         ___qtreewidgetitem.setText(6, QCoreApplication.translate("mw_Main", u"ETA", None));
         ___qtreewidgetitem.setText(5, QCoreApplication.translate("mw_Main", u"Speed", None));

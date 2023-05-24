@@ -11,6 +11,7 @@ from dep_dl import DownloaderUi
 from utils import init_logger
 from ui.app_ui import Ui_mw_Main
 from worker import Worker
+from version import __version__
 
 os.environ['PATH'] += os.pathsep + os.path.join(os.path.dirname(__file__), "bin")
 
@@ -26,6 +27,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.le_link.setFocus()
         self.conf()
         self.format_change(self.dd_format.currentText())
+        self.statusBar.showMessage(f"Version {__version__}")
 
         self.form = DownloaderUi()
         self.form.finished.connect(self.form.close)
