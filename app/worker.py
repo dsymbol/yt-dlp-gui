@@ -5,7 +5,6 @@ import sys
 from dataclasses import dataclass
 
 import PySide6.QtCore as qtc
-from psutil import Process
 
 log = logging.getLogger(__name__)
 
