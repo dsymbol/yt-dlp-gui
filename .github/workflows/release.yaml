@@ -1,10 +1,9 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        required: true
+  push:
+    paths:
+      - 'app/version.py'
 
 permissions:
   contents: write
@@ -64,6 +63,7 @@ jobs:
       - build-linux
       - build-windows
     steps:
+      - uses: actions/checkout@v3
       - name: Restore linux build
         uses: actions/download-artifact@v3
         with:
@@ -76,11 +76,14 @@ jobs:
           name: yt-dlp-gui-win
           path: /opt/builds
 
+      - name: Get version
+        run: echo "VERSION=$(grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' ./app/version.py)" >> $GITHUB_ENV
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ inputs.version }}
-          tag_name: ${{ inputs.version }}
+          name: ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
           generate_release_notes: true
           draft: false
           prerelease: false
