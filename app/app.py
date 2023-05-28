@@ -82,12 +82,13 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.cb_subtitles.setChecked(False)
 
     def button_add(self):
-        link, path, format_, cargs, filename, metadata, thumbnail, subtitles = [
+        link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles = [
             self.le_link.text(),
             self.le_path.text(),
             self.dd_format.currentText(),
             self.le_cargs.text(),
             self.le_filename.text(),
+            self.dd_sponsorblock.currentText(),
             self.cb_metadata.isChecked(),
             self.cb_thumbnail.isChecked(),
             self.cb_subtitles.isChecked()
@@ -107,7 +108,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.le_link.clear()
             self.le_cargs.clear()
             self.le_filename.clear()
-            self.to_dl[self.index] = [item, link, path, format_, cargs, filename, metadata, thumbnail, subtitles]
+            self.to_dl[self.index] = [item, link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles]
             self.index += 1
             log.info(f'Queued download added: link: {link}, format: {format_}, path: {path}/{filename}')
         else:
@@ -159,6 +160,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
                 settings = {
                     "path": "",
                     "format": 0,
+                    "sponsorblock": 0,
                     "metadata": False,
                     "subtitles": False,
                     "thumbnail": False
@@ -167,6 +169,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
 
         self.le_path.setText(settings["path"])
         self.dd_format.setCurrentIndex(settings["format"])
+        self.dd_sponsorblock.setCurrentIndex(settings["sponsorblock"])
         self.cb_metadata.setChecked(settings["metadata"])
         self.cb_subtitles.setChecked(settings["subtitles"])
         self.cb_thumbnail.setChecked(settings["thumbnail"])
@@ -175,6 +178,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         settings = {
             "path": self.le_path.text(),
             "format": self.dd_format.currentIndex(),
+            "sponsorblock": self.dd_sponsorblock.currentIndex(),
             "metadata": self.cb_metadata.isChecked(),
             "subtitles": self.cb_subtitles.isChecked(),
             "thumbnail": self.cb_thumbnail.isChecked()

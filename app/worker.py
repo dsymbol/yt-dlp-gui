@@ -24,7 +24,7 @@ class Worker(qtc.QThread):
     finished = qtc.Signal(int)
     progress = qtc.Signal(object, list)
 
-    def __init__(self, item, link, path, format_, cargs, filename, metadata, thumbnail, subtitles):
+    def __init__(self, item, link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles):
         super().__init__()
         self.item = item
         self.link = link
@@ -32,6 +32,7 @@ class Worker(qtc.QThread):
         self.format = format_
         self.cargs = cargs
         self.filename = filename
+        self.sponsorblock = sponsorblock
         self.metadata = metadata
         self.thumbnail = thumbnail
         self.subtitles = subtitles
@@ -59,6 +60,12 @@ class Worker(qtc.QThread):
             args += ['--embed-thumbnail']
         if self.subtitles:
             args += ['--write-auto-subs']
+
+        if self.sponsorblock:
+            if self.sponsorblock == "remove":
+                args += ['--sponsorblock-remove', 'all']
+            else:
+                args += ['--sponsorblock-mark', 'all']
         return args
 
     def stop(self):
