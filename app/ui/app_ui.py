@@ -99,6 +99,7 @@ class Ui_mw_Main(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.le_cargs = QLineEdit(self.gb_embeds)
         self.le_cargs.setObjectName(u"le_cargs")
+        self.le_cargs.setClearButtonEnabled(True)
 
         self.gridLayout_2.addWidget(self.le_cargs, 1, 1, 1, 2)
 
@@ -132,6 +133,7 @@ class Ui_mw_Main(object):
 
         self.le_filename = QLineEdit(self.gb_embeds)
         self.le_filename.setObjectName(u"le_filename")
+        self.le_filename.setClearButtonEnabled(True)
 
         self.gridLayout_2.addWidget(self.le_filename, 0, 1, 1, 2)
 
@@ -188,6 +190,7 @@ class Ui_mw_Main(object):
 
         self.le_link = QLineEdit(self.gb_args)
         self.le_link.setObjectName(u"le_link")
+        self.le_link.setClearButtonEnabled(True)
 
         self.gridLayout_4.addWidget(self.le_link, 0, 1, 1, 3)
 

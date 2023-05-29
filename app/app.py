@@ -94,29 +94,29 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.cb_subtitles.isChecked()
         ]
 
-        if link and path and format_:
-            item = qtw.QTreeWidgetItem(self.tw, [link, format_, '-', '0%', 'Queued', '-', '-'])
-            pb = qtw.QProgressBar()
-            pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
-            pb.setTextVisible(False)
-            pb.setValue(0)
-            pb.setRange(0, 100)
-            self.tw.setItemWidget(item, 3, pb)
-            [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
-            item.id = self.index
-            filename = filename if filename else "%(title)s.%(ext)s"
-            self.le_link.clear()
-            self.le_cargs.clear()
-            self.le_filename.clear()
-            self.to_dl[self.index] = [item, link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles]
-            self.index += 1
-            log.info(f'Queued download added: link: {link}, format: {format_}, path: {path}/{filename}')
-        else:
-            qtw.QMessageBox.information(
+        if not all([link, path, format_]):
+            return qtw.QMessageBox.information(
                 self,
                 'Application Message',
-                "Unable to add the download because some required fields are missing.\nRequired fields: Link and Path."
+                "Unable to add the download because some required fields are missing.\nRequired fields: Link, Path & Format."
             )
+
+        item = qtw.QTreeWidgetItem(self.tw, [link, format_, '-', '0%', 'Queued', '-', '-'])
+        pb = qtw.QProgressBar()
+        pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
+        pb.setTextVisible(False)
+        pb.setValue(0)
+        pb.setRange(0, 100)
+        self.tw.setItemWidget(item, 3, pb)
+        [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
+        item.id = self.index
+        filename = filename if filename else "%(title)s.%(ext)s"
+        self.le_link.clear()
+        self.to_dl[self.index] = [item, link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles]
+        self.index += 1
+        log.info(f'Queued download added: (link={link}, path={path}, format={format_}, cargs={cargs}, '
+                 f'filename={filename}, sponsorblock={sponsorblock}, metadata={metadata}, thumbnail={thumbnail}, '
+                 f'subtitles={subtitles})')
 
     def button_clear(self):
         if self.worker:

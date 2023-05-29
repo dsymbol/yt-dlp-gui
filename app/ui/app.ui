@@ -172,7 +172,11 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="le_cargs"/>
+        <widget class="QLineEdit" name="le_cargs">
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item row="1" column="3">
         <widget class="QCheckBox" name="cb_thumbnail">
@@ -225,6 +229,9 @@
         <widget class="QLineEdit" name="le_filename">
          <property name="placeholderText">
           <string>%(title)s.%(ext)s</string>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -324,6 +331,9 @@
         <widget class="QLineEdit" name="le_link">
          <property name="placeholderText">
           <string>https://www.youtube.com/watch?v=dQw4w9WgXcQ</string>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
