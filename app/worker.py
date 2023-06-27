@@ -47,7 +47,9 @@ class Worker(qtc.QThread):
             '%(progress._percent_str)s %(progress._speed_str)s %(progress._eta_str)s', '--dump-json', '-v',
             '-o', f'{self.path}/{self.filename}', self.link
         ]
-        if self.format == "mp4":
+        if self.format == "best":
+            args += ['-f', r'bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b']
+        elif self.format == "mp4":
             args += ['-f', r'bv*[vcodec^=avc]+ba[ext=m4a]/b']
         else:
             args += ['--extract-audio', '--audio-format', self.format, '--audio-quality', '0']

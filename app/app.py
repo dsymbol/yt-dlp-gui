@@ -69,7 +69,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.le_path.setText(path)
 
     def format_change(self, fmt):
-        if fmt == 'mp4':
+        if fmt == 'mp4' or fmt == "best":
             self.cb_subtitles.setEnabled(True)
             self.cb_thumbnail.setEnabled(True)
         else:

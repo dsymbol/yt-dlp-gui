@@ -347,6 +347,11 @@
          </property>
          <item>
           <property name="text">
+           <string>best</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>mp4</string>
           </property>
          </item>

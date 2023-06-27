@@ -199,6 +199,7 @@ class Ui_mw_Main(object):
         self.dd_format.addItem("")
         self.dd_format.addItem("")
         self.dd_format.addItem("")
+        self.dd_format.addItem("")
         self.dd_format.setObjectName(u"dd_format")
         self.dd_format.setMinimumSize(QSize(0, 0))
 
@@ -271,10 +272,11 @@ class Ui_mw_Main(object):
         self.tb_path.setText(QCoreApplication.translate("mw_Main", u"...", None))
         self.lb_format.setText(QCoreApplication.translate("mw_Main", u"Format", None))
         self.le_link.setPlaceholderText(QCoreApplication.translate("mw_Main", u"https://www.youtube.com/watch?v=dQw4w9WgXcQ", None))
-        self.dd_format.setItemText(0, QCoreApplication.translate("mw_Main", u"mp4", None))
-        self.dd_format.setItemText(1, QCoreApplication.translate("mw_Main", u"mp3", None))
-        self.dd_format.setItemText(2, QCoreApplication.translate("mw_Main", u"wav", None))
-        self.dd_format.setItemText(3, QCoreApplication.translate("mw_Main", u"flac", None))
+        self.dd_format.setItemText(0, QCoreApplication.translate("mw_Main", u"best", None))
+        self.dd_format.setItemText(1, QCoreApplication.translate("mw_Main", u"mp4", None))
+        self.dd_format.setItemText(2, QCoreApplication.translate("mw_Main", u"mp3", None))
+        self.dd_format.setItemText(3, QCoreApplication.translate("mw_Main", u"wav", None))
+        self.dd_format.setItemText(4, QCoreApplication.translate("mw_Main", u"flac", None))
 
     # retranslateUi
 
