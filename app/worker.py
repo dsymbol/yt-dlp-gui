@@ -48,7 +48,7 @@ class Worker(qtc.QThread):
             '-o', f'{self.path}/{self.filename}', self.link
         ]
         if self.format == "mp4":
-            args += ['--format-sort', 'ext:mp4:m4a']
+            args += ['-f', r'bv*[vcodec^=avc]+ba[ext=m4a]/b']
         else:
             args += ['--extract-audio', '--audio-format', self.format, '--audio-quality', '0']
 
