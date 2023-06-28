@@ -5,13 +5,13 @@ It is designed to be more user-friendly and accessible for those who are not com
 
 ## Screenshot
 
-![](https://github.com/dsymbol/yt-dlp-gui/assets/88138099/ba9ee6f0-99fe-46c5-b3b8-f63d5ea124fc)
+![](https://github.com/dsymbol/yt-dlp-gui/assets/88138099/4e14b95e-a716-48ad-9d68-8da9a14df755)
 
 ## Getting Started
 
 There are three ways to get started, depending on your preference and system:
 
-* [`Portable`](#portable) ~ *Windows & Linux*
+* [`Portable`](#portable) ~ *Windows*
 * [`Build`](#build) ~ *Windows & Linux*
 * [`Manual`](#manual) ~ *Platform independent*
 
