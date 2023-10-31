@@ -81,9 +81,8 @@ class DownloaderUi(QWidget, Ui_w_Downloader):
             QTimer.singleShot(0, self.finished.emit)
 
     def get_file_checksum(self, path):
-        with open(path, "rb") as f:
-            checksum = file_digest(f, "sha256").hexdigest()
-            return checksum
+        f = open(path, "rb")
+        return file_digest(f, "sha256").hexdigest()
 
     def fetch_latest_checksum(self, url, executable):
         try:
@@ -108,11 +107,9 @@ class DownloaderUi(QWidget, Ui_w_Downloader):
         os_ = platform.system()
 
         if shutil.which('yt-dlp'):
-            # check if dependency is in bin folder
             yt_dlp_path = os.path.join(BIN, "yt-dlp.exe" if os_ == "Windows" else "yt-dlp")
             
             if os.path.exists(yt_dlp_path):
-                # dependency is in bin folder - compare checksums
                 yt_dlp_checksum_url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/SHA2-256SUMS"
                 file_checksum = self.get_file_checksum(yt_dlp_path)
                 latest_checksum = self.fetch_latest_checksum(yt_dlp_checksum_url, binaries[os_]['yt-dlp'])
