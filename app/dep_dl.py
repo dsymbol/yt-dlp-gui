@@ -12,6 +12,8 @@ from PySide6.QtCore import QThread, Signal, QTimer
 from PySide6.QtWidgets import QWidget
 from tqdm import tqdm
 
+from hashlib import file_digest
+
 from ui.download_ui import Ui_w_Downloader
 
 BIN = Path(__file__).parent / 'bin'
@@ -78,6 +80,23 @@ class DownloaderUi(QWidget, Ui_w_Downloader):
         else:
             QTimer.singleShot(0, self.finished.emit)
 
+    def get_file_checksum(self, path):
+        with open(path, "rb") as f:
+            checksum = file_digest(f, "sha256").hexdigest()
+            return checksum
+
+    def fetch_latest_checksum(self, url, executable):
+        try:
+            r = requests.get(url)
+            # format: checksums = [[checksum, asset]...]
+            checksums = r.text.split()
+            for i in range(0, len(checksums), 2):
+                if checksums[i + 1] == executable:
+                    return checksums[i]
+        except:
+            pass
+        return None
+
     def get_missing_dep(self):
         binaries = {
             "Linux": {"ffmpeg": "ffmpeg-linux64-v4.1", "ffprobe": "ffprobe-linux64-v4.1", "yt-dlp": "yt-dlp_linux"},
@@ -85,8 +104,23 @@ class DownloaderUi(QWidget, Ui_w_Downloader):
             "Windows": {"ffmpeg": "ffmpeg-win64-v4.1.exe", "ffprobe": "ffprobe-win64-v4.1.exe", "yt-dlp": "yt-dlp.exe"}
         }
 
-        exes = [exe for exe in ['ffmpeg', 'ffprobe', 'yt-dlp'] if not shutil.which(exe)]
+        exes = [exe for exe in ['ffmpeg', 'ffprobe'] if not shutil.which(exe)]
         os_ = platform.system()
+
+        if shutil.which('yt-dlp'):
+            # check if dependency is in bin folder
+            yt_dlp_path = os.path.join(BIN, "yt-dlp.exe" if os_ == "Windows" else "yt-dlp")
+            
+            if os.path.exists(yt_dlp_path):
+                # dependency is in bin folder - compare checksums
+                yt_dlp_checksum_url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/SHA2-256SUMS"
+                file_checksum = self.get_file_checksum(yt_dlp_path)
+                latest_checksum = self.fetch_latest_checksum(yt_dlp_checksum_url, binaries[os_]['yt-dlp'])
+                
+                if latest_checksum != None and file_checksum != latest_checksum:
+                    exes.append('yt-dlp')
+        else:
+            exes.append('yt-dlp')
 
         if exes:
             if not os.path.exists(BIN):
