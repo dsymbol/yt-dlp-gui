@@ -12,7 +12,7 @@ from PySide6.QtCore import QThread, Signal, QTimer
 from PySide6.QtWidgets import QWidget
 from tqdm import tqdm
 
-from hashlib import file_digest
+from hashlib import sha256
 
 from ui.download_ui import Ui_w_Downloader
 
@@ -81,8 +81,13 @@ class DownloaderUi(QWidget, Ui_w_Downloader):
             QTimer.singleShot(0, self.finished.emit)
 
     def get_file_checksum(self, path):
-        f = open(path, "rb")
-        return file_digest(f, "sha256").hexdigest()
+        h  = sha256()
+        b  = bytearray(128*1024)
+        mv = memoryview(b)
+        with open(path, 'rb', buffering=0) as f:
+            while n := f.readinto(mv):
+                h.update(mv[:n])
+        return h.hexdigest()
 
     def fetch_latest_checksum(self, url, executable):
         try:
