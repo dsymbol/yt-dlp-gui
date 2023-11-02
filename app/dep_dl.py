@@ -67,10 +67,11 @@ class Downloader(QThread):
 class DownloaderUi(QWidget, Ui_w_Downloader):
     finished = Signal()
 
-    def __init__(self):
+    def __init__(self, auto_update):
         super().__init__()
         self.setupUi(self)
         self.missing = []
+        self.auto_update = auto_update
 
         self.get_missing_dep()
 
@@ -114,7 +115,7 @@ class DownloaderUi(QWidget, Ui_w_Downloader):
         if shutil.which('yt-dlp'):
             yt_dlp_path = os.path.join(BIN, "yt-dlp.exe" if os_ == "Windows" else "yt-dlp")
             
-            if os.path.exists(yt_dlp_path):
+            if os.path.exists(yt_dlp_path) and self.auto_update:
                 yt_dlp_checksum_url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/SHA2-256SUMS"
                 file_checksum = self.get_file_checksum(yt_dlp_path)
                 latest_checksum = self.fetch_latest_checksum(yt_dlp_checksum_url, binaries[os_]['yt-dlp'])

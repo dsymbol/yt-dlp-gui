@@ -8,6 +8,7 @@ from PySide6 import QtCore as qtc
 from PySide6 import QtWidgets as qtw
 
 from dep_dl import DownloaderUi
+from update_dialog import UpdateUi
 from utils import init_logger
 from ui.app_ui import Ui_mw_Main
 from worker import Worker
@@ -29,9 +30,19 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.format_change(self.dd_format.currentText())
         self.statusBar.showMessage(f"Version {__version__}")
 
-        self.form = DownloaderUi()
-        self.form.finished.connect(self.form.close)
-        self.form.finished.connect(self.show)
+        self.downloader = DownloaderUi(self.auto_update)
+        self.downloader.finished.connect(self.downloader.close)
+        
+        if self.first_load:
+            self.update_dialog = UpdateUi()
+            self.update_dialog.selected.connect(self.set_auto_update)
+            self.update_dialog.finished.connect(self.update_dialog.close)
+            self.update_dialog.finished.connect(self.show)
+            
+            self.downloader.finished.connect(self.update_dialog.show)
+        else:
+            self.downloader.finished.connect(self.show)
+            
 
         self.to_dl = {}
         self.worker = {}
@@ -43,6 +54,9 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.pb_clear.clicked.connect(self.button_clear)
         self.pb_download.clicked.connect(self.button_download)
         self.tw.itemClicked.connect(self.remove_item)
+
+    def set_auto_update(self, value):
+        self.auto_update = value
 
     def remove_item(self, item, column):
         ret = qtw.QMessageBox.question(
@@ -163,7 +177,9 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
                     "sponsorblock": 0,
                     "metadata": False,
                     "subtitles": False,
-                    "thumbnail": False
+                    "thumbnail": False,
+                    "autoupdate": False,
+                    "firstload": True,
                 }
                 json.dump(settings, f, indent=4)
 
@@ -173,6 +189,9 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.cb_metadata.setChecked(settings["metadata"])
         self.cb_subtitles.setChecked(settings["subtitles"])
         self.cb_thumbnail.setChecked(settings["thumbnail"])
+        
+        self.auto_update = settings.get("autoupdate") if settings.get("autoupdate") != None else True
+        self.first_load = settings.get("firstload") if settings.get("firstload") != None else True
 
     def closeEvent(self, event):
         settings = {
@@ -181,7 +200,9 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             "sponsorblock": self.dd_sponsorblock.currentIndex(),
             "metadata": self.cb_metadata.isChecked(),
             "subtitles": self.cb_subtitles.isChecked(),
-            "thumbnail": self.cb_thumbnail.isChecked()
+            "thumbnail": self.cb_thumbnail.isChecked(),
+            "autoupdate": self.auto_update,
+            "firstload": False,
         }
         with open(Path(__file__).parent / 'conf.json', 'w') as f:
             json.dump(settings, f, indent=4)
