@@ -13,8 +13,5 @@ class UpdateUi(QWidget, Ui_w_autoupdate):
         self.b_confirm.clicked.connect(self.on_b_confirm_clicked)
 
     def on_b_confirm_clicked(self):
-        if self.cb_autoupdate.isChecked():
-            self.selected.emit(True)
-        else:
-            self.selected.emit(False)
+        self.selected.emit(self.cb_autoupdate.isChecked())
         self.finished.emit()
