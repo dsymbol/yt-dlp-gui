@@ -163,7 +163,8 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
                     "sponsorblock": 0,
                     "metadata": False,
                     "subtitles": False,
-                    "thumbnail": False
+                    "thumbnail": False,
+                    "customargs": ""
                 }
                 json.dump(settings, f, indent=4)
 
@@ -173,6 +174,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.cb_metadata.setChecked(settings["metadata"])
         self.cb_subtitles.setChecked(settings["subtitles"])
         self.cb_thumbnail.setChecked(settings["thumbnail"])
+        self.le_cargs.setText(settings["customargs"])
 
     def closeEvent(self, event):
         settings = {
@@ -181,7 +183,8 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             "sponsorblock": self.dd_sponsorblock.currentIndex(),
             "metadata": self.cb_metadata.isChecked(),
             "subtitles": self.cb_subtitles.isChecked(),
-            "thumbnail": self.cb_thumbnail.isChecked()
+            "thumbnail": self.cb_thumbnail.isChecked(),
+            "customargs": self.le_cargs.text()
         }
         with open(Path(__file__).parent / 'conf.json', 'w') as f:
             json.dump(settings, f, indent=4)
