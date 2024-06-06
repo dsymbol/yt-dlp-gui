@@ -7,7 +7,7 @@ from pathlib import Path
 from PySide6 import QtCore as qtc
 from PySide6 import QtWidgets as qtw
 
-from dep_dl import DownloaderUi
+from dep_dl import DownloadWindow
 from utils import init_logger
 from ui.app_ui import Ui_mw_Main
 from worker import Worker
@@ -29,7 +29,7 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.format_change(self.dd_format.currentText())
         self.statusBar.showMessage(f"Version {__version__}")
 
-        self.form = DownloaderUi()
+        self.form = DownloadWindow()
         self.form.finished.connect(self.form.close)
         self.form.finished.connect(self.show)
 
