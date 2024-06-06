@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import sys
@@ -175,22 +174,15 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.to_dl = {}
 
     def conf(self):
-        file = Path(__file__).parent / "conf.json"
-
-        try:
-            with open(file, "r") as f:
-                settings = json.load(f)
-        except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
-            with open(file, "w") as f:
-                settings = {
-                    "path": "",
-                    "format": 0,
-                    "sponsorblock": 0,
-                    "metadata": False,
-                    "subtitles": False,
-                    "thumbnail": False,
-                }
-                json.dump(settings, f, indent=4)
+        d = {
+            "path": "",
+            "format": 0,
+            "sponsorblock": 0,
+            "metadata": False,
+            "subtitles": False,
+            "thumbnail": False,
+        }
+        settings = load_json(ROOT / "conf.json", d)
 
         self.le_path.setText(settings["path"])
         self.dd_format.setCurrentIndex(settings["format"])
@@ -200,7 +192,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.cb_thumbnail.setChecked(settings["thumbnail"])
 
     def closeEvent(self, event):
-        settings = {
+        d = {
             "path": self.le_path.text(),
             "format": self.dd_format.currentIndex(),
             "sponsorblock": self.dd_sponsorblock.currentIndex(),
@@ -208,8 +200,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "subtitles": self.cb_subtitles.isChecked(),
             "thumbnail": self.cb_thumbnail.isChecked(),
         }
-        with open(Path(__file__).parent / "conf.json", "w") as f:
-            json.dump(settings, f, indent=4)
+        save_json(ROOT / "conf.json", d)
         event.accept()
 
     def update_progress(self, item, emit_data):
