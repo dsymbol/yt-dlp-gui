@@ -181,6 +181,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "metadata": False,
             "subtitles": False,
             "thumbnail": False,
+            "custom_args": ""
         }
         settings = load_json(ROOT / "conf.json", d)
 
@@ -190,6 +191,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.cb_metadata.setChecked(settings["metadata"])
         self.cb_subtitles.setChecked(settings["subtitles"])
         self.cb_thumbnail.setChecked(settings["thumbnail"])
+        self.le_cargs.setText(settings["custom_args"])
 
     def closeEvent(self, event):
         d = {
@@ -199,6 +201,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "metadata": self.cb_metadata.isChecked(),
             "subtitles": self.cb_subtitles.isChecked(),
             "thumbnail": self.cb_thumbnail.isChecked(),
+            "custom_args": self.le_cargs.text()
         }
         save_json(ROOT / "conf.json", d)
         event.accept()
