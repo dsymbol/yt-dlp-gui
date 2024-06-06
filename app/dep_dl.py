@@ -3,7 +3,6 @@ import platform
 import shutil
 import stat
 from io import StringIO
-from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import requests
@@ -12,8 +11,9 @@ from PySide6.QtWidgets import QWidget
 from tqdm import tqdm
 
 from ui.download_ui import Ui_Download
+from utils import ROOT
 
-BIN = Path(__file__).parent / "bin"
+BIN = ROOT / "bin"
 
 
 class DownloadWindow(QWidget, Ui_Download):
@@ -26,7 +26,7 @@ class DownloadWindow(QWidget, Ui_Download):
         self.missing = []
 
         self.get_missing_dep()
-        
+
         if self.missing:
             self.show()
             self.download_init()

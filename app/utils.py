@@ -1,5 +1,7 @@
 import logging
+from pathlib import Path
 
+ROOT = Path(__file__).parent
 
 def init_logger(file="debug.log"):
     logging.basicConfig(

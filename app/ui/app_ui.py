@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'app.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.0
+## Created by: Qt User Interface Compiler version 6.7.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -22,15 +22,15 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
     QVBoxLayout, QWidget)
 import ui.icons_rc
 
-class Ui_mw_Main(object):
-    def setupUi(self, mw_Main):
-        if not mw_Main.objectName():
-            mw_Main.setObjectName(u"mw_Main")
-        mw_Main.resize(841, 622)
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        if not MainWindow.objectName():
+            MainWindow.setObjectName(u"MainWindow")
+        MainWindow.resize(841, 622)
         icon = QIcon()
         icon.addFile(u":/icon/yt-dlp-gui.ico", QSize(), QIcon.Normal, QIcon.Off)
-        mw_Main.setWindowIcon(icon)
-        self.centralwidget = QWidget(mw_Main)
+        MainWindow.setWindowIcon(icon)
+        self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         font = QFont()
         font.setPointSize(9)
@@ -92,7 +92,7 @@ class Ui_mw_Main(object):
 
         self.gb_embeds = QGroupBox(self.centralwidget)
         self.gb_embeds.setObjectName(u"gb_embeds")
-        self.gb_embeds.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.gb_embeds.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.gb_embeds.setFlat(False)
         self.gb_embeds.setCheckable(False)
         self.gridLayout_2 = QGridLayout(self.gb_embeds)
@@ -147,7 +147,7 @@ class Ui_mw_Main(object):
 
         self.gridLayout_2.addWidget(self.label, 2, 0, 1, 1)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 2, 1, 1)
 
@@ -205,7 +205,7 @@ class Ui_mw_Main(object):
 
         self.gridLayout_4.addWidget(self.dd_format, 2, 1, 1, 1)
 
-        self.horizontalSpacer = QSpacerItem(219, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(219, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_4.addItem(self.horizontalSpacer, 2, 2, 1, 2)
 
@@ -216,67 +216,67 @@ class Ui_mw_Main(object):
         self.gridLayout.setRowStretch(1, 5)
         self.gridLayout.setColumnStretch(0, 1)
         self.gridLayout.setColumnStretch(1, 1)
-        mw_Main.setCentralWidget(self.centralwidget)
-        self.statusBar = QStatusBar(mw_Main)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusBar = QStatusBar(MainWindow)
         self.statusBar.setObjectName(u"statusBar")
-        mw_Main.setStatusBar(self.statusBar)
+        MainWindow.setStatusBar(self.statusBar)
         QWidget.setTabOrder(self.le_path, self.pb_add)
         QWidget.setTabOrder(self.pb_add, self.pb_clear)
         QWidget.setTabOrder(self.pb_clear, self.pb_download)
         QWidget.setTabOrder(self.pb_download, self.tw)
 
-        self.retranslateUi(mw_Main)
+        self.retranslateUi(MainWindow)
 
-        QMetaObject.connectSlotsByName(mw_Main)
+        QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
-    def retranslateUi(self, mw_Main):
-        mw_Main.setWindowTitle(QCoreApplication.translate("mw_Main", u"yt-dlp-gui", None))
-        self.gb_status.setTitle(QCoreApplication.translate("mw_Main", u"Status", None))
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"yt-dlp-gui", None))
+        self.gb_status.setTitle(QCoreApplication.translate("MainWindow", u"Status", None))
         ___qtreewidgetitem = self.tw.headerItem()
-        ___qtreewidgetitem.setText(6, QCoreApplication.translate("mw_Main", u"ETA", None));
-        ___qtreewidgetitem.setText(5, QCoreApplication.translate("mw_Main", u"Speed", None));
-        ___qtreewidgetitem.setText(4, QCoreApplication.translate("mw_Main", u"Status", None));
-        ___qtreewidgetitem.setText(3, QCoreApplication.translate("mw_Main", u"Progress", None));
-        ___qtreewidgetitem.setText(2, QCoreApplication.translate("mw_Main", u"Size", None));
-        ___qtreewidgetitem.setText(1, QCoreApplication.translate("mw_Main", u"Format", None));
-        ___qtreewidgetitem.setText(0, QCoreApplication.translate("mw_Main", u"Title", None));
-        self.gb_controls.setTitle(QCoreApplication.translate("mw_Main", u"Controls", None))
+        ___qtreewidgetitem.setText(6, QCoreApplication.translate("MainWindow", u"ETA", None));
+        ___qtreewidgetitem.setText(5, QCoreApplication.translate("MainWindow", u"Speed", None));
+        ___qtreewidgetitem.setText(4, QCoreApplication.translate("MainWindow", u"Status", None));
+        ___qtreewidgetitem.setText(3, QCoreApplication.translate("MainWindow", u"Progress", None));
+        ___qtreewidgetitem.setText(2, QCoreApplication.translate("MainWindow", u"Size", None));
+        ___qtreewidgetitem.setText(1, QCoreApplication.translate("MainWindow", u"Format", None));
+        ___qtreewidgetitem.setText(0, QCoreApplication.translate("MainWindow", u"Title", None));
+        self.gb_controls.setTitle(QCoreApplication.translate("MainWindow", u"Controls", None))
 #if QT_CONFIG(tooltip)
-        self.pb_add.setToolTip(QCoreApplication.translate("mw_Main", u"<html><head/><body><p>Add</p></body></html>", None))
+        self.pb_add.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>Add</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.pb_add.setText("")
 #if QT_CONFIG(tooltip)
-        self.pb_clear.setToolTip(QCoreApplication.translate("mw_Main", u"<html><head/><body><p>Clear</p></body></html>", None))
+        self.pb_clear.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>Clear</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.pb_clear.setText("")
 #if QT_CONFIG(tooltip)
-        self.pb_download.setToolTip(QCoreApplication.translate("mw_Main", u"<html><head/><body><p>Download</p></body></html>", None))
+        self.pb_download.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>Download</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.pb_download.setText("")
-        self.gb_embeds.setTitle(QCoreApplication.translate("mw_Main", u"Optional", None))
-        self.cb_thumbnail.setText(QCoreApplication.translate("mw_Main", u"Thumbnail", None))
+        self.gb_embeds.setTitle(QCoreApplication.translate("MainWindow", u"Optional", None))
+        self.cb_thumbnail.setText(QCoreApplication.translate("MainWindow", u"Thumbnail", None))
         self.dd_sponsorblock.setItemText(0, "")
-        self.dd_sponsorblock.setItemText(1, QCoreApplication.translate("mw_Main", u"remove", None))
-        self.dd_sponsorblock.setItemText(2, QCoreApplication.translate("mw_Main", u"mark", None))
+        self.dd_sponsorblock.setItemText(1, QCoreApplication.translate("MainWindow", u"remove", None))
+        self.dd_sponsorblock.setItemText(2, QCoreApplication.translate("MainWindow", u"mark", None))
 
-        self.lb_cargs.setText(QCoreApplication.translate("mw_Main", u"Custom Args", None))
-        self.cb_subtitles.setText(QCoreApplication.translate("mw_Main", u"Subtitles", None))
-        self.cb_metadata.setText(QCoreApplication.translate("mw_Main", u"Metadata", None))
-        self.le_filename.setPlaceholderText(QCoreApplication.translate("mw_Main", u"%(title)s.%(ext)s", None))
-        self.lb_filename.setText(QCoreApplication.translate("mw_Main", u"Filename", None))
-        self.label.setText(QCoreApplication.translate("mw_Main", u"SponsorBlock", None))
-        self.gb_args.setTitle(QCoreApplication.translate("mw_Main", u"Arguments", None))
-        self.lb_link.setText(QCoreApplication.translate("mw_Main", u"Link", None))
-        self.lb_path.setText(QCoreApplication.translate("mw_Main", u"Path", None))
-        self.tb_path.setText(QCoreApplication.translate("mw_Main", u"...", None))
-        self.lb_format.setText(QCoreApplication.translate("mw_Main", u"Format", None))
-        self.le_link.setPlaceholderText(QCoreApplication.translate("mw_Main", u"https://www.youtube.com/watch?v=dQw4w9WgXcQ", None))
-        self.dd_format.setItemText(0, QCoreApplication.translate("mw_Main", u"best", None))
-        self.dd_format.setItemText(1, QCoreApplication.translate("mw_Main", u"mp4", None))
-        self.dd_format.setItemText(2, QCoreApplication.translate("mw_Main", u"mp3", None))
-        self.dd_format.setItemText(3, QCoreApplication.translate("mw_Main", u"wav", None))
-        self.dd_format.setItemText(4, QCoreApplication.translate("mw_Main", u"flac", None))
+        self.lb_cargs.setText(QCoreApplication.translate("MainWindow", u"Custom Args", None))
+        self.cb_subtitles.setText(QCoreApplication.translate("MainWindow", u"Subtitles", None))
+        self.cb_metadata.setText(QCoreApplication.translate("MainWindow", u"Metadata", None))
+        self.le_filename.setPlaceholderText(QCoreApplication.translate("MainWindow", u"%(title)s.%(ext)s", None))
+        self.lb_filename.setText(QCoreApplication.translate("MainWindow", u"Filename", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"SponsorBlock", None))
+        self.gb_args.setTitle(QCoreApplication.translate("MainWindow", u"Arguments", None))
+        self.lb_link.setText(QCoreApplication.translate("MainWindow", u"Link", None))
+        self.lb_path.setText(QCoreApplication.translate("MainWindow", u"Path", None))
+        self.tb_path.setText(QCoreApplication.translate("MainWindow", u"...", None))
+        self.lb_format.setText(QCoreApplication.translate("MainWindow", u"Format", None))
+        self.le_link.setPlaceholderText(QCoreApplication.translate("MainWindow", u"https://www.youtube.com/watch?v=dQw4w9WgXcQ", None))
+        self.dd_format.setItemText(0, QCoreApplication.translate("MainWindow", u"best", None))
+        self.dd_format.setItemText(1, QCoreApplication.translate("MainWindow", u"mp4", None))
+        self.dd_format.setItemText(2, QCoreApplication.translate("MainWindow", u"mp3", None))
+        self.dd_format.setItemText(3, QCoreApplication.translate("MainWindow", u"wav", None))
+        self.dd_format.setItemText(4, QCoreApplication.translate("MainWindow", u"flac", None))
 
     # retranslateUi
 

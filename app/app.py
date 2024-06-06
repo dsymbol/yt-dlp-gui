@@ -2,24 +2,22 @@ import json
 import logging
 import os
 import sys
-from pathlib import Path
-
-from PySide6 import QtCore as qtc
-from PySide6 import QtWidgets as qtw
 
 from dep_dl import DownloadWindow
-from utils import init_logger
-from ui.app_ui import Ui_mw_Main
-from worker import Worker
+
+from PySide6 import QtCore as qtc, QtWidgets as qtw
+from utils import *
+from ui.app_ui import Ui_MainWindow
 from version import __version__
+from worker import Worker
 
-os.environ['PATH'] += os.pathsep + os.path.join(os.path.dirname(__file__), "bin")
+os.environ["PATH"] += os.pathsep + str(ROOT / "bin")
 
-init_logger(Path(__file__).parent / 'debug.log')
+init_logger(ROOT / "debug.log")
 log = logging.getLogger(__name__)
 
 
-class MainWindow(qtw.QMainWindow, Ui_mw_Main):
+class MainWindow(qtw.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -47,33 +45,36 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
     def remove_item(self, item, column):
         ret = qtw.QMessageBox.question(
             self,
-            'Application Message',
+            "Application Message",
             f"Would you like to remove {item.text(0)} ?",
             qtw.QMessageBox.Yes | qtw.QMessageBox.No,
-            qtw.QMessageBox.No
+            qtw.QMessageBox.No,
         )
         if ret == qtw.QMessageBox.Yes:
             if self.to_dl.get(item.id):
                 log.info(f"Removing queued {item.text(0)} download with id {item.id} ")
                 self.to_dl.pop(item.id)
             elif worker := self.worker.get(item.id):
-                log.info(f"Stopping and removing {item.text(0)} download with id {item.id}")
+                log.info(
+                    f"Stopping and removing {item.text(0)} download with id {item.id}"
+                )
                 worker.stop()
             self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item))
 
     def button_path(self):
-        path = qtw.QFileDialog.getExistingDirectory(self, "Select a folder", qtc.QDir.homePath(),
-                                                    qtw.QFileDialog.ShowDirsOnly)
+        path = qtw.QFileDialog.getExistingDirectory(
+            self, "Select a folder", qtc.QDir.homePath(), qtw.QFileDialog.ShowDirsOnly
+        )
 
         if path:
             self.le_path.setText(path)
 
     def format_change(self, fmt):
-        if fmt == 'mp4' or fmt == "best":
+        if fmt == "mp4" or fmt == "best":
             self.cb_subtitles.setEnabled(True)
             self.cb_thumbnail.setEnabled(True)
         else:
-            if fmt in ['mp3', 'flac']:
+            if fmt in ["mp3", "flac"]:
                 self.cb_thumbnail.setEnabled(True)
             else:
                 self.cb_thumbnail.setEnabled(False)
@@ -82,7 +83,17 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.cb_subtitles.setChecked(False)
 
     def button_add(self):
-        link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles = [
+        (
+            link,
+            path,
+            format_,
+            cargs,
+            filename,
+            sponsorblock,
+            metadata,
+            thumbnail,
+            subtitles,
+        ) = [
             self.le_link.text(),
             self.le_path.text(),
             self.dd_format.currentText(),
@@ -91,17 +102,19 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             self.dd_sponsorblock.currentText(),
             self.cb_metadata.isChecked(),
             self.cb_thumbnail.isChecked(),
-            self.cb_subtitles.isChecked()
+            self.cb_subtitles.isChecked(),
         ]
 
         if not all([link, path, format_]):
             return qtw.QMessageBox.information(
                 self,
-                'Application Message',
-                "Unable to add the download because some required fields are missing.\nRequired fields: Link, Path & Format."
+                "Application Message",
+                "Unable to add the download because some required fields are missing.\nRequired fields: Link, Path & Format.",
             )
 
-        item = qtw.QTreeWidgetItem(self.tw, [link, format_, '-', '0%', 'Queued', '-', '-'])
+        item = qtw.QTreeWidgetItem(
+            self.tw, [link, format_, "-", "0%", "Queued", "-", "-"]
+        )
         pb = qtw.QProgressBar()
         pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
         pb.setTextVisible(False)
@@ -112,19 +125,32 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         item.id = self.index
         filename = filename if filename else "%(title)s.%(ext)s"
         self.le_link.clear()
-        self.to_dl[self.index] = [item, link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles]
+        self.to_dl[self.index] = [
+            item,
+            link,
+            path,
+            format_,
+            cargs,
+            filename,
+            sponsorblock,
+            metadata,
+            thumbnail,
+            subtitles,
+        ]
         self.index += 1
-        log.info(f'Queued download added: (link={link}, path={path}, format={format_}, cargs={cargs}, '
-                 f'filename={filename}, sponsorblock={sponsorblock}, metadata={metadata}, thumbnail={thumbnail}, '
-                 f'subtitles={subtitles})')
+        log.info(
+            f"Queued download added: (link={link}, path={path}, format={format_}, cargs={cargs}, "
+            f"filename={filename}, sponsorblock={sponsorblock}, metadata={metadata}, thumbnail={thumbnail}, "
+            f"subtitles={subtitles})"
+        )
 
     def button_clear(self):
         if self.worker:
             return qtw.QMessageBox.critical(
                 self,
-                'Application Message',
+                "Application Message",
                 "Unable to clear list because there are active downloads in progress.\n"
-                "Remove a download by clicking on it."
+                "Remove a download by clicking on it.",
             )
 
         self.worker = {}
@@ -135,8 +161,8 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         if not self.to_dl:
             return qtw.QMessageBox.information(
                 self,
-                'Application Message',
-                "Unable to download because there are no links in the list."
+                "Application Message",
+                "Unable to download because there are no links in the list.",
             )
 
         for k, v in self.to_dl.items():
@@ -149,21 +175,20 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
         self.to_dl = {}
 
     def conf(self):
-        file = Path(__file__).parent / 'conf.json'
+        file = Path(__file__).parent / "conf.json"
 
         try:
-            with open(file, 'r') as f:
+            with open(file, "r") as f:
                 settings = json.load(f)
         except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
-            log.exception(e)
-            with open(file, 'w') as f:
+            with open(file, "w") as f:
                 settings = {
                     "path": "",
                     "format": 0,
                     "sponsorblock": 0,
                     "metadata": False,
                     "subtitles": False,
-                    "thumbnail": False
+                    "thumbnail": False,
                 }
                 json.dump(settings, f, indent=4)
 
@@ -181,9 +206,9 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
             "sponsorblock": self.dd_sponsorblock.currentIndex(),
             "metadata": self.cb_metadata.isChecked(),
             "subtitles": self.cb_subtitles.isChecked(),
-            "thumbnail": self.cb_thumbnail.isChecked()
+            "thumbnail": self.cb_thumbnail.isChecked(),
         }
-        with open(Path(__file__).parent / 'conf.json', 'w') as f:
+        with open(Path(__file__).parent / "conf.json", "w") as f:
             json.dump(settings, f, indent=4)
         event.accept()
 
@@ -195,12 +220,12 @@ class MainWindow(qtw.QMainWindow, Ui_mw_Main):
                     item.setText(index, update)
                 else:
                     pb = self.tw.itemWidget(item, index)
-                    pb.setValue(round(float(update.replace('%',''))))
+                    pb.setValue(round(float(update.replace("%", ""))))
         except AttributeError:
-            log.info(f'Item {item.id} no longer exists')
+            log.info(f"Item {item.id} no longer exists")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = qtw.QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec())
