@@ -84,6 +84,7 @@ class Worker(qtc.QThread):
             for line in p.stdout:
                 with qtc.QMutexLocker(self.mutex):
                     if self._stop:
+                        p.terminate()
                         break
 
                 if line.startswith('{'):
