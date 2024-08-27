@@ -248,7 +248,8 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "subtitles": False,
             "thumbnail": False,
             "custom_args": "",
-            "presets": {}  # Add presets key
+            "presets": {},  # Add presets key
+            "selected_preset": 0  # Default to "None" if no preset is selected
         }
         settings = load_json(ROOT / "conf.json", d)
 
@@ -265,7 +266,15 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.dd_presets.clear()
         self.dd_presets.addItem("None")
         for preset in self.presets.keys():
-            self.dd_presets.addItem(preset)
+            self.dd_presets.addItem(str(preset))
+            
+        # Convert selected_preset to string if it's an integer or non-string type
+        selected_preset = settings["selected_preset"]
+        
+        if selected_preset != -1:
+            self.dd_presets.setCurrentIndex(selected_preset)
+        else:
+            self.dd_presets.setCurrentIndex(0)  # Default to "None" if preset not found
 
     def closeEvent(self, event):
         d = {
