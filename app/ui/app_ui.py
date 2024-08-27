@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'app.ui'
+## Form generated from reading UI file 'appFWpgrC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.0
+## Created by: Qt User Interface Compiler version 6.7.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,9 +26,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(841, 622)
+        MainWindow.resize(1208, 622)
         icon = QIcon()
-        icon.addFile(u":/icon/yt-dlp-gui.ico", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/icon/yt-dlp-gui.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
         self.pb_add = QPushButton(self.gb_controls)
         self.pb_add.setObjectName(u"pb_add")
         icon1 = QIcon()
-        icon1.addFile(u":/buttons/add.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon1.addFile(u":/buttons/add.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pb_add.setIcon(icon1)
         self.pb_add.setIconSize(QSize(20, 20))
 
@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
         self.pb_clear = QPushButton(self.gb_controls)
         self.pb_clear.setObjectName(u"pb_clear")
         icon2 = QIcon()
-        icon2.addFile(u":/buttons/clear.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(u":/buttons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pb_clear.setIcon(icon2)
         self.pb_clear.setIconSize(QSize(20, 20))
 
@@ -81,7 +81,7 @@ class Ui_MainWindow(object):
         self.pb_download = QPushButton(self.gb_controls)
         self.pb_download.setObjectName(u"pb_download")
         icon3 = QIcon()
-        icon3.addFile(u":/buttons/download.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon3.addFile(u":/buttons/download.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pb_download.setIcon(icon3)
         self.pb_download.setIconSize(QSize(20, 20))
 
@@ -97,16 +97,62 @@ class Ui_MainWindow(object):
         self.gb_embeds.setCheckable(False)
         self.gridLayout_2 = QGridLayout(self.gb_embeds)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.lb_presets = QLabel(self.gb_embeds)
+        self.lb_presets.setObjectName(u"lb_presets")
+
+        self.gridLayout_2.addWidget(self.lb_presets, 3, 0, 1, 1)
+
+        self.le_filename = QLineEdit(self.gb_embeds)
+        self.le_filename.setObjectName(u"le_filename")
+        self.le_filename.setClearButtonEnabled(True)
+
+        self.gridLayout_2.addWidget(self.le_filename, 0, 1, 1, 2)
+
         self.le_cargs = QLineEdit(self.gb_embeds)
         self.le_cargs.setObjectName(u"le_cargs")
         self.le_cargs.setClearButtonEnabled(True)
 
         self.gridLayout_2.addWidget(self.le_cargs, 1, 1, 1, 2)
 
+        self.lb_filename = QLabel(self.gb_embeds)
+        self.lb_filename.setObjectName(u"lb_filename")
+
+        self.gridLayout_2.addWidget(self.lb_filename, 0, 0, 1, 1)
+
         self.cb_thumbnail = QCheckBox(self.gb_embeds)
         self.cb_thumbnail.setObjectName(u"cb_thumbnail")
 
         self.gridLayout_2.addWidget(self.cb_thumbnail, 1, 3, 1, 1)
+
+        self.cb_subtitles = QCheckBox(self.gb_embeds)
+        self.cb_subtitles.setObjectName(u"cb_subtitles")
+
+        self.gridLayout_2.addWidget(self.cb_subtitles, 2, 3, 1, 1)
+
+        self.dd_presets = QComboBox(self.gb_embeds)
+        self.dd_presets.addItem("")
+        self.dd_presets.setObjectName(u"dd_presets")
+
+        self.gridLayout_2.addWidget(self.dd_presets, 3, 1, 1, 3)
+
+        self.pb_save_preset = QPushButton(self.gb_embeds)
+        self.pb_save_preset.setObjectName(u"pb_save_preset")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pb_save_preset.sizePolicy().hasHeightForWidth())
+        self.pb_save_preset.setSizePolicy(sizePolicy)
+
+        self.gridLayout_2.addWidget(self.pb_save_preset, 4, 2, 1, 1)
+
+        self.label = QLabel(self.gb_embeds)
+        self.label.setObjectName(u"label")
+
+        self.gridLayout_2.addWidget(self.label, 2, 0, 1, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 2, 1, 1)
 
         self.dd_sponsorblock = QComboBox(self.gb_embeds)
         self.dd_sponsorblock.addItem("")
@@ -121,35 +167,22 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.lb_cargs, 1, 0, 1, 1)
 
-        self.cb_subtitles = QCheckBox(self.gb_embeds)
-        self.cb_subtitles.setObjectName(u"cb_subtitles")
-
-        self.gridLayout_2.addWidget(self.cb_subtitles, 2, 3, 1, 1)
-
         self.cb_metadata = QCheckBox(self.gb_embeds)
         self.cb_metadata.setObjectName(u"cb_metadata")
 
         self.gridLayout_2.addWidget(self.cb_metadata, 0, 3, 1, 1)
 
-        self.le_filename = QLineEdit(self.gb_embeds)
-        self.le_filename.setObjectName(u"le_filename")
-        self.le_filename.setClearButtonEnabled(True)
+        self.le_preset_name = QLineEdit(self.gb_embeds)
+        self.le_preset_name.setObjectName(u"le_preset_name")
 
-        self.gridLayout_2.addWidget(self.le_filename, 0, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.le_preset_name, 4, 1, 1, 1)
 
-        self.lb_filename = QLabel(self.gb_embeds)
-        self.lb_filename.setObjectName(u"lb_filename")
+        self.pb_delete_preset = QPushButton(self.gb_embeds)
+        self.pb_delete_preset.setObjectName(u"pb_delete_preset")
+        sizePolicy.setHeightForWidth(self.pb_delete_preset.sizePolicy().hasHeightForWidth())
+        self.pb_delete_preset.setSizePolicy(sizePolicy)
 
-        self.gridLayout_2.addWidget(self.lb_filename, 0, 0, 1, 1)
-
-        self.label = QLabel(self.gb_embeds)
-        self.label.setObjectName(u"label")
-
-        self.gridLayout_2.addWidget(self.label, 2, 0, 1, 1)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.pb_delete_preset, 4, 3, 1, 1)
 
 
         self.gridLayout.addWidget(self.gb_embeds, 0, 1, 1, 1)
@@ -255,17 +288,26 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.pb_download.setText("")
         self.gb_embeds.setTitle(QCoreApplication.translate("MainWindow", u"Optional", None))
+        self.lb_presets.setText(QCoreApplication.translate("MainWindow", u"Presets", None))
+        self.le_filename.setPlaceholderText(QCoreApplication.translate("MainWindow", u"%(title)s.%(ext)s", None))
+        self.lb_filename.setText(QCoreApplication.translate("MainWindow", u"Filename", None))
         self.cb_thumbnail.setText(QCoreApplication.translate("MainWindow", u"Thumbnail", None))
+        self.cb_subtitles.setText(QCoreApplication.translate("MainWindow", u"Subtitles", None))
+        self.dd_presets.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
+
+#if QT_CONFIG(tooltip)
+        self.dd_presets.setToolTip(QCoreApplication.translate("MainWindow", u"Select a preset or use custom args", None))
+#endif // QT_CONFIG(tooltip)
+        self.pb_save_preset.setText(QCoreApplication.translate("MainWindow", u"Save Preset", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"SponsorBlock", None))
         self.dd_sponsorblock.setItemText(0, "")
         self.dd_sponsorblock.setItemText(1, QCoreApplication.translate("MainWindow", u"remove", None))
         self.dd_sponsorblock.setItemText(2, QCoreApplication.translate("MainWindow", u"mark", None))
 
         self.lb_cargs.setText(QCoreApplication.translate("MainWindow", u"Custom Args", None))
-        self.cb_subtitles.setText(QCoreApplication.translate("MainWindow", u"Subtitles", None))
         self.cb_metadata.setText(QCoreApplication.translate("MainWindow", u"Metadata", None))
-        self.le_filename.setPlaceholderText(QCoreApplication.translate("MainWindow", u"%(title)s.%(ext)s", None))
-        self.lb_filename.setText(QCoreApplication.translate("MainWindow", u"Filename", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"SponsorBlock", None))
+        self.le_preset_name.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter preset name", None))
+        self.pb_delete_preset.setText(QCoreApplication.translate("MainWindow", u"Delete Preset", None))
         self.gb_args.setTitle(QCoreApplication.translate("MainWindow", u"Arguments", None))
         self.lb_link.setText(QCoreApplication.translate("MainWindow", u"Link", None))
         self.lb_path.setText(QCoreApplication.translate("MainWindow", u"Path", None))
@@ -279,4 +321,3 @@ class Ui_MainWindow(object):
         self.dd_format.setItemText(4, QCoreApplication.translate("MainWindow", u"flac", None))
 
     # retranslateUi
-
