@@ -52,6 +52,11 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         if not preset_name:
             qtw.QMessageBox.warning(self, "Warning", "Preset name cannot be empty.")
             return
+            
+        # Check if the preset name already exists
+        if preset_name in self.presets:
+            qtw.QMessageBox.warning(self, "Warning", f"A preset with the name '{preset_name}' already exists. Please choose a different name.")
+            return
         
         cargs = self.le_cargs.text().strip()
         if not cargs:
