@@ -43,6 +43,9 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         
         self.pb_save_preset.clicked.connect(self.save_preset)
         self.pb_delete_preset.clicked.connect(self.delete_preset)  # Connect the delete button to the method
+        
+        # Connect the signal
+        self.dd_presets.currentIndexChanged.connect(self.load_preset)
 
     def save_preset(self):
         preset_name = self.le_preset_name.text().strip()
@@ -61,8 +64,11 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.le_preset_name.clear()
         qtw.QMessageBox.information(self, "Success", f"Preset '{preset_name}' saved successfully.")
         
-        # Optionally, update the config file immediately
-        self.save_config()
+        # Automatically select the newly saved preset
+        index = self.dd_presets.findText(preset_name)
+        if index != -1:
+            self.dd_presets.setCurrentIndex(index)
+            self.save_config()  # Optionally, update the config file immediately
     
     def delete_preset(self):
         selected_preset = self.dd_presets.currentText()
@@ -85,6 +91,15 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             
             # Optionally, update the config file immediately
             self.save_config()
+            
+    def load_preset(self):
+        selected_preset = self.dd_presets.currentText()
+        
+        if selected_preset == "None":
+            self.le_cargs.clear()  # Clear the custom args field if "None" is selected
+        else:
+            # Load the custom arguments for the selected preset
+            self.le_cargs.setText(self.presets.get(selected_preset, ""))            
 
     def save_config(self):
         d = {
@@ -163,19 +178,12 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             self.cb_subtitles.isChecked(),
         ]
 
-        # Get selected preset
-        selected_preset = self.dd_presets.currentText()
-        preset_args = self.presets.get(selected_preset, "") if selected_preset != "None" else ""
-
         if not all([link, path, format_]):
             return qtw.QMessageBox.information(
                 self,
                 "Application Message",
                 "Unable to add the download because some required fields are missing.\nRequired fields: Link, Path & Format.",
             )
-
-        # Combine preset and custom args
-        combined_args = f"{preset_args} {cargs}".strip()
 
         item = qtw.QTreeWidgetItem(
             self.tw, [link, format_, "-", "0%", "Queued", "-", "-"]
@@ -195,7 +203,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             link,
             path,
             format_,
-            combined_args,  # Use combined args
+            cargs,  # Use combined args
             filename,
             sponsorblock,
             metadata,
@@ -204,7 +212,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         ]
         self.index += 1
         log.info(
-            f"Queued download added: (link={link}, path={path}, format={format_}, cargs={combined_args}, "
+            f"Queued download added: (link={link}, path={path}, format={format_}, cargs={cargs}, "
             f"filename={filename}, sponsorblock={sponsorblock}, metadata={metadata}, thumbnail={thumbnail}, "
             f"subtitles={subtitles})"
         )
