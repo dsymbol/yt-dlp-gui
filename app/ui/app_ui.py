@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'appERcwrg.ui'
+## Form generated from reading UI file 'appjWUIaS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -26,7 +26,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1232, 622)
+        MainWindow.resize(1137, 622)
         icon = QIcon()
         icon.addFile(u":/icon/yt-dlp-gui.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
@@ -160,33 +160,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.label, 4, 0, 1, 1)
 
-        self.le_filename = QLineEdit(self.gb_embeds)
-        self.le_filename.setObjectName(u"le_filename")
-        self.le_filename.setClearButtonEnabled(True)
-
-        self.gridLayout_2.addWidget(self.le_filename, 0, 1, 1, 2)
-
-        self.lb_presets = QLabel(self.gb_embeds)
-        self.lb_presets.setObjectName(u"lb_presets")
-
-        self.gridLayout_2.addWidget(self.lb_presets, 2, 0, 1, 1)
-
-        self.le_preset_name = QLineEdit(self.gb_embeds)
-        self.le_preset_name.setObjectName(u"le_preset_name")
-
-        self.gridLayout_2.addWidget(self.le_preset_name, 3, 1, 1, 1)
-
-        self.lb_filename = QLabel(self.gb_embeds)
-        self.lb_filename.setObjectName(u"lb_filename")
-
-        self.gridLayout_2.addWidget(self.lb_filename, 0, 0, 1, 1)
-
-        self.le_cargs = QLineEdit(self.gb_embeds)
-        self.le_cargs.setObjectName(u"le_cargs")
-        self.le_cargs.setClearButtonEnabled(True)
-
-        self.gridLayout_2.addWidget(self.le_cargs, 1, 1, 1, 2)
-
         self.pb_save_preset = QPushButton(self.gb_embeds)
         self.pb_save_preset.setObjectName(u"pb_save_preset")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
@@ -195,13 +168,36 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pb_save_preset.sizePolicy().hasHeightForWidth())
         self.pb_save_preset.setSizePolicy(sizePolicy)
 
-        self.gridLayout_2.addWidget(self.pb_save_preset, 3, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.pb_save_preset, 3, 2, 1, 2)
+
+        self.lb_presets = QLabel(self.gb_embeds)
+        self.lb_presets.setObjectName(u"lb_presets")
+
+        self.gridLayout_2.addWidget(self.lb_presets, 2, 0, 1, 1)
+
+        self.lb_filename = QLabel(self.gb_embeds)
+        self.lb_filename.setObjectName(u"lb_filename")
+
+        self.gridLayout_2.addWidget(self.lb_filename, 0, 0, 1, 1)
 
         self.dd_presets = QComboBox(self.gb_embeds)
         self.dd_presets.addItem("")
         self.dd_presets.setObjectName(u"dd_presets")
 
-        self.gridLayout_2.addWidget(self.dd_presets, 2, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.dd_presets, 2, 1, 1, 1)
+
+        self.le_cargs = QLineEdit(self.gb_embeds)
+        self.le_cargs.setObjectName(u"le_cargs")
+        self.le_cargs.setClearButtonEnabled(True)
+
+        self.gridLayout_2.addWidget(self.le_cargs, 1, 1, 1, 3)
+
+        self.pb_delete_preset = QPushButton(self.gb_embeds)
+        self.pb_delete_preset.setObjectName(u"pb_delete_preset")
+        sizePolicy.setHeightForWidth(self.pb_delete_preset.sizePolicy().hasHeightForWidth())
+        self.pb_delete_preset.setSizePolicy(sizePolicy)
+
+        self.gridLayout_2.addWidget(self.pb_delete_preset, 2, 2, 1, 2)
 
         self.lb_cargs = QLabel(self.gb_embeds)
         self.lb_cargs.setObjectName(u"lb_cargs")
@@ -213,7 +209,7 @@ class Ui_MainWindow(object):
         self.dd_sponsorblock.addItem("")
         self.dd_sponsorblock.addItem("")
         self.dd_sponsorblock.setObjectName(u"dd_sponsorblock")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.dd_sponsorblock.sizePolicy().hasHeightForWidth())
@@ -221,31 +217,31 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.dd_sponsorblock, 4, 1, 1, 1)
 
-        self.pb_delete_preset = QPushButton(self.gb_embeds)
-        self.pb_delete_preset.setObjectName(u"pb_delete_preset")
-        sizePolicy.setHeightForWidth(self.pb_delete_preset.sizePolicy().hasHeightForWidth())
-        self.pb_delete_preset.setSizePolicy(sizePolicy)
+        self.le_preset_name = QLineEdit(self.gb_embeds)
+        self.le_preset_name.setObjectName(u"le_preset_name")
 
-        self.gridLayout_2.addWidget(self.pb_delete_preset, 3, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.le_preset_name, 3, 1, 1, 1)
 
         self.cb_thumbnail = QCheckBox(self.gb_embeds)
         self.cb_thumbnail.setObjectName(u"cb_thumbnail")
 
-        self.gridLayout_2.addWidget(self.cb_thumbnail, 1, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.cb_thumbnail, 1, 4, 1, 1)
 
         self.cb_metadata = QCheckBox(self.gb_embeds)
         self.cb_metadata.setObjectName(u"cb_metadata")
 
-        self.gridLayout_2.addWidget(self.cb_metadata, 0, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.cb_metadata, 0, 4, 1, 1)
 
         self.cb_subtitles = QCheckBox(self.gb_embeds)
         self.cb_subtitles.setObjectName(u"cb_subtitles")
 
-        self.gridLayout_2.addWidget(self.cb_subtitles, 2, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.cb_subtitles, 2, 4, 1, 1)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.le_filename = QLineEdit(self.gb_embeds)
+        self.le_filename.setObjectName(u"le_filename")
+        self.le_filename.setClearButtonEnabled(True)
 
-        self.gridLayout_2.addItem(self.horizontalSpacer_2, 4, 2, 1, 2)
+        self.gridLayout_2.addWidget(self.le_filename, 0, 1, 1, 3)
 
 
         self.gridLayout.addWidget(self.gb_embeds, 0, 1, 1, 1)
@@ -306,23 +302,24 @@ class Ui_MainWindow(object):
 
         self.gb_embeds.setTitle(QCoreApplication.translate("MainWindow", u"Optional", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"SponsorBlock", None))
-        self.le_filename.setPlaceholderText(QCoreApplication.translate("MainWindow", u"%(title)s.%(ext)s", None))
-        self.lb_presets.setText(QCoreApplication.translate("MainWindow", u"Presets", None))
-        self.le_preset_name.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter preset name", None))
-        self.lb_filename.setText(QCoreApplication.translate("MainWindow", u"Filename", None))
         self.pb_save_preset.setText(QCoreApplication.translate("MainWindow", u"Save Preset", None))
+        self.lb_presets.setText(QCoreApplication.translate("MainWindow", u"Presets", None))
+        self.lb_filename.setText(QCoreApplication.translate("MainWindow", u"Filename", None))
         self.dd_presets.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
 
 #if QT_CONFIG(tooltip)
         self.dd_presets.setToolTip(QCoreApplication.translate("MainWindow", u"Select a preset or use custom args", None))
 #endif // QT_CONFIG(tooltip)
+        self.pb_delete_preset.setText(QCoreApplication.translate("MainWindow", u"Delete Preset", None))
         self.lb_cargs.setText(QCoreApplication.translate("MainWindow", u"Custom Args", None))
         self.dd_sponsorblock.setItemText(0, "")
         self.dd_sponsorblock.setItemText(1, QCoreApplication.translate("MainWindow", u"remove", None))
         self.dd_sponsorblock.setItemText(2, QCoreApplication.translate("MainWindow", u"mark", None))
 
-        self.pb_delete_preset.setText(QCoreApplication.translate("MainWindow", u"Delete Preset", None))
+        self.le_preset_name.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter preset name", None))
         self.cb_thumbnail.setText(QCoreApplication.translate("MainWindow", u"Thumbnail", None))
         self.cb_metadata.setText(QCoreApplication.translate("MainWindow", u"Metadata", None))
         self.cb_subtitles.setText(QCoreApplication.translate("MainWindow", u"Subtitles", None))
+        self.le_filename.setPlaceholderText(QCoreApplication.translate("MainWindow", u"%(title)s.%(ext)s", None))
     # retranslateUi
+
