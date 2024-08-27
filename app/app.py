@@ -40,7 +40,66 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.pb_clear.clicked.connect(self.button_clear)
         self.pb_download.clicked.connect(self.button_download)
         self.tw.itemClicked.connect(self.remove_item)
+        
+        self.pb_save_preset.clicked.connect(self.save_preset)
+        self.pb_delete_preset.clicked.connect(self.delete_preset)  # Connect the delete button to the method
 
+    def save_preset(self):
+        preset_name = self.le_preset_name.text().strip()
+        if not preset_name:
+            qtw.QMessageBox.warning(self, "Warning", "Preset name cannot be empty.")
+            return
+        
+        cargs = self.le_cargs.text().strip()
+        if not cargs:
+            qtw.QMessageBox.warning(self, "Warning", "Custom arguments cannot be empty.")
+            return
+        
+        # Save the new preset
+        self.presets[preset_name] = cargs
+        self.dd_presets.addItem(preset_name)
+        self.le_preset_name.clear()
+        qtw.QMessageBox.information(self, "Success", f"Preset '{preset_name}' saved successfully.")
+        
+        # Optionally, update the config file immediately
+        self.save_config()
+    
+    def delete_preset(self):
+        selected_preset = self.dd_presets.currentText()
+        if selected_preset == "None":
+            qtw.QMessageBox.warning(self, "Warning", "Cannot delete 'None' preset.")
+            return
+        
+        ret = qtw.QMessageBox.question(
+            self,
+            "Confirm Deletion",
+            f"Are you sure you want to delete the preset '{selected_preset}'?",
+            qtw.QMessageBox.Yes | qtw.QMessageBox.No,
+            qtw.QMessageBox.No,
+        )
+        if ret == qtw.QMessageBox.Yes:
+            # Remove the preset
+            self.presets.pop(selected_preset, None)
+            self.dd_presets.removeItem(self.dd_presets.currentIndex())
+            qtw.QMessageBox.information(self, "Success", f"Preset '{selected_preset}' deleted successfully.")
+            
+            # Optionally, update the config file immediately
+            self.save_config()
+
+    def save_config(self):
+        d = {
+            "path": self.le_path.text(),
+            "format": self.dd_format.currentIndex(),
+            "sponsorblock": self.dd_sponsorblock.currentIndex(),
+            "metadata": self.cb_metadata.isChecked(),
+            "subtitles": self.cb_subtitles.isChecked(),
+            "thumbnail": self.cb_thumbnail.isChecked(),
+            "custom_args": self.le_cargs.text(),
+            "presets": self.presets,  # Save the updated presets
+            "selected_preset": self.dd_presets.currentIndex()  # Save the selected preset index
+        }
+        save_json(ROOT / "conf.json", d)
+        
     def remove_item(self, item, column):
         ret = qtw.QMessageBox.question(
             self,
@@ -104,12 +163,19 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             self.cb_subtitles.isChecked(),
         ]
 
+        # Get selected preset
+        selected_preset = self.dd_presets.currentText()
+        preset_args = self.presets.get(selected_preset, "") if selected_preset != "None" else ""
+
         if not all([link, path, format_]):
             return qtw.QMessageBox.information(
                 self,
                 "Application Message",
                 "Unable to add the download because some required fields are missing.\nRequired fields: Link, Path & Format.",
             )
+
+        # Combine preset and custom args
+        combined_args = f"{preset_args} {cargs}".strip()
 
         item = qtw.QTreeWidgetItem(
             self.tw, [link, format_, "-", "0%", "Queued", "-", "-"]
@@ -123,13 +189,13 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
         item.id = self.index
         filename = filename if filename else "%(title)s.%(ext)s"
-        self.le_link.clear()
+        #self.le_link.clear()
         self.to_dl[self.index] = [
             item,
             link,
             path,
             format_,
-            cargs,
+            combined_args,  # Use combined args
             filename,
             sponsorblock,
             metadata,
@@ -138,7 +204,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         ]
         self.index += 1
         log.info(
-            f"Queued download added: (link={link}, path={path}, format={format_}, cargs={cargs}, "
+            f"Queued download added: (link={link}, path={path}, format={format_}, cargs={combined_args}, "
             f"filename={filename}, sponsorblock={sponsorblock}, metadata={metadata}, thumbnail={thumbnail}, "
             f"subtitles={subtitles})"
         )
@@ -181,7 +247,8 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "metadata": False,
             "subtitles": False,
             "thumbnail": False,
-            "custom_args": ""
+            "custom_args": "",
+            "presets": {}  # Add presets key
         }
         settings = load_json(ROOT / "conf.json", d)
 
@@ -192,6 +259,13 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.cb_subtitles.setChecked(settings["subtitles"])
         self.cb_thumbnail.setChecked(settings["thumbnail"])
         self.le_cargs.setText(settings["custom_args"])
+        
+        # Load presets into a dropdown menu (if using a dropdown for presets)
+        self.presets = settings["presets"]
+        self.dd_presets.clear()
+        self.dd_presets.addItem("None")
+        for preset in self.presets.keys():
+            self.dd_presets.addItem(preset)
 
     def closeEvent(self, event):
         d = {
@@ -201,7 +275,9 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "metadata": self.cb_metadata.isChecked(),
             "subtitles": self.cb_subtitles.isChecked(),
             "thumbnail": self.cb_thumbnail.isChecked(),
-            "custom_args": self.le_cargs.text()
+            "custom_args": self.le_cargs.text(),
+            "presets": self.presets,  # Preserve presets
+            "selected_preset": self.dd_presets.currentIndex()  # Save the selected preset index
         }
         save_json(ROOT / "conf.json", d)
         event.accept()
