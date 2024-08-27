@@ -1,6 +1,7 @@
 import json
 import logging
 import subprocess as sp
+import shlex
 import sys
 from dataclasses import dataclass
 
@@ -55,7 +56,7 @@ class Worker(qtc.QThread):
             args += ['--extract-audio', '--audio-format', self.format, '--audio-quality', '0']
 
         if self.cargs:
-            args += self.cargs.split()
+            args += shlex.split(self.cargs)
         if self.metadata:
             args += ['--embed-metadata']
         if self.thumbnail:
