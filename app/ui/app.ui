@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1208</width>
+    <width>1232</width>
     <height>622</height>
    </rect>
   </property>
@@ -156,167 +156,6 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QGroupBox" name="gb_embeds">
-      <property name="title">
-       <string>Optional</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-      <property name="checkable">
-       <bool>false</bool>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="3" column="0">
-        <widget class="QLabel" name="lb_presets">
-         <property name="text">
-          <string>Presets</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="le_filename">
-         <property name="placeholderText">
-          <string>%(title)s.%(ext)s</string>
-         </property>
-         <property name="clearButtonEnabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="le_cargs">
-         <property name="clearButtonEnabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="lb_filename">
-         <property name="text">
-          <string>Filename</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QCheckBox" name="cb_thumbnail">
-         <property name="text">
-          <string>Thumbnail</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QCheckBox" name="cb_subtitles">
-         <property name="text">
-          <string>Subtitles</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1" colspan="3">
-        <widget class="QComboBox" name="dd_presets">
-         <property name="toolTip">
-          <string>Select a preset or use custom args</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>None</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QPushButton" name="pb_save_preset">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Save Preset</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>SponsorBlock</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="dd_sponsorblock">
-         <item>
-          <property name="text">
-           <string/>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>remove</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>mark</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lb_cargs">
-         <property name="text">
-          <string>Custom Args</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QCheckBox" name="cb_metadata">
-         <property name="text">
-          <string>Metadata</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="le_preset_name">
-         <property name="placeholderText">
-          <string>Enter preset name</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QPushButton" name="pb_delete_preset">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Delete Preset</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QGroupBox" name="gb_args">
       <property name="title">
@@ -432,6 +271,173 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>219</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="gb_embeds">
+      <property name="title">
+       <string>Optional</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>SponsorBlock</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QLineEdit" name="le_filename">
+         <property name="placeholderText">
+          <string>%(title)s.%(ext)s</string>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="lb_presets">
+         <property name="text">
+          <string>Presets</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="le_preset_name">
+         <property name="placeholderText">
+          <string>Enter preset name</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lb_filename">
+         <property name="text">
+          <string>Filename</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QLineEdit" name="le_cargs">
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="pb_save_preset">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Save Preset</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QComboBox" name="dd_presets">
+         <property name="toolTip">
+          <string>Select a preset or use custom args</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lb_cargs">
+         <property name="text">
+          <string>Custom Args</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QComboBox" name="dd_sponsorblock">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string/>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>remove</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>mark</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QPushButton" name="pb_delete_preset">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Delete Preset</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QCheckBox" name="cb_thumbnail">
+         <property name="text">
+          <string>Thumbnail</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QCheckBox" name="cb_metadata">
+         <property name="text">
+          <string>Metadata</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QCheckBox" name="cb_subtitles">
+         <property name="text">
+          <string>Subtitles</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2" colspan="2">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
