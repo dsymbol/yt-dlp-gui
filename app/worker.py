@@ -26,9 +26,8 @@ class Worker(qtc.QThread):
         item,
         link,
         path,
-        format_,
+        fmt,
         cargs,
-        filename,
         sponsorblock,
         metadata,
         thumbnail,
@@ -38,9 +37,8 @@ class Worker(qtc.QThread):
         self.item = item
         self.link = link
         self.path = path
-        self.format = format_
+        self.fmt = fmt
         self.cargs = cargs
-        self.filename = filename
         self.sponsorblock = sponsorblock
         self.metadata = metadata
         self.thumbnail = thumbnail
@@ -48,6 +46,19 @@ class Worker(qtc.QThread):
 
         self.mutex = qtc.QMutex()
         self._stop = False
+
+    def __str__(self):
+        s = (
+            f"(link={self.link}, "
+            f"path={self.path}, "
+            f"format={self.fmt}, "
+            f"cargs={self.cargs}, "
+            f"sponsorblock={self.sponsorblock}, "
+            f"metadata={self.metadata}, "
+            f"thumbnail={self.thumbnail}, "
+            f"subtitles={self.subtitles})"
+        )
+        return s
 
     def build_command(self):
         args = [
@@ -63,18 +74,18 @@ class Worker(qtc.QThread):
             "--dump-json",
             "-v",
             "-o",
-            f"{self.path}/{self.filename}",
+            self.path,
             self.link,
         ]
-        if self.format == "best":
+        if self.fmt == "best":
             args += ["-f", r"bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"]
-        elif self.format == "mp4":
+        elif self.fmt == "mp4":
             args += ["-f", r"bv*[vcodec^=avc]+ba[ext=m4a]/b"]
         else:
             args += [
                 "--extract-audio",
                 "--audio-format",
-                self.format,
+                self.fmt,
                 "--audio-quality",
                 "0",
             ]

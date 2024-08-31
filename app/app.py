@@ -51,11 +51,13 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         )
         if ret == qtw.QMessageBox.Yes:
             if self.to_dl.get(item.id):
-                log.info(f"Removing queued {item.text(0)} download with id {item.id} ")
+                log.info(
+                    f"Removing queued `{item.text(0)}` download with id `{item.id}`"
+                )
                 self.to_dl.pop(item.id)
             elif worker := self.worker.get(item.id):
                 log.info(
-                    f"Stopping and removing {item.text(0)} download with id {item.id}"
+                    f"Stopping and removing `{item.text(0)}` download with id `{item.id}`"
                 )
                 worker.stop()
             self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item))
@@ -82,66 +84,38 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             self.cb_subtitles.setChecked(False)
 
     def button_add(self):
-        (
-            link,
-            path,
-            format_,
-            cargs,
-            filename,
-            sponsorblock,
-            metadata,
-            thumbnail,
-            subtitles,
-        ) = [
-            self.le_link.text(),
-            self.le_path.text(),
-            self.dd_format.currentText(),
-            self.le_cargs.text(),
-            self.le_filename.text(),
-            self.dd_sponsorblock.currentText(),
-            self.cb_metadata.isChecked(),
-            self.cb_thumbnail.isChecked(),
-            self.cb_subtitles.isChecked(),
-        ]
+        link = self.le_link.text()
+        path = self.le_path.text()
+        fmt = self.dd_format.currentText()
 
-        if not all([link, path, format_]):
+        if not all([link, path, fmt]):
             return qtw.QMessageBox.information(
                 self,
                 "Application Message",
                 "Unable to add the download because some required fields are missing.\nRequired fields: Link, Path & Format.",
             )
 
-        item = qtw.QTreeWidgetItem(
-            self.tw, [link, format_, "-", "0%", "Queued", "-", "-"]
-        )
+        item = qtw.QTreeWidgetItem(self.tw, [link, fmt, "-", "0%", "Queued", "-", "-"])
         pb = qtw.QProgressBar()
         pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
         pb.setTextVisible(False)
-        pb.setValue(0)
-        pb.setRange(0, 100)
         self.tw.setItemWidget(item, 3, pb)
         [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
         item.id = self.index
-        filename = filename if filename else "%(title)s.%(ext)s"
         self.le_link.clear()
-        self.to_dl[self.index] = [
+        self.to_dl[self.index] = Worker(
             item,
             link,
-            path,
-            format_,
-            cargs,
-            filename,
-            sponsorblock,
-            metadata,
-            thumbnail,
-            subtitles,
-        ]
-        self.index += 1
-        log.info(
-            f"Queued download added: (link={link}, path={path}, format={format_}, cargs={cargs}, "
-            f"filename={filename}, sponsorblock={sponsorblock}, metadata={metadata}, thumbnail={thumbnail}, "
-            f"subtitles={subtitles})"
+            path + "/" + (self.le_filename.text() or "%(title)s.%(ext)s"),
+            fmt,
+            self.le_cargs.text(),
+            self.dd_sponsorblock.currentText(),
+            self.cb_metadata.isChecked(),
+            self.cb_thumbnail.isChecked(),
+            self.cb_subtitles.isChecked(),
         )
+        log.info(f"Queued download added: {self.to_dl[self.index]}")
+        self.index += 1
 
     def button_clear(self):
         if self.worker:
@@ -165,7 +139,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             )
 
         for k, v in self.to_dl.items():
-            self.worker[k] = Worker(*v)
+            self.worker[k] = v
             self.worker[k].finished.connect(self.worker[k].deleteLater)
             self.worker[k].finished.connect(lambda x: self.worker.pop(x))
             self.worker[k].progress.connect(self.update_progress)
@@ -181,7 +155,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "metadata": False,
             "subtitles": False,
             "thumbnail": False,
-            "custom_args": ""
+            "custom_args": "",
         }
         settings = load_json(ROOT / "conf.json", d)
 
@@ -201,7 +175,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "metadata": self.cb_metadata.isChecked(),
             "subtitles": self.cb_subtitles.isChecked(),
             "thumbnail": self.cb_thumbnail.isChecked(),
-            "custom_args": self.le_cargs.text()
+            "custom_args": self.le_cargs.text(),
         }
         save_json(ROOT / "conf.json", d)
         event.accept()
