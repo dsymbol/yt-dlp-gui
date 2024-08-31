@@ -3,22 +3,18 @@ import logging
 import shlex
 import subprocess as sp
 import sys
-from dataclasses import dataclass
 
 import PySide6.QtCore as qtc
 
 log = logging.getLogger(__name__)
 
-
-@dataclass
-class TreeDex:
-    TITLE: int = 0
-    FORMAT: int = 1
-    SIZE: int = 2
-    PROGRESS: int = 3
-    STATUS: int = 4
-    SPEED: int = 5
-    ETA: int = 6
+TITLE = 0
+FORMAT = 1
+SIZE = 2
+PROGRESS = 3
+STATUS = 4
+SPEED = 5
+ETA = 6
 
 
 class Worker(qtc.QThread):
@@ -130,18 +126,18 @@ class Worker(qtc.QThread):
                     )
                     self.progress.emit(
                         self.item,
-                        [[TreeDex.TITLE, title], [TreeDex.STATUS, "Processing"]],
+                        [(TITLE, title), (STATUS, "Processing")],
                     )
                 elif line.lower().startswith("downloading"):
                     data = line.split()
                     self.progress.emit(
                         self.item,
                         [
-                            [TreeDex.SIZE, data[1]],
-                            [TreeDex.PROGRESS, data[2]],
-                            [TreeDex.SPEED, data[3]],
-                            [TreeDex.ETA, data[4]],
-                            [TreeDex.STATUS, "Downloading"],
+                            (SIZE, data[1]),
+                            (PROGRESS, data[2]),
+                            (SPEED, data[3]),
+                            (ETA, data[4]),
+                            (STATUS, "Downloading"),
                         ],
                     )
                 elif line.lower().startswith("error"):
@@ -150,21 +146,21 @@ class Worker(qtc.QThread):
                     self.progress.emit(
                         self.item,
                         [
-                            [TreeDex.SIZE, "ERROR"],
-                            [TreeDex.STATUS, "ERROR"],
-                            [TreeDex.SPEED, "ERROR"],
+                            (SIZE, "ERROR"),
+                            (STATUS, "ERROR"),
+                            (SPEED, "ERROR"),
                         ],
                     )
                     break
                 elif line.startswith(("[Merger]", "[ExtractAudio]")):
-                    self.progress.emit(self.item, [[TreeDex.STATUS, "Converting"]])
+                    self.progress.emit(self.item, [(STATUS, "Converting")])
 
             if not error:
                 self.progress.emit(
                     self.item,
                     [
-                        [TreeDex.PROGRESS, "100%"],
-                        [TreeDex.STATUS, "Finished"],
+                        (PROGRESS, "100%"),
+                        (STATUS, "Finished"),
                     ],
                 )
 
