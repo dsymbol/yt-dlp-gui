@@ -4,7 +4,7 @@ videos from various [websites](https://github.com/yt-dlp/yt-dlp/blob/master/supp
 It is designed to be more user-friendly and accessible for those who are not comfortable using the command line.
 
 ## Screenshot
-![Capture](https://github.com/user-attachments/assets/f7ffa290-31d9-4360-a1f0-cf14112a7172)
+![Capture](https://github.com/user-attachments/assets/6265eb04-8552-4330-8cdb-307264a95bc6)
 
 ## Getting Started
 
