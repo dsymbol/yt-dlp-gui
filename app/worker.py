@@ -1,7 +1,7 @@
 import json
 import logging
-import subprocess as sp
 import shlex
+import subprocess as sp
 import sys
 from dataclasses import dataclass
 
@@ -25,7 +25,20 @@ class Worker(qtc.QThread):
     finished = qtc.Signal(int)
     progress = qtc.Signal(object, list)
 
-    def __init__(self, item, link, path, format_, cargs, filename, sponsorblock, metadata, thumbnail, subtitles):
+    def __init__(
+        self,
+        item,
+        link,
+        path,
+        format_,
+        cargs,
+        filename,
+        sponsorblock,
+        metadata,
+        thumbnail,
+        subtitles,
+        chapters,
+    ):
         super().__init__()
         self.item = item
         self.link = link
@@ -37,6 +50,7 @@ class Worker(qtc.QThread):
         self.metadata = metadata
         self.thumbnail = thumbnail
         self.subtitles = subtitles
+        self.chapters = chapters
 
         self.mutex = qtc.QMutex()
         self._stop = False
@@ -73,6 +87,8 @@ class Worker(qtc.QThread):
 
         if self.cargs:
             args += shlex.split(self.cargs)
+        if self.chapters:
+            args += ["--split-chapters", "-o", f"chapter:{self.path}\%(title)s\%(section_number)03d. %(section_title)s.%(ext)s"]
         if self.metadata:
             args += ["--embed-metadata"]
         if self.thumbnail:
