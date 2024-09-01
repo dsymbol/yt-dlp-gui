@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'appjWUIaS.ui'
+## Form generated from reading UI file 'appeEkGTb.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -243,6 +243,11 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.le_filename, 0, 1, 1, 3)
 
+        self.cb_chapters = QCheckBox(self.gb_embeds)
+        self.cb_chapters.setObjectName(u"cb_chapters")
+
+        self.gridLayout_2.addWidget(self.cb_chapters, 3, 4, 1, 1)
+
 
         self.gridLayout.addWidget(self.gb_embeds, 0, 1, 1, 1)
 
@@ -321,5 +326,6 @@ class Ui_MainWindow(object):
         self.cb_metadata.setText(QCoreApplication.translate("MainWindow", u"Metadata", None))
         self.cb_subtitles.setText(QCoreApplication.translate("MainWindow", u"Subtitles", None))
         self.le_filename.setPlaceholderText(QCoreApplication.translate("MainWindow", u"%(title)s.%(ext)s", None))
+        self.cb_chapters.setText(QCoreApplication.translate("MainWindow", u"Split Chapters", None))
     # retranslateUi
 
