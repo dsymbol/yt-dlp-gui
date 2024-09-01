@@ -430,6 +430,13 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="4">
+        <widget class="QCheckBox" name="cb_chapters">
+         <property name="text">
+          <string>Split Chapters</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
