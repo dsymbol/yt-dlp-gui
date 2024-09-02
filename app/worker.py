@@ -6,7 +6,7 @@ import sys
 
 import PySide6.QtCore as qtc
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 TITLE = 0
 FORMAT = 1
@@ -114,6 +114,9 @@ class Worker(qtc.QThread):
         create_window = sp.CREATE_NO_WINDOW if sys.platform == "win32" else 0
         command = self.build_command()
         error = False
+        logger.info(
+            f"Download ({self.item.id}) starting with args: " + shlex.join(command)
+        )
 
         with sp.Popen(
             command,
@@ -131,10 +134,7 @@ class Worker(qtc.QThread):
 
                 if line.startswith("{"):
                     title = json.loads(line)["title"]
-                    log.info(
-                        f"`{title}` with id {self.item.id} download started with args: "
-                        + shlex.join(command)
-                    )
+                    logger.debug(f"Download ({self.item.id}) title: `{title}`")
                     self.progress.emit(
                         self.item,
                         [(TITLE, title), (STATUS, "Processing")],
@@ -153,7 +153,7 @@ class Worker(qtc.QThread):
                     )
                 elif line.lower().startswith("error"):
                     error = True
-                    log.error(line)
+                    logger.error(line.replace("ERROR:", "").strip())
                     self.progress.emit(
                         self.item,
                         [

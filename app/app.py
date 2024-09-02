@@ -12,8 +12,15 @@ from worker import Worker
 
 os.environ["PATH"] += os.pathsep + str(ROOT / "bin")
 
-init_logger(ROOT / "debug.log")
-log = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s (%(module)s:%(lineno)d) %(message)s",
+    handlers=[
+        logging.FileHandler(ROOT / "debug.log", encoding="utf-8", delay=True),
+        logging.StreamHandler(),
+    ],
+)
+logger = logging.getLogger(__name__)
 
 
 class MainWindow(qtw.QMainWindow, Ui_MainWindow):
@@ -51,13 +58,13 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         )
         if ret == qtw.QMessageBox.Yes:
             if self.to_dl.get(item.id):
-                log.info(
-                    f"Removing queued `{item.text(0)}` download with id `{item.id}`"
+                logger.debug(
+                    f"Removing queued download ({item.id}): `{item.text(0)}`"
                 )
                 self.to_dl.pop(item.id)
             elif worker := self.worker.get(item.id):
-                log.info(
-                    f"Stopping and removing `{item.text(0)}` download with id `{item.id}`"
+                logger.info(
+                    f"Stopping and removing download ({item.id}): `{item.text(0)}`"
                 )
                 worker.stop()
             self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item))
@@ -114,7 +121,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             self.cb_thumbnail.isChecked(),
             self.cb_subtitles.isChecked(),
         )
-        log.info(f"Queued download added: {self.to_dl[self.index]}")
+        logger.info(f"Queue download ({item.id}) added: {self.to_dl[self.index]}")
         self.index += 1
 
     def button_clear(self):
@@ -190,7 +197,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
                     pb = self.tw.itemWidget(item, index)
                     pb.setValue(round(float(update.replace("%", ""))))
         except AttributeError:
-            log.info(f"Item {item.id} no longer exists")
+            logger.info(f"Download ({item.id}) no longer exists")
 
 
 if __name__ == "__main__":
