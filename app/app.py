@@ -29,7 +29,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.tw.setColumnWidth(0, 200)
         self.le_link.setFocus()
-        self.conf()
+        self.config = self.load_config()
         self.format_change(self.dd_format.currentText())
         self.statusBar.showMessage(f"Version {__version__}")
 
@@ -78,17 +78,15 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             self.le_path.setText(path)
 
     def format_change(self, fmt):
-        if fmt == "mp4" or fmt == "best":
+        if fmt in ("mp4", "best"):
             self.cb_subtitles.setEnabled(True)
             self.cb_thumbnail.setEnabled(True)
         else:
-            if fmt in ["mp3", "flac"]:
+            self.cb_subtitles.setEnabled(False)
+            if fmt in ("mp3", "flac"):
                 self.cb_thumbnail.setEnabled(True)
             else:
                 self.cb_thumbnail.setEnabled(False)
-                self.cb_thumbnail.setChecked(False)
-            self.cb_subtitles.setEnabled(False)
-            self.cb_subtitles.setChecked(False)
 
     def button_add(self):
         link = self.le_link.text()
@@ -117,9 +115,9 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             fmt,
             self.le_cargs.text(),
             self.dd_sponsorblock.currentText(),
-            self.cb_metadata.isChecked(),
-            self.cb_thumbnail.isChecked(),
-            self.cb_subtitles.isChecked(),
+            self.cb_metadata.isEnabled() and self.cb_metadata.isChecked(),
+            self.cb_thumbnail.isEnabled() and self.cb_thumbnail.isChecked(),
+            self.cb_subtitles.isEnabled() and self.cb_subtitles.isChecked(),
         )
         logger.info(f"Queue download ({item.id}) added: {self.to_dl[self.index]}")
         self.index += 1
@@ -154,7 +152,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
 
         self.to_dl = {}
 
-    def conf(self):
+    def load_config(self):
         d = {
             "path": "",
             "format": 0,
@@ -164,27 +162,27 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             "thumbnail": False,
             "custom_args": "",
         }
-        settings = load_json(ROOT / "conf.json", d)
+        config = load_json(ROOT / "config.json", d)
 
-        self.le_path.setText(settings["path"])
-        self.dd_format.setCurrentIndex(settings["format"])
-        self.dd_sponsorblock.setCurrentIndex(settings["sponsorblock"])
-        self.cb_metadata.setChecked(settings["metadata"])
-        self.cb_subtitles.setChecked(settings["subtitles"])
-        self.cb_thumbnail.setChecked(settings["thumbnail"])
-        self.le_cargs.setText(settings["custom_args"])
+        self.le_path.setText(config["path"])
+        self.dd_format.setCurrentIndex(config["format"])
+        self.dd_sponsorblock.setCurrentIndex(config["sponsorblock"])
+        self.cb_metadata.setChecked(config["metadata"])
+        self.cb_subtitles.setChecked(config["subtitles"])
+        self.cb_thumbnail.setChecked(config["thumbnail"])
+        self.le_cargs.setText(config["custom_args"])
+
+        return config
 
     def closeEvent(self, event):
-        d = {
-            "path": self.le_path.text(),
-            "format": self.dd_format.currentIndex(),
-            "sponsorblock": self.dd_sponsorblock.currentIndex(),
-            "metadata": self.cb_metadata.isChecked(),
-            "subtitles": self.cb_subtitles.isChecked(),
-            "thumbnail": self.cb_thumbnail.isChecked(),
-            "custom_args": self.le_cargs.text(),
-        }
-        save_json(ROOT / "conf.json", d)
+        self.config["path"] = self.le_path.text()
+        self.config["format"] = self.dd_format.currentIndex()
+        self.config["sponsorblock"] = self.dd_sponsorblock.currentIndex()
+        self.config["metadata"] = self.cb_metadata.isChecked()
+        self.config["subtitles"] = self.cb_subtitles.isChecked()
+        self.config["thumbnail"] = self.cb_thumbnail.isChecked()
+        self.config["custom_args"] = self.le_cargs.text()
+        save_json(ROOT / "config.json", self.config)
         event.accept()
 
     def update_progress(self, item, emit_data):
