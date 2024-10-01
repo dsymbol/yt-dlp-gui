@@ -1,0 +1,28 @@
+[general]
+format = 0
+
+[presets.best]
+args = ["-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"]
+path = ""
+filename = "%(title)s.%(ext)s"
+sponsorblock = 0
+metadata = false
+subtitles = false
+thumbnail = false
+
+[presets.mp4]
+args = ["-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b"]
+path = ""
+filename = "%(title)s.%(ext)s"
+sponsorblock = 0
+metadata = false
+subtitles = false
+thumbnail = false
+
+[presets.mp3]
+args = ["--extract-audio", "--audio-format", "mp3", "--audio-quality", "0"]
+path = ""
+filename = "%(title)s.%(ext)s"
+sponsorblock = 0
+metadata = false
+thumbnail = false

@@ -11,9 +11,9 @@ from PySide6.QtWidgets import QWidget
 from tqdm import tqdm
 
 from ui.download_ui import Ui_Download
-from utils import ROOT
+from utils import root
 
-BIN = ROOT / "bin"
+bin_ = root / "bin"
 
 
 class DownloadWindow(QWidget, Ui_Download):
@@ -56,8 +56,8 @@ class DownloadWindow(QWidget, Ui_Download):
         os_ = platform.system()
 
         if exes:
-            if not os.path.exists(BIN):
-                os.makedirs(BIN)
+            if not os.path.exists(bin_):
+                os.makedirs(bin_)
             for exe in exes:
                 if exe == "yt-dlp":
                     url = (
@@ -69,7 +69,7 @@ class DownloadWindow(QWidget, Ui_Download):
                         "https://github.com/imageio/imageio-binaries/raw/master/ffmpeg/"
                         + binaries[os_][exe]
                     )
-                filename = os.path.join(BIN, f"{exe}.exe" if os_ == "Windows" else exe)
+                filename = os.path.join(bin_, f"{exe}.exe" if os_ == "Windows" else exe)
 
                 self.missing += [[url, filename]]
 

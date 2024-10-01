@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>841</width>
+    <width>816</width>
     <height>622</height>
    </rect>
   </property>
@@ -23,70 +23,7 @@
      <pointsize>9</pointsize>
     </font>
    </property>
-   <layout class="QGridLayout" name="gridLayout" rowstretch="2,5" columnstretch="1,1,0">
-    <item row="1" column="0" colspan="3">
-     <widget class="QGroupBox" name="gb_status">
-      <property name="title">
-       <string>Status</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QTreeWidget" name="tw">
-         <attribute name="headerVisible">
-          <bool>true</bool>
-         </attribute>
-         <column>
-          <property name="text">
-           <string>Title</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Format</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Size</string>
-          </property>
-          <property name="textAlignment">
-           <set>AlignCenter</set>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Progress</string>
-          </property>
-          <property name="textAlignment">
-           <set>AlignCenter</set>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Status</string>
-          </property>
-          <property name="textAlignment">
-           <set>AlignCenter</set>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Speed</string>
-          </property>
-          <property name="textAlignment">
-           <set>AlignCenter</set>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>ETA</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
+   <layout class="QGridLayout" name="gridLayout" rowstretch="2,4">
     <item row="0" column="2">
      <widget class="QGroupBox" name="gb_controls">
       <property name="title">
@@ -170,220 +107,234 @@
       <property name="checkable">
        <bool>false</bool>
       </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="le_cargs">
-         <property name="clearButtonEnabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QCheckBox" name="cb_thumbnail">
-         <property name="text">
-          <string>Thumbnail</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="dd_sponsorblock">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <property name="text">
-           <string/>
-          </property>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>SponsorBlock</string>
+           </property>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>remove</string>
-          </property>
+          <widget class="QComboBox" name="dd_sponsorblock">
+           <item>
+            <property name="text">
+             <string/>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>remove</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>mark</string>
+            </property>
+           </item>
+          </widget>
          </item>
-         <item>
-          <property name="text">
-           <string>mark</string>
-          </property>
-         </item>
-        </widget>
+        </layout>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lb_cargs">
-         <property name="text">
-          <string>Custom Args</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QCheckBox" name="cb_subtitles">
-         <property name="text">
-          <string>Subtitles</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
+       <item>
         <widget class="QCheckBox" name="cb_metadata">
          <property name="text">
           <string>Metadata</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="le_filename">
-         <property name="placeholderText">
-          <string>%(title)s.%(ext)s</string>
-         </property>
-         <property name="clearButtonEnabled">
-          <bool>true</bool>
+       <item>
+        <widget class="QCheckBox" name="cb_thumbnail">
+         <property name="text">
+          <string>Thumbnail</string>
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QCheckBox" name="cb_subtitles">
+         <property name="text">
+          <string>Subtitles</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="3">
+     <widget class="QGroupBox" name="gb_status">
+      <property name="title">
+       <string>Downloads</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QLabel" name="lb_filename">
-         <property name="text">
-          <string>Filename</string>
-         </property>
+        <widget class="QTreeWidget" name="tw">
+         <attribute name="headerVisible">
+          <bool>true</bool>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>Title</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Format</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Size</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignCenter</set>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Progress</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignCenter</set>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Status</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignCenter</set>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Speed</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignCenter</set>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>ETA</string>
+          </property>
+         </column>
         </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>SponsorBlock</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QGroupBox" name="gb_args">
+     <widget class="QGroupBox" name="gb_params">
       <property name="title">
-       <string>Arguments</string>
+       <string>Parameters</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,0,0,0" rowminimumheight="0,0,0">
-       <item row="0" column="0">
-        <widget class="QLabel" name="lb_link">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Link</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lb_path">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Path</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="le_path">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QToolButton" name="tb_path">
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="lb_format">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Format</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="3">
-        <widget class="QLineEdit" name="le_link">
-         <property name="placeholderText">
-          <string>https://www.youtube.com/watch?v=dQw4w9WgXcQ</string>
-         </property>
-         <property name="clearButtonEnabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="dd_format">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <property name="text">
-           <string>best</string>
-          </property>
+          <widget class="QLabel" name="lb_link">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Link</string>
+           </property>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>mp4</string>
-          </property>
+          <widget class="QLineEdit" name="le_link">
+           <property name="placeholderText">
+            <string>https://www.youtube.com/watch?v=dQw4w9WgXcQ</string>
+           </property>
+           <property name="clearButtonEnabled">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
-         <item>
-          <property name="text">
-           <string>mp3</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>wav</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>flac</string>
-          </property>
-         </item>
-        </widget>
+        </layout>
        </item>
-       <item row="2" column="2" colspan="2">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>219</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="lb_path">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Path</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="le_path">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tb_path">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="lb_format">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Format</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="dd_format"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pb_save_preset">
+           <property name="text">
+            <string>Save Preset</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lb_filename">
+           <property name="text">
+            <string>Filename</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="le_filename">
+           <property name="placeholderText">
+            <string>%(title)s.%(ext)s</string>
+           </property>
+           <property name="clearButtonEnabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -393,7 +344,6 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <tabstops>
-  <tabstop>le_path</tabstop>
   <tabstop>pb_add</tabstop>
   <tabstop>pb_clear</tabstop>
   <tabstop>pb_download</tabstop>
