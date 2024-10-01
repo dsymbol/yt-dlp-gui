@@ -34,13 +34,15 @@ python app.py
 
 ## Preset Customization
 
+**Note:** all files mentioned below are located in the root directory of the program.
+
 If you want to create your own presets or modify the existing ones, you're in the right place. All customization options can be found in the `config.toml` file.
 
 ###  Available Fields
 
 To define a preset, the section name must begin with `presets.`. Below are the fields you can use to customize your presets:
 
-- **args** (required): This field specifies the arguments for `yt-dlp`. It can be provided as a string or a list.
+- **args** (required): This field can be provided as a string or a list. The arguments specified here will be added onto the [base](https://github.com/dsymbol/yt-dlp-gui/blob/main/app/worker.py#L67) `yt-dlp` arguments. Therefore only the format and other relevant options for downloading should be specified.
 
 - **path** (optional): This string field allows you to specify the output path. If this field is left out, it must be included in the `args` field.
 
@@ -65,4 +67,4 @@ sponsorblock = 0
 metadata = false
 ```
 
-Try it yourself by pasting it to the bottom of your `config.toml` file! You will see that any fields not included in the preset will be disabled in the GUI. If you encounter any issues with your preset, check the `debug.log` file which is located in the root directory of the program for details.
+Try it yourself by pasting it to the bottom of your `config.toml` file! You will see that any fields not included in the preset will be disabled in the GUI. If you encounter any issues with your preset, check the `debug.log` file for details.
