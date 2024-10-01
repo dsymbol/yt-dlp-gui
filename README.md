@@ -34,6 +34,8 @@ python app.py
 
 ## Preset Customization
 
+**Note:** all files mentioned below are located in the root directory of the program.
+
 If you want to create your own presets or modify the existing ones, you're in the right place. All customization options can be found in the `config.toml` file.
 
 ###  Available Fields
@@ -65,4 +67,4 @@ sponsorblock = 0
 metadata = false
 ```
 
-Try it yourself by pasting it to the bottom of your `config.toml` file! You will see that any fields not included in the preset will be disabled in the GUI. If you encounter any issues with your preset, check the `debug.log` file which is located in the root directory of the program for details.
+Try it yourself by pasting it to the bottom of your `config.toml` file! You will see that any fields not included in the preset will be disabled in the GUI. If you encounter any issues with your preset, check the `debug.log` file for details.
