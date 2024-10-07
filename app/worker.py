@@ -152,7 +152,7 @@ class Worker(qtc.QThread):
 
         if p.returncode != 0:
             logger.error(
-                f"Download ({self.item.id}) returncode: {p.returncode}\n{"".join(output)}"
+                f'Download ({self.item.id}) returncode: {p.returncode}\n{"".join(output)}'
             )
             self.progress.emit(
                 self.item,
