@@ -3,10 +3,10 @@ import os
 import sys
 
 from dep_dl import DownloadWindow
-
-from PySide6 import QtCore as qtc, QtWidgets as qtw
-from utils import *
+from PySide6 import QtCore as qtc
+from PySide6 import QtWidgets as qtw
 from ui.app_ui import Ui_MainWindow
+from utils import *
 from worker import Worker
 
 os.environ["PATH"] += os.pathsep + str(root / "bin")
@@ -68,7 +68,10 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
 
     def button_path(self):
         path = qtw.QFileDialog.getExistingDirectory(
-            self, "Select a folder", qtc.QDir.homePath(), qtw.QFileDialog.ShowDirsOnly
+            self,
+            "Select a folder",
+            self.le_path.text() or qtc.QDir.homePath(),
+            qtw.QFileDialog.ShowDirsOnly,
         )
 
         if path:
