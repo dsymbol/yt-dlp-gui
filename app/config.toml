@@ -1,5 +1,6 @@
 [general]
 format = 0
+proxy = ""
 
 [presets.best]
 args = ["-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"]
