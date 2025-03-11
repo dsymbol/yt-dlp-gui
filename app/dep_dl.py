@@ -66,7 +66,7 @@ class DownloadWindow(QWidget, Ui_Download):
                     )
                 else:
                     url = (
-                        "https://github.com/imageio/imageio-binaries/raw/master/ffmpeg/"
+                        "https://github.com/imageio/imageio-binaries/raw/183aef992339cc5a463528c75dd298db15fd346f/ffmpeg/"
                         + binaries[os_][exe]
                     )
                 filename = os.path.join(bin_, f"{exe}.exe" if os_ == "Windows" else exe)
