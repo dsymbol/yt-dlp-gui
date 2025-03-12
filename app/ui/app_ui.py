@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
     QStatusBar, QToolButton, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget)
 import ui.icons_rc
+import darkdetect
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -44,7 +45,7 @@ class Ui_MainWindow(object):
         self.pb_add = QPushButton(self.gb_controls)
         self.pb_add.setObjectName(u"pb_add")
         icon1 = QIcon()
-        icon1.addFile(u":/buttons/add.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon1.addFile(u":/buttons/add_dark.png" if darkdetect.isDark() else u":/buttons/add.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pb_add.setIcon(icon1)
         self.pb_add.setIconSize(QSize(20, 20))
 
@@ -53,7 +54,7 @@ class Ui_MainWindow(object):
         self.pb_clear = QPushButton(self.gb_controls)
         self.pb_clear.setObjectName(u"pb_clear")
         icon2 = QIcon()
-        icon2.addFile(u":/buttons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u":/buttons/clear_dark.png" if darkdetect.isDark() else u":/buttons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pb_clear.setIcon(icon2)
         self.pb_clear.setIconSize(QSize(20, 20))
 
@@ -62,7 +63,7 @@ class Ui_MainWindow(object):
         self.pb_download = QPushButton(self.gb_controls)
         self.pb_download.setObjectName(u"pb_download")
         icon3 = QIcon()
-        icon3.addFile(u":/buttons/download.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon3.addFile(u":/buttons/download_dark.png" if darkdetect.isDark() else u":/buttons/download.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pb_download.setIcon(icon3)
         self.pb_download.setIconSize(QSize(20, 20))
 

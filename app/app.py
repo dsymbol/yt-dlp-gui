@@ -122,6 +122,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             self.cb_metadata.isChecked(),
             self.cb_thumbnail.isChecked(),
             self.cb_subtitles.isChecked(),
+            self.config["general"]["proxy"]
         )
         logger.info(f"Queue download ({item.id}) added: {self.to_dl[self.index]}")
         self.index += 1

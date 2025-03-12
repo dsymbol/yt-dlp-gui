@@ -33,6 +33,7 @@ class Worker(qtc.QThread):
         metadata,
         thumbnail,
         subtitles,
+        proxy
     ):
         super().__init__()
         self.item = item
@@ -45,6 +46,7 @@ class Worker(qtc.QThread):
         self.metadata = metadata
         self.thumbnail = thumbnail
         self.subtitles = subtitles
+        self.proxy = proxy
 
         self.mutex = qtc.QMutex()
         self._stop = False
@@ -79,13 +81,14 @@ class Worker(qtc.QThread):
         ]
 
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
+        if self.proxy != "":
+            args += ["--proxy", self.proxy]
         if self.metadata:
             args += ["--embed-metadata"]
         if self.thumbnail:
             args += ["--embed-thumbnail"]
         if self.subtitles:
             args += ["--write-auto-subs"]
-
         if self.sponsorblock == "remove":
             args += ["--sponsorblock-remove", "all"]
             print("remove")
