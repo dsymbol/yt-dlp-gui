@@ -8,9 +8,10 @@ from tempfile import NamedTemporaryFile
 import requests
 from PySide6.QtCore import QThread, QTimer, Signal
 from PySide6.QtWidgets import QWidget
+from PySide6.QtGui import QIcon
 from tqdm import tqdm
 
-from ui.download_ui import Ui_Download
+from ui.download_widget import Ui_Download
 from utils import root
 
 bin_ = root / "bin"
@@ -22,6 +23,8 @@ class DownloadWindow(QWidget, Ui_Download):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowIcon(QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
+
         self.pb.setMaximum(100)
         self.missing = []
 
@@ -114,16 +117,19 @@ class _D_Worker(QThread):
         chunk_size = 1024
         read_bytes = 0
 
-        with NamedTemporaryFile(mode="wb", delete=False) as temp, tqdm(
-            desc=os.path.basename(self.filename),
-            total=file_size,
-            unit="iB",
-            unit_scale=True,
-            unit_divisor=1024,
-            file=data,
-            bar_format="{desc}: {n_fmt}/{total_fmt} [{elapsed}/{remaining}, {rate_fmt}{postfix}]",
-            leave=True,
-        ) as bar:
+        with (
+            NamedTemporaryFile(mode="wb", delete=False) as temp,
+            tqdm(
+                desc=os.path.basename(self.filename),
+                total=file_size,
+                unit="iB",
+                unit_scale=True,
+                unit_divisor=1024,
+                file=data,
+                bar_format="{desc}: {n_fmt}/{total_fmt} [{elapsed}/{remaining}, {rate_fmt}{postfix}]",
+                leave=True,
+            ) as bar,
+        ):
             for chunk in r.iter_content(chunk_size=chunk_size):
                 temp.write(chunk)
                 bar.update(chunk_size)

@@ -1,8 +1,9 @@
 from pathlib import Path
+import sys
 
 import toml
 
-root = Path(__file__).parent
+root = Path(sys.argv[0]).resolve().parent
 
 
 def load_toml(path):

@@ -5,7 +5,8 @@ import sys
 from dep_dl import DownloadWindow
 from PySide6 import QtCore as qtc
 from PySide6 import QtWidgets as qtw
-from ui.app_ui import Ui_MainWindow
+from PySide6.QtGui import QIcon
+from ui.main_window import Ui_MainWindow
 from utils import *
 from worker import Worker
 
@@ -26,6 +27,11 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowIcon(QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
+        self.pb_add.setIcon(QIcon(str(root / "assets" / "add.png")))
+        self.pb_clear.setIcon(QIcon(str(root / "assets" / "clear.png")))
+        self.pb_download.setIcon(QIcon(str(root / "assets" / "download.png")))
+
         self.tw.setColumnWidth(0, 200)
         self.le_link.setFocus()
         self.load_config()

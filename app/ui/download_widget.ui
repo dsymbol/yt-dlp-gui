@@ -16,10 +16,6 @@
   <property name="windowTitle">
    <string>Fetching dependency...</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="assets/icons.qrc">
-    <normaloff>:/icon/yt-dlp-gui.ico</normaloff>:/icon/yt-dlp-gui.ico</iconset>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item alignment="Qt::AlignmentFlag::AlignHCenter">
     <widget class="QLabel" name="lb_progress">
@@ -37,8 +33,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="assets/icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

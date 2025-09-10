@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'download.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.0
+## Created by: Qt User Interface Compiler version 6.7.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,7 +17,6 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QLabel, QProgressBar, QSizePolicy,
     QVBoxLayout, QWidget)
-import ui.icons_rc
 
 class Ui_Download(object):
     def setupUi(self, Download):
@@ -25,9 +24,6 @@ class Ui_Download(object):
             Download.setObjectName(u"Download")
         Download.setWindowModality(Qt.WindowModality.NonModal)
         Download.resize(441, 73)
-        icon = QIcon()
-        icon.addFile(u":/icon/yt-dlp-gui.ico", QSize(), QIcon.Normal, QIcon.Off)
-        Download.setWindowIcon(icon)
         self.verticalLayout = QVBoxLayout(Download)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.lb_progress = QLabel(Download)
