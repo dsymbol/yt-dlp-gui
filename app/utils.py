@@ -3,7 +3,7 @@ import sys
 
 import toml
 
-root = Path(sys.argv[0]).resolve().parent
+root = Path(__file__).parent
 
 
 def load_toml(path):

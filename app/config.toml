@@ -1,28 +1,9 @@
 [general]
-format = 0
-
-[presets.best]
-args = ["-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"]
+current_preset = 0
 path = ""
-filename = "%(title)s.%(ext)s"
-sponsorblock = 0
-metadata = false
-subtitles = false
-thumbnail = false
+global_args = []
 
-[presets.mp4]
-args = ["-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b"]
-path = ""
-filename = "%(title)s.%(ext)s"
-sponsorblock = 0
-metadata = false
-subtitles = false
-thumbnail = false
-
-[presets.mp3]
-args = ["--extract-audio", "--audio-format", "mp3", "--audio-quality", "0"]
-path = ""
-filename = "%(title)s.%(ext)s"
-sponsorblock = 0
-metadata = false
-thumbnail = false
+[presets]
+best = ["-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"]
+mp4 = ["-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b"]
+mp3 = ["--extract-audio", "--audio-format", "mp3", "--audio-quality", "0"]

@@ -3,7 +3,7 @@ import logging
 import shlex
 import subprocess as sp
 import sys
-
+import os
 import PySide6.QtCore as qtc
 
 logger = logging.getLogger(__name__)
@@ -24,44 +24,25 @@ class Worker(qtc.QThread):
     def __init__(
         self,
         item,
-        args,
+        config,
         link,
         path,
-        filename,
-        fmt,
-        sponsorblock,
-        metadata,
-        thumbnail,
-        subtitles,
+        preset
     ):
         super().__init__()
         self.item = item
-        self.args = args
+        self.config = config
         self.link = link
         self.path = path
-        self.filename = filename
-        self.fmt = fmt
-        self.sponsorblock = sponsorblock
-        self.metadata = metadata
-        self.thumbnail = thumbnail
-        self.subtitles = subtitles
+        self.preset = preset
+        self.args = self.config["presets"][preset]
+        self.global_args = self.config["general"].get("global_args")
 
         self.mutex = qtc.QMutex()
         self._stop = False
 
     def __str__(self):
-        s = (
-            f"(link={self.link}, "
-            f"args={self.args}, "
-            f"path={self.path}, "
-            f"filename={self.filename}, "
-            f"format={self.fmt}, "
-            f"sponsorblock={self.sponsorblock}, "
-            f"metadata={self.metadata}, "
-            f"thumbnail={self.thumbnail}, "
-            f"subtitles={self.subtitles})"
-        )
-        return s
+        return f"(link={self.link}, preset={self.preset}, path={self.path}, args={self.args})"
 
     def build_command(self):
         args = [
@@ -79,26 +60,8 @@ class Worker(qtc.QThread):
         ]
 
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
-        if self.metadata:
-            args += ["--embed-metadata"]
-        if self.thumbnail:
-            args += ["--embed-thumbnail"]
-        if self.subtitles:
-            args += ["--write-auto-subs"]
-
-        if self.sponsorblock == "remove":
-            args += ["--sponsorblock-remove", "all"]
-            print("remove")
-        elif self.sponsorblock == "mark":
-            args += ["--sponsorblock-mark", "all"]
-            print("mark")
-
-        if self.path:
-            args += [
-                "-o",
-                f"{self.path}/{self.filename}" if self.filename else self.path,
-            ]
-        args += ["--", self.link]
+        args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
+        args += ["-o", f"{self.path}/%(title)s.%(ext)s", "--", self.link]
         return args
 
     def stop(self):

@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install -U "https://yt-dlp.github.io/Pyinstaller-Builds/x86_64/pyinstaller-6.7.0-py3-none-any.whl"
+          pip install -U "https://github.com/yt-dlp/Pyinstaller-Builds/releases/download/2025.09.13.221251/pyinstaller-6.16.0-py3-none-win_amd64.whl"
 
       - name: Set version
         working-directory: ./app
@@ -44,7 +44,7 @@ jobs:
       - name: Build application
         working-directory: ./app
         run: |
-          pyinstaller --name=yt-dlp-gui --clean -y app.py --icon ./ui/assets/yt-dlp-gui.ico --add-data "config.toml;." --noconsole
+          pyinstaller --name=yt-dlp-gui --clean -y app.py --icon ./assets/yt-dlp-gui.ico --add-data "config.toml;." --add-data "assets;assets" --noconsole
           Compress-Archive -Path dist/* -DestinationPath ./yt-dlp-gui-win64.zip
 
       - uses: actions/upload-artifact@v4

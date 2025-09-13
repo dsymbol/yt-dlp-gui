@@ -31,9 +31,14 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.pb_add.setIcon(QIcon(str(root / "assets" / "add.png")))
         self.pb_clear.setIcon(QIcon(str(root / "assets" / "clear.png")))
         self.pb_download.setIcon(QIcon(str(root / "assets" / "download.png")))
+        self.te_link.setPlaceholderText(
+            "https://www.youtube.com/watch?v=hTWKbfoikeg\n"
+            "https://www.youtube.com/watch?v=KQetemT1sWc\n"
+            "https://www.youtube.com/watch?v=yKNxeF4KMsY"
+        )
 
         self.tw.setColumnWidth(0, 200)
-        self.le_link.setFocus()
+        self.te_link.setFocus()
         self.load_config()
         self.statusBar.showMessage(__version__)
 
@@ -45,9 +50,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.worker = {}
         self.index = 0
 
-        self.tb_path.clicked.connect(self.button_path)
-        self.dd_format.currentTextChanged.connect(self.load_preset)
-        self.pb_save_preset.clicked.connect(self.save_preset)
+        self.pb_path.clicked.connect(self.button_path)
         self.pb_add.clicked.connect(self.button_add)
         self.pb_clear.clicked.connect(self.button_clear)
         self.pb_download.clicked.connect(self.button_download)
@@ -70,7 +73,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
                     f"Stopping and removing download ({item.id}): {item.text(0)}"
                 )
                 worker.stop()
-            self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item))
+            self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item)) # remove and return a top-level item
 
     def button_path(self):
         path = qtw.QFileDialog.getExistingDirectory(
@@ -84,53 +87,45 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             self.le_path.setText(path)
 
     def button_add(self):
-        missing = {}
-        link = self.le_link.text()
+        missing = []
+        preset = self.dd_preset.currentText()
+        links = self.te_link.toPlainText()
         path = self.le_path.text()
-        filename = self.le_filename.text()
 
-        if not link:
-            missing["Link"] = link
-        if not self.fmt:
-            missing["Format"] = self.fmt
-        if "path" in self.preset and not path:
-            missing["Path"] = path
-        if "filename" in self.preset and not filename:
-            missing["Filename"] = filename
+        if not links:
+            missing.append("Video URL")
+        if not path:
+            missing.append("Save to")
 
-        if not all(missing.values()):
-            missing_fields = ", ".join(missing.keys())
+        if missing:
+            missing_fields = ", ".join(missing)
             return qtw.QMessageBox.information(
                 self,
                 "Application Message",
-                f"Required fields ({missing_fields}) are missing.",
+                (
+                    f"Required fields ({missing_fields}) are missing."
+                    if len(missing) > 1
+                    else f"Required field ({missing_fields}) is missing."
+                ),
             )
 
-        item = qtw.QTreeWidgetItem(
-            self.tw, [link, self.fmt, "-", "0%", "Queued", "-", "-"]
-        )
-        pb = qtw.QProgressBar()
-        pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
-        pb.setTextVisible(False)
-        self.tw.setItemWidget(item, 3, pb)
-        [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
-        item.id = self.index
-        self.le_link.clear()
+        self.te_link.clear()
 
-        self.to_dl[self.index] = Worker(
-            item,
-            self.preset["args"],
-            link,
-            path,
-            filename,
-            self.fmt,
-            self.dd_sponsorblock.currentText(),
-            self.cb_metadata.isChecked(),
-            self.cb_thumbnail.isChecked(),
-            self.cb_subtitles.isChecked(),
-        )
-        logger.info(f"Queue download ({item.id}) added: {self.to_dl[self.index]}")
-        self.index += 1
+        for link in links.split("\n"):
+            link = link.strip()
+            item = qtw.QTreeWidgetItem(
+                self.tw, [link, preset, "-", "", "Queued", "-", "-"]
+            )
+            pb = qtw.QProgressBar()
+            pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
+            pb.setTextVisible(False)
+            self.tw.setItemWidget(item, 3, pb)
+            [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
+            item.id = self.index
+
+            self.to_dl[self.index] = Worker(item, self.config, link, path, preset)
+            logger.info(f"Queue download ({item.id}) added: {self.to_dl[self.index]}")
+            self.index += 1
 
     def button_clear(self):
         if self.worker:
@@ -183,111 +178,13 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             logger.error("Config file TOML decoding failed", exc_info=True)
             qtw.QApplication.exit()
 
-        self.dd_format.addItems(self.config["presets"].keys())
-        self.dd_format.setCurrentIndex(self.config["general"]["format"])
-        self.load_preset(self.dd_format.currentText())
-
-    def save_preset(self):
-        if "path" in self.preset:
-            self.preset["path"] = self.le_path.text()
-        if "sponsorblock" in self.preset:
-            self.preset["sponsorblock"] = self.dd_sponsorblock.currentIndex()
-        if "metadata" in self.preset:
-            self.preset["metadata"] = self.cb_metadata.isChecked()
-        if "subtitles" in self.preset:
-            self.preset["subtitles"] = self.cb_subtitles.isChecked()
-        if "thumbnail" in self.preset:
-            self.preset["thumbnail"] = self.cb_thumbnail.isChecked()
-        if "filename" in self.preset:
-            self.preset["filename"] = self.le_filename.text()
-        save_toml(root / "config.toml", self.config)
-
-        qtw.QMessageBox.information(
-            self,
-            "Application Message",
-            f"Preset for {self.fmt} saved successfully.",
-        )
-
-    def load_preset(self, fmt):
-        preset = self.config["presets"].get(fmt)
-
-        if not preset:
-            self.le_path.clear()
-            self.tb_path.setEnabled(False)
-            self.dd_sponsorblock.setCurrentIndex(-1)
-            self.dd_sponsorblock.setEnabled(False)
-            self.cb_metadata.setChecked(False)
-            self.cb_metadata.setEnabled(False)
-            self.cb_subtitles.setChecked(False)
-            self.cb_subtitles.setEnabled(False)
-            self.cb_thumbnail.setChecked(False)
-            self.cb_thumbnail.setEnabled(False)
-            self.le_filename.clear()
-            self.le_filename.setEnabled(False)
-            self.le_link.setEnabled(False)
-            self.gb_controls.setEnabled(False)
-            return
-
-        if not preset.get("args"):
-            qtw.QMessageBox.critical(
-                self,
-                "Application Message",
-                "The args key does not exist in the current preset and therefore it cannot be used.",
-            )
-            self.dd_format.setCurrentIndex(-1)
-            return
-
-        logger.debug(f"Changed format to {fmt} preset: {preset}")
-        self.le_link.setEnabled(True)
-        self.gb_controls.setEnabled(True)
-
-        if "path" in preset:
-            self.tb_path.setEnabled(True)
-            self.le_path.setText(preset["path"])
-        else:
-            self.le_path.clear()
-            self.tb_path.setEnabled(False)
-
-        if "sponsorblock" in preset:
-            self.dd_sponsorblock.setEnabled(True)
-            self.dd_sponsorblock.setCurrentIndex(preset["sponsorblock"])
-        else:
-            self.dd_sponsorblock.setCurrentIndex(-1)
-            self.dd_sponsorblock.setEnabled(False)
-
-        if "metadata" in preset:
-            self.cb_metadata.setEnabled(True)
-            self.cb_metadata.setChecked(preset["metadata"])
-        else:
-            self.cb_metadata.setChecked(False)
-            self.cb_metadata.setEnabled(False)
-
-        if "subtitles" in preset:
-            self.cb_subtitles.setEnabled(True)
-            self.cb_subtitles.setChecked(preset["subtitles"])
-        else:
-            self.cb_subtitles.setChecked(False)
-            self.cb_subtitles.setEnabled(False)
-
-        if "thumbnail" in preset:
-            self.cb_thumbnail.setEnabled(True)
-            self.cb_thumbnail.setChecked(preset["thumbnail"])
-        else:
-            self.cb_thumbnail.setChecked(False)
-            self.cb_thumbnail.setEnabled(False)
-
-        if "filename" in preset:
-            self.le_filename.setEnabled(True)
-            self.le_filename.setText(preset["filename"])
-        else:
-            self.le_filename.clear()
-            self.le_filename.setEnabled(False)
-
-        self.preset = preset
-        self.fmt = fmt
+        self.dd_preset.addItems(self.config["presets"].keys())
+        self.dd_preset.setCurrentIndex(self.config["general"]["current_preset"])
+        self.le_path.setText(self.config["general"]["path"])
 
     def closeEvent(self, event):
-        self.config["general"]["format"] = self.dd_format.currentIndex()
+        self.config["general"]["current_preset"] = self.dd_preset.currentIndex()
+        self.config["general"]["path"] = self.le_path.text()
         save_toml(root / "config.toml", self.config)
         event.accept()
 
