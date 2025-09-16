@@ -47,12 +47,8 @@ class Worker(qtc.QThread):
         ]
 
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
-        args += (
-            self.global_args
-            if isinstance(self.global_args, list)
-            else shlex.split(self.global_args)
-        )
-        args += ["-o", f"{self.path}/%(title)s.%(ext)s", "--", self.link]
+        args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
+        args += ["-P", self.path, "--", self.link]
         return args
 
     def stop(self):
