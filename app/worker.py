@@ -3,7 +3,6 @@ import logging
 import shlex
 import subprocess as sp
 import sys
-import os
 import PySide6.QtCore as qtc
 
 logger = logging.getLogger(__name__)
@@ -21,14 +20,7 @@ class Worker(qtc.QThread):
     finished = qtc.Signal(int)
     progress = qtc.Signal(object, list)
 
-    def __init__(
-        self,
-        item,
-        config,
-        link,
-        path,
-        preset
-    ):
+    def __init__(self, item, config, link, path, preset):
         super().__init__()
         self.item = item
         self.config = config
@@ -48,19 +40,18 @@ class Worker(qtc.QThread):
         args = [
             "yt-dlp",
             "--newline",
-            "--ignore-errors",
-            "--ignore-config",
             "--no-simulate",
             "--progress",
             "--progress-template",
-            "%(progress.status)s %(progress._total_bytes_estimate_str)s "
-            "%(progress._percent_str)s %(progress._speed_str)s %(progress._eta_str)s",
-            "--dump-json",
-            "-v",
+            '["%(progress.status)s","%(progress._total_bytes_estimate_str)s","%(progress._percent_str)s","%(progress._speed_str)s","%(progress._eta_str)s","%(info.title)s"]',
         ]
 
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
-        args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
+        args += (
+            self.global_args
+            if isinstance(self.global_args, list)
+            else shlex.split(self.global_args)
+        )
         args += ["-o", f"{self.path}/%(title)s.%(ext)s", "--", self.link]
         return args
 
@@ -76,6 +67,8 @@ class Worker(qtc.QThread):
             f"Download ({self.item.id}) starting with cmd: " + shlex.join(command)
         )
 
+        self.progress.emit(self.item, [(STATUS, "Processing")])
+
         with sp.Popen(
             command,
             stdout=sp.PIPE,
@@ -89,24 +82,22 @@ class Worker(qtc.QThread):
                 with qtc.QMutexLocker(self.mutex):
                     if self._stop:
                         p.terminate()
+                        p.returncode = 0
                         break
 
-                if line.startswith("{"):
-                    title = json.loads(line)["title"]
-                    logger.debug(f"Download ({self.item.id}) title: {title}")
-                    self.progress.emit(
-                        self.item,
-                        [(TITLE, title), (STATUS, "Processing")],
-                    )
-                elif line.lower().startswith("downloading"):
-                    data = line.split()
+                line = line.strip()
+                if line.startswith("[") and line.endswith("]"):
+                    _, total_bytes, percent, speed, eta, title = [
+                        i.strip() for i in json.loads(line)
+                    ]
                     self.progress.emit(
                         self.item,
                         [
-                            (SIZE, data[1]),
-                            (PROGRESS, data[2]),
-                            (SPEED, data[3]),
-                            (ETA, data[4]),
+                            (TITLE, title),
+                            (SIZE, total_bytes),
+                            (PROGRESS, percent),
+                            (SPEED, speed),
+                            (ETA, eta),
                             (STATUS, "Downloading"),
                         ],
                     )
