@@ -47,7 +47,8 @@ class Worker(qtc.QThread):
         ]
 
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
-        args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
+        if self.global_args:
+            args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
         # Optional per-run overrides (e.g., for 'fresh' restarts)
         extra = getattr(self, "extra_args", [])
         if extra:
@@ -58,6 +59,12 @@ class Worker(qtc.QThread):
     def stop(self):
         with qtc.QMutexLocker(self.mutex):
             self._stop = True
+        # Also try to terminate the subprocess if it exists
+        if hasattr(self, '_process') and self._process:
+            try:
+                self._process.terminate()
+            except Exception:
+                pass
 
     def run(self):
         create_window = sp.CREATE_NO_WINDOW if sys.platform == "win32" else 0
@@ -77,6 +84,7 @@ class Worker(qtc.QThread):
             universal_newlines=True,
             creationflags=create_window,
         ) as p:
+            self._process = p
             for line in p.stdout:
                 output.append(line)
                 with qtc.QMutexLocker(self.mutex):
@@ -124,4 +132,7 @@ class Worker(qtc.QThread):
                     (STATUS, "Finished"),
                 ],
             )
+        
+        # Clear process reference
+        self._process = None
         self.finished.emit(self.item.id)

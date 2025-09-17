@@ -44,10 +44,11 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.tw.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
 
         # Remove dangerous left-click-to-delete
+        # Note: This may show a RuntimeWarning if not connected, which is harmless
         try:
             self.tw.itemClicked.disconnect(self.remove_item)
-        except Exception:
-            pass  # already disconnected or not connected yet
+        except (TypeError, RuntimeError):
+            pass  # Signal was not connected, which is fine
 
         # Right-click context menu
         self.tw.setContextMenuPolicy(qtc.Qt.CustomContextMenu)
@@ -181,7 +182,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         for k, v in self.to_dl.items():
             self.worker[k] = v
             self.worker[k].finished.connect(self.worker[k].deleteLater)
-            self.worker[k].finished.connect(lambda x: self.worker.pop(x))
+            self.worker[k].finished.connect(lambda dl_id: self.worker.pop(dl_id, None))
             self.worker[k].progress.connect(self.update_progress)
             self.worker[k].start()
 
@@ -226,7 +227,8 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
                     item.setText(index, update)
                 else:
                     pb = self.tw.itemWidget(item, index)
-                    pb.setValue(round(float(update.replace("%", ""))))
+                    if pb is not None:
+                        pb.setValue(round(float(update.replace("%", ""))))
         except AttributeError:
             logger.info(f"Download ({item.id}) no longer exists")
 
@@ -242,7 +244,15 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         """
         # Stop any existing worker for this item
         if (worker := self.worker.get(item.id)) is not None:
+            logger.debug(f"Stopping existing worker for item {item.id}")
             worker.stop()
+            # Wait for the thread to properly terminate
+            if worker.isRunning():
+                worker.wait(3000)  # Wait up to 3 seconds for clean shutdown
+                if worker.isRunning():
+                    logger.warning(f"Force terminating worker for item {item.id}")
+                    worker.terminate()
+                    worker.wait(1000)  # Wait for termination
 
         # If item was queued but not started yet, drop the stale queue entry
         if self.to_dl.get(item.id):
@@ -262,7 +272,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         # Wire signals and start
         self.worker[item.id] = w
         w.finished.connect(w.deleteLater)
-        w.finished.connect(lambda x=item.id: self.worker.pop(x, None))
+        w.finished.connect(lambda dl_id: self.worker.pop(dl_id, None))
         w.progress.connect(self.update_progress)
         # Reset UI visuals
         try:
@@ -272,6 +282,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         except Exception:
             pass
         item.setText(4, "Processing" if fresh else "Queued")
+        logger.debug(f"Starting new worker for item {item.id} (fresh={fresh})")
         w.start()
 
     def delete_items(self, items):
