@@ -48,6 +48,10 @@ class Worker(qtc.QThread):
 
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
         args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
+        # Optional per-run overrides (e.g., for 'fresh' restarts)
+        extra = getattr(self, "extra_args", [])
+        if extra:
+            args += extra
         args += ["-P", self.path, "--", self.link]
         return args
 
