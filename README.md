@@ -4,7 +4,7 @@ Graphical interface for the command line tool [yt-dlp](https://github.com/yt-dlp
 
 ## Screenshot
 
-![](https://github.com/user-attachments/assets/8e758f07-3cdb-477c-91ab-0ee20c2443e8)
+![Screenshot](app/assets/screenshot_001.png)
 
 ## Usage
 
