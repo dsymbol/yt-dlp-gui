@@ -20,14 +20,16 @@ class Worker(qtc.QThread):
     finished = qtc.Signal(int)
     progress = qtc.Signal(object, list)
 
-    def __init__(self, item, config, link, path, preset):
+    def __init__(self, item, config, link, path, preset, preset_options=None):
         super().__init__()
         self.item = item
         self.config = config
         self.link = link
         self.path = path
         self.preset = preset
-        self.args = self.config["presets"][preset]
+        self.preset_options = preset_options or {}
+        preset_config = self.config["presets"][preset]
+        self.args = preset_config.get("args", preset_config) if isinstance(preset_config, dict) else preset_config
         self.global_args = self.config["general"].get("global_args")
 
         self.mutex = qtc.QMutex()
@@ -46,8 +48,25 @@ class Worker(qtc.QThread):
             '["%(progress.status)s","%(progress._total_bytes_estimate_str)s","%(progress._percent_str)s","%(progress._speed_str)s","%(progress._eta_str)s","%(info.title)s"]',
         ]
 
+        # Add preset-specific options based on UI selections
+        if self.preset_options.get("metadata", False):
+            args.extend(["--write-info-json", "--write-description"])
+            
+        if self.preset_options.get("subtitles", False):
+            args.extend(["--write-subs", "--write-auto-subs"])
+            
+        if self.preset_options.get("thumbnail", False):
+            args.append("--write-thumbnail")
+            
+        sponsorblock = self.preset_options.get("sponsorblock", 0)
+        if sponsorblock == 1:  # Remove
+            args.append("--sponsorblock-remove=all")
+        elif sponsorblock == 2:  # Mark
+            args.append("--sponsorblock-mark=all")
+
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
-        args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
+        if self.global_args:
+            args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
         args += ["-P", self.path, "--", self.link]
         return args
 

@@ -3,7 +3,22 @@ current_preset = 0
 path = ""
 global_args = []
 
-[presets]
-best = ["-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"]
-mp4 = ["-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b"]
-mp3 = ["--extract-audio", "--audio-format", "mp3", "--audio-quality", "0"]
+[presets.best]
+args = [ "-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b",]
+metadata = true
+sponsorblock = 0
+subtitles = false
+thumbnail = false
+
+[presets.mp4]
+args = [ "-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b",]
+metadata = true
+sponsorblock = 0
+subtitles = false
+thumbnail = false
+
+[presets.mp3]
+args = [ "--extract-audio", "--audio-format", "mp3", "--audio-quality", "0",]
+metadata = true
+sponsorblock = 0
+# Note: subtitles and thumbnail omitted for audio-only format
