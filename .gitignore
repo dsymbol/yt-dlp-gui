@@ -133,3 +133,6 @@ bin/
 
 config.toml
 debug.log
+
+# vscode IDE settings
+.vscode/
