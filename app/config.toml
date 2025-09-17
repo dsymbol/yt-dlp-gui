@@ -1,9 +1,9 @@
 [general]
 current_preset = 0
-path = ""
+path = "E:/Videos/Podcasts/Who Are These Socials/Down The Drain"
 global_args = []
 
 [presets]
-best = ["-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"]
-mp4 = ["-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b"]
-mp3 = ["--extract-audio", "--audio-format", "mp3", "--audio-quality", "0"]
+best = [ "-f", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b",]
+mp4 = [ "-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b",]
+mp3 = [ "--extract-audio", "--audio-format", "mp3", "--audio-quality", "0",]
