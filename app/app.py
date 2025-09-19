@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-
+import qtawesome as qta
 from dep_dl import DownloadWindow
 from PySide6 import QtCore as qtc
 from PySide6 import QtWidgets as qtw
@@ -28,9 +28,12 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.setWindowIcon(QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
-        self.pb_add.setIcon(QIcon(str(root / "assets" / "add.png")))
-        self.pb_clear.setIcon(QIcon(str(root / "assets" / "clear.png")))
-        self.pb_download.setIcon(QIcon(str(root / "assets" / "download.png")))
+        self.pb_add.setIcon(qta.icon("mdi6.plus"))
+        self.pb_add.setIconSize(qtc.QSize(21, 21))
+        self.pb_clear.setIcon(qta.icon("mdi6.trash-can-outline"))
+        self.pb_clear.setIconSize(qtc.QSize(22, 22))
+        self.pb_download.setIcon(qta.icon("mdi6.download"))
+        self.pb_download.setIconSize(qtc.QSize(22, 22))
         self.te_link.setPlaceholderText(
             "https://www.youtube.com/watch?v=hTWKbfoikeg\n"
             "https://www.youtube.com/watch?v=KQetemT1sWc\n"
@@ -73,7 +76,9 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
                     f"Stopping and removing download ({item.id}): {item.text(0)}"
                 )
                 worker.stop()
-            self.tw.takeTopLevelItem(self.tw.indexOfTopLevelItem(item)) # remove and return a top-level item
+            self.tw.takeTopLevelItem(
+                self.tw.indexOfTopLevelItem(item)
+            )  # remove and return a top-level item
 
     def button_path(self):
         path = qtw.QFileDialog.getExistingDirectory(
