@@ -59,21 +59,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tw.itemClicked.connect(self.remove_item)
 
     def remove_item(self, item, column):
+        item_id = item.data(0, ItemRoles.IdRole)
+        item_text = item.text(0)
+
         ret = QtWidgets.QMessageBox.question(
             self,
             "Application Message",
-            f"Would you like to remove {item.text(0)} ?",
+            f"Would you like to remove {item_text} ?",
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
             QtWidgets.QMessageBox.No,
         )
         if ret == QtWidgets.QMessageBox.Yes:
-            if self.to_dl.get(item.id):
-                logger.debug(f"Removing queued download ({item.id}): {item.text(0)}")
-                self.to_dl.pop(item.id)
-            elif worker := self.worker.get(item.id):
-                logger.info(
-                    f"Stopping and removing download ({item.id}): {item.text(0)}"
-                )
+            if self.to_dl.get(item_id):
+                logger.debug(f"Removing queued download ({item_id}): {item_text}")
+                self.to_dl.pop(item_id)
+            elif worker := self.worker.get(item_id):
+                logger.info(f"Stopping and removing download ({item_id}): {item_text}")
                 worker.stop()
             self.tw.takeTopLevelItem(
                 self.tw.indexOfTopLevelItem(item)
@@ -125,10 +126,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             pb.setTextVisible(False)
             self.tw.setItemWidget(item, 3, pb)
             [item.setTextAlignment(i, QtCore.Qt.AlignCenter) for i in range(1, 6)]
-            item.id = self.index
+            item.setData(0, ItemRoles.IdRole, self.index)
+            item.setData(0, ItemRoles.LinkRole, link)
+            item.setData(0, ItemRoles.PathRole, path)
 
             self.to_dl[self.index] = Worker(item, self.config, link, path, preset)
-            logger.info(f"Queue download ({item.id}) added: {self.to_dl[self.index]}")
+            logger.info(
+                f"Queue download ({self.index}) added: {self.to_dl[self.index]}"
+            )
             self.index += 1
 
     def button_clear(self):
@@ -202,7 +207,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     pb = self.tw.itemWidget(item, index)
                     pb.setValue(round(float(update.replace("%", ""))))
         except AttributeError:
-            logger.info(f"Download ({item.id}) no longer exists")
+            logger.info(f"Download ({item.data(0, ItemRoles.IdRole)}) no longer exists")
 
 
 if __name__ == "__main__":

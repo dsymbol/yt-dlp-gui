@@ -5,6 +5,7 @@ import subprocess as sp
 import sys
 
 from PySide6 import QtCore
+from utils import ItemRoles
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +66,8 @@ class Worker(QtCore.QThread):
         command = self.build_command()
         output = []
         logger.info(
-            f"Download ({self.item.id}) starting with cmd: " + shlex.join(command)
+            f"Download ({self.item.data(0, ItemRoles.IdRole)}) starting with cmd: "
+            + shlex.join(command)
         )
 
         self.progress.emit(self.item, [(STATUS, "Processing")])
@@ -107,7 +109,7 @@ class Worker(QtCore.QThread):
 
         if p.returncode != 0:
             logger.error(
-                f'Download ({self.item.id}) returncode: {p.returncode}\n{"".join(output)}'
+                f'Download ({self.item.data(0, ItemRoles.IdRole)}) returncode: {p.returncode}\n{"".join(output)}'
             )
             self.progress.emit(
                 self.item,
@@ -125,4 +127,4 @@ class Worker(QtCore.QThread):
                     (STATUS, "Finished"),
                 ],
             )
-        self.finished.emit(self.item.id)
+        self.finished.emit(self.item.data(0, ItemRoles.IdRole))
