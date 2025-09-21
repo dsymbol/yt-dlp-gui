@@ -56,29 +56,46 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pb_add.clicked.connect(self.button_add)
         self.pb_clear.clicked.connect(self.button_clear)
         self.pb_download.clicked.connect(self.button_download)
-        self.tw.itemClicked.connect(self.remove_item)
+
+        self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tw.customContextMenuRequested.connect(self.open_menu)
+
+    def open_menu(self, position):
+        menu = QtWidgets.QMenu()
+
+        delete_action = menu.addAction(qta.icon("mdi6.trash-can"), "Delete")
+        copy_url_action = menu.addAction(qta.icon("mdi6.content-copy"), "Copy URL")
+        open_folder_action = menu.addAction(qta.icon("mdi6.folder-open"), "Open Folder")
+
+        item = self.tw.itemAt(position)
+
+        if item:
+            item_path = item.data(0, ItemRoles.PathRole)
+            item_link = item.data(0, ItemRoles.LinkRole)
+            action = menu.exec(self.tw.viewport().mapToGlobal(position))
+
+            if action == delete_action:
+                self.remove_item(item, 0)
+            elif action == copy_url_action:
+                QtWidgets.QApplication.clipboard().setText(item_link)
+                logger.info(f"Copied URL to clipboard: {item_link}")
+            elif action == open_folder_action:
+                QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(item_path))
+                logger.info(f"Opened folder: {item_path}")
 
     def remove_item(self, item, column):
         item_id = item.data(0, ItemRoles.IdRole)
         item_text = item.text(0)
 
-        ret = QtWidgets.QMessageBox.question(
-            self,
-            "Application Message",
-            f"Would you like to remove {item_text} ?",
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-            QtWidgets.QMessageBox.No,
-        )
-        if ret == QtWidgets.QMessageBox.Yes:
-            if self.to_dl.get(item_id):
-                logger.debug(f"Removing queued download ({item_id}): {item_text}")
-                self.to_dl.pop(item_id)
-            elif worker := self.worker.get(item_id):
-                logger.info(f"Stopping and removing download ({item_id}): {item_text}")
-                worker.stop()
-            self.tw.takeTopLevelItem(
-                self.tw.indexOfTopLevelItem(item)
-            )  # remove and return a top-level item
+        logger.debug(f"Removing download ({item_id}): {item_text}")
+
+        if worker := self.worker.get(item_id):
+            worker.stop()
+
+        self.to_dl.pop(item_id, None)
+        self.tw.takeTopLevelItem(
+            self.tw.indexOfTopLevelItem(item)
+        )  # remove and return a top-level item
 
     def button_path(self):
         path = QtWidgets.QFileDialog.getExistingDirectory(
@@ -107,11 +124,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             return QtWidgets.QMessageBox.information(
                 self,
                 "Application Message",
-                (
-                    f"Required fields ({missing_fields}) are missing."
-                    if len(missing) > 1
-                    else f"Required field ({missing_fields}) is missing."
-                ),
+                f"Required field{'s' if len(missing) > 1 else ''} ({missing_fields}) missing.",
             )
 
         self.te_link.clear()
@@ -142,7 +155,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self,
                 "Application Message",
                 "Unable to clear list because there are active downloads in progress.\n"
-                "Remove a download by clicking on it.",
+                "Remove a download by right clicking on it and selecting delete.",
             )
 
         self.worker = {}
