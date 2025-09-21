@@ -5,17 +5,9 @@ import subprocess as sp
 import sys
 
 from PySide6 import QtCore
-from utils import ItemRoles
+from utils import ItemRoles, TreeColumn
 
 logger = logging.getLogger(__name__)
-
-TITLE = 0
-FORMAT = 1
-SIZE = 2
-PROGRESS = 3
-STATUS = 4
-SPEED = 5
-ETA = 6
 
 
 class Worker(QtCore.QThread):
@@ -70,7 +62,7 @@ class Worker(QtCore.QThread):
             + shlex.join(command)
         )
 
-        self.progress.emit(self.item, [(STATUS, "Processing")])
+        self.progress.emit(self.item, [(TreeColumn.STATUS, "Processing")])
 
         with sp.Popen(
             command,
@@ -96,16 +88,16 @@ class Worker(QtCore.QThread):
                     self.progress.emit(
                         self.item,
                         [
-                            (TITLE, title),
-                            (SIZE, total_bytes),
-                            (PROGRESS, percent),
-                            (SPEED, speed),
-                            (ETA, eta),
-                            (STATUS, "Downloading"),
+                            (TreeColumn.TITLE, title),
+                            (TreeColumn.SIZE, total_bytes),
+                            (TreeColumn.PROGRESS, percent),
+                            (TreeColumn.SPEED, speed),
+                            (TreeColumn.ETA, eta),
+                            (TreeColumn.STATUS, "Downloading"),
                         ],
                     )
                 elif line.startswith(("[Merger]", "[ExtractAudio]")):
-                    self.progress.emit(self.item, [(STATUS, "Converting")])
+                    self.progress.emit(self.item, [(TreeColumn.STATUS, "Converting")])
 
         if p.returncode != 0:
             logger.error(
@@ -114,17 +106,17 @@ class Worker(QtCore.QThread):
             self.progress.emit(
                 self.item,
                 [
-                    (SIZE, "ERROR"),
-                    (STATUS, "ERROR"),
-                    (SPEED, "ERROR"),
+                    (TreeColumn.SIZE, "ERROR"),
+                    (TreeColumn.STATUS, "ERROR"),
+                    (TreeColumn.SPEED, "ERROR"),
                 ],
             )
         else:
             self.progress.emit(
                 self.item,
                 [
-                    (PROGRESS, "100%"),
-                    (STATUS, "Finished"),
+                    (TreeColumn.PROGRESS, "100%"),
+                    (TreeColumn.STATUS, "Finished"),
                 ],
             )
         self.finished.emit(self.item.data(0, ItemRoles.IdRole))

@@ -21,3 +21,13 @@ class ItemRoles:
     IdRole = QtCore.Qt.UserRole
     LinkRole = QtCore.Qt.UserRole + 1
     PathRole = QtCore.Qt.UserRole + 2
+
+
+class TreeColumn:
+    TITLE = 0
+    PRESET = 1
+    SIZE = 2
+    PROGRESS = 3
+    STATUS = 4
+    SPEED = 5
+    ETA = 6
