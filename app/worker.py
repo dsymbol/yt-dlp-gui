@@ -3,7 +3,8 @@ import logging
 import shlex
 import subprocess as sp
 import sys
-import PySide6.QtCore as qtc
+
+from PySide6 import QtCore
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +17,9 @@ SPEED = 5
 ETA = 6
 
 
-class Worker(qtc.QThread):
-    finished = qtc.Signal(int)
-    progress = qtc.Signal(object, list)
+class Worker(QtCore.QThread):
+    finished = QtCore.Signal(int)
+    progress = QtCore.Signal(object, list)
 
     def __init__(self, item, config, link, path, preset):
         super().__init__()
@@ -30,7 +31,7 @@ class Worker(qtc.QThread):
         self.args = self.config["presets"][preset]
         self.global_args = self.config["general"].get("global_args")
 
-        self.mutex = qtc.QMutex()
+        self.mutex = QtCore.QMutex()
         self._stop = False
 
     def __str__(self):
@@ -47,12 +48,16 @@ class Worker(qtc.QThread):
         ]
 
         args += self.args if isinstance(self.args, list) else shlex.split(self.args)
-        args += self.global_args if isinstance(self.global_args, list) else shlex.split(self.global_args)
+        args += (
+            self.global_args
+            if isinstance(self.global_args, list)
+            else shlex.split(self.global_args)
+        )
         args += ["-P", self.path, "--", self.link]
         return args
 
     def stop(self):
-        with qtc.QMutexLocker(self.mutex):
+        with QtCore.QMutexLocker(self.mutex):
             self._stop = True
 
     def run(self):
@@ -75,7 +80,7 @@ class Worker(qtc.QThread):
         ) as p:
             for line in p.stdout:
                 output.append(line)
-                with qtc.QMutexLocker(self.mutex):
+                with QtCore.QMutexLocker(self.mutex):
                     if self._stop:
                         p.terminate()
                         p.returncode = 0

@@ -1,11 +1,10 @@
 import logging
 import os
 import sys
+
 import qtawesome as qta
 from dep_dl import DownloadWindow
-from PySide6 import QtCore as qtc
-from PySide6 import QtWidgets as qtw
-from PySide6.QtGui import QIcon
+from PySide6 import QtCore, QtGui, QtWidgets
 from ui.main_window import Ui_MainWindow
 from utils import *
 from worker import Worker
@@ -23,17 +22,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class MainWindow(qtw.QMainWindow, Ui_MainWindow):
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowIcon(QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
+        self.setWindowIcon(QtGui.QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
         self.pb_add.setIcon(qta.icon("mdi6.plus"))
-        self.pb_add.setIconSize(qtc.QSize(21, 21))
+        self.pb_add.setIconSize(QtCore.QSize(21, 21))
         self.pb_clear.setIcon(qta.icon("mdi6.trash-can-outline"))
-        self.pb_clear.setIconSize(qtc.QSize(22, 22))
+        self.pb_clear.setIconSize(QtCore.QSize(22, 22))
         self.pb_download.setIcon(qta.icon("mdi6.download"))
-        self.pb_download.setIconSize(qtc.QSize(22, 22))
+        self.pb_download.setIconSize(QtCore.QSize(22, 22))
         self.te_link.setPlaceholderText(
             "https://www.youtube.com/watch?v=hTWKbfoikeg\n"
             "https://www.youtube.com/watch?v=KQetemT1sWc\n"
@@ -60,14 +59,14 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         self.tw.itemClicked.connect(self.remove_item)
 
     def remove_item(self, item, column):
-        ret = qtw.QMessageBox.question(
+        ret = QtWidgets.QMessageBox.question(
             self,
             "Application Message",
             f"Would you like to remove {item.text(0)} ?",
-            qtw.QMessageBox.Yes | qtw.QMessageBox.No,
-            qtw.QMessageBox.No,
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No,
         )
-        if ret == qtw.QMessageBox.Yes:
+        if ret == QtWidgets.QMessageBox.Yes:
             if self.to_dl.get(item.id):
                 logger.debug(f"Removing queued download ({item.id}): {item.text(0)}")
                 self.to_dl.pop(item.id)
@@ -81,11 +80,11 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
             )  # remove and return a top-level item
 
     def button_path(self):
-        path = qtw.QFileDialog.getExistingDirectory(
+        path = QtWidgets.QFileDialog.getExistingDirectory(
             self,
             "Select a folder",
-            self.le_path.text() or qtc.QDir.homePath(),
-            qtw.QFileDialog.ShowDirsOnly,
+            self.le_path.text() or QtCore.QDir.homePath(),
+            QtWidgets.QFileDialog.ShowDirsOnly,
         )
 
         if path:
@@ -104,7 +103,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
 
         if missing:
             missing_fields = ", ".join(missing)
-            return qtw.QMessageBox.information(
+            return QtWidgets.QMessageBox.information(
                 self,
                 "Application Message",
                 (
@@ -118,14 +117,14 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
 
         for link in links.split("\n"):
             link = link.strip()
-            item = qtw.QTreeWidgetItem(
+            item = QtWidgets.QTreeWidgetItem(
                 self.tw, [link, preset, "-", "", "Queued", "-", "-"]
             )
-            pb = qtw.QProgressBar()
+            pb = QtWidgets.QProgressBar()
             pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
             pb.setTextVisible(False)
             self.tw.setItemWidget(item, 3, pb)
-            [item.setTextAlignment(i, qtc.Qt.AlignCenter) for i in range(1, 6)]
+            [item.setTextAlignment(i, QtCore.Qt.AlignCenter) for i in range(1, 6)]
             item.id = self.index
 
             self.to_dl[self.index] = Worker(item, self.config, link, path, preset)
@@ -134,7 +133,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
 
     def button_clear(self):
         if self.worker:
-            return qtw.QMessageBox.critical(
+            return QtWidgets.QMessageBox.critical(
                 self,
                 "Application Message",
                 "Unable to clear list because there are active downloads in progress.\n"
@@ -147,7 +146,7 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
 
     def button_download(self):
         if not self.to_dl:
-            return qtw.QMessageBox.information(
+            return QtWidgets.QMessageBox.information(
                 self,
                 "Application Message",
                 "Unable to download because there are no links in the list.",
@@ -168,20 +167,20 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
         try:
             self.config = load_toml(config_path)
         except FileNotFoundError:
-            qtw.QMessageBox.critical(
+            QtWidgets.QMessageBox.critical(
                 self,
                 "Application Message",
                 f"Config file not found at: {config_path}",
             )
-            qtw.QApplication.exit()
+            QtWidgets.QApplication.exit()
         except toml.decoder.TomlDecodeError:
-            qtw.QMessageBox.critical(
+            QtWidgets.QMessageBox.critical(
                 self,
                 "Application Message",
                 "Config file TOML decoding failed, check the log file for more info.",
             )
             logger.error("Config file TOML decoding failed", exc_info=True)
-            qtw.QApplication.exit()
+            QtWidgets.QApplication.exit()
 
         self.dd_preset.addItems(self.config["presets"].keys())
         self.dd_preset.setCurrentIndex(self.config["general"]["current_preset"])
@@ -207,6 +206,6 @@ class MainWindow(qtw.QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
-    app = qtw.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec())
