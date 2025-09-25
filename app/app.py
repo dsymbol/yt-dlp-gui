@@ -144,9 +144,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             item.setData(0, ItemRoles.PathRole, path)
 
             self.to_dl[self.index] = Worker(item, self.config, link, path, preset)
-            logger.info(
-                f"Queue download ({self.index}) added: {self.to_dl[self.index]}"
-            )
+            logger.info(f"Queued download ({self.index}) added {link}")
             self.index += 1
 
     def button_clear(self):
@@ -210,7 +208,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         save_toml(root / "config.toml", self.config)
         event.accept()
 
-    def update_progress(self, item, emit_data):
+    def update_progress(self, item: QtWidgets.QTreeWidgetItem, emit_data):
         try:
             for data in emit_data:
                 index, update = data
