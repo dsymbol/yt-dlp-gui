@@ -1,4 +1,3 @@
-import json
 import logging
 import shlex
 import subprocess as sp
@@ -32,7 +31,7 @@ class Worker(QtCore.QThread):
             "--no-simulate",
             "--progress",
             "--progress-template",
-            '["%(progress.status)s","%(progress._total_bytes_estimate_str)s","%(progress._percent_str)s","%(progress._speed_str)s","%(progress._eta_str)s","%(info.title)s"]',
+            "%(progress.status)s__SEP__%(progress._total_bytes_estimate_str)s__SEP__%(progress._percent_str)s__SEP__%(progress._speed_str)s__SEP__%(progress._eta_str)s__SEP__%(info.title)s",
         ]
         p_args = config["presets"][self.preset]
         g_args = config["general"].get("global_args")
@@ -71,9 +70,9 @@ class Worker(QtCore.QThread):
                         return self.finished.emit(self.id)
 
                 line = line.strip()
-                if line.startswith("[") and line.endswith("]"):
-                    _, total_bytes, percent, speed, eta, title = [
-                        i.strip() for i in json.loads(line)
+                if "__SEP__" in line:
+                    status, total_bytes, percent, speed, eta, title = [
+                        i.strip() for i in line.split("__SEP__")
                     ]
                     self.progress.emit(
                         self.item,
