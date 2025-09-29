@@ -161,9 +161,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tw.clear()
 
     def button_download(self):
-        # If there are links in the text area, add them to the download list automatically using button_add
-        links = self.te_link.toPlainText().strip()
-        if links:
+        if self.te_link.toPlainText().strip():
             self.button_add()
 
         if not self.to_dl:

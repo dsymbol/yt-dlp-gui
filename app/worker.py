@@ -36,9 +36,10 @@ class Worker(QtCore.QThread):
         p_args = config["presets"][self.preset]
         g_args = config["general"].get("global_args")
 
+        args += ["-P", self.path]
         args += p_args if isinstance(p_args, list) else shlex.split(p_args)
         args += g_args if isinstance(g_args, list) else shlex.split(g_args)
-        args += ["-P", self.path, "--", self.link]
+        args += ["--", self.link]
         return args
 
     def stop(self):
