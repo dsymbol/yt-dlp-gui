@@ -2,10 +2,6 @@ name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "version"
-        required: false
 
 permissions:
   contents: write
@@ -34,12 +30,9 @@ jobs:
         working-directory: ./app
         shell: bash
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            version=${{ github.event.inputs.version }}
-          else
-            version=$(git rev-parse --short HEAD)
-          fi
+          current_date=$(date +%Y.%m.%d)
           sed -i "s/^__version__.*/__version__ = \"$version\"/" ./app.py
+          echo "TAG_NAME=$current_date" >> $GITHUB_ENV
 
       - name: Build application
         working-directory: ./app
@@ -47,16 +40,9 @@ jobs:
           pyinstaller --name=yt-dlp-gui --clean -y app.py --icon ./assets/yt-dlp-gui.ico --add-data "config.toml;." --add-data "assets;assets" --noconsole
           Compress-Archive -Path dist/* -DestinationPath ./yt-dlp-gui-win64.zip
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ github.event.inputs.version == '' }}
-        with:
-          name: yt-dlp-gui-win64
-          path: ./app/dist/
-
       - uses: softprops/action-gh-release@v2
-        if: ${{ github.event.inputs.version != '' }}
         with:
-          tag_name: ${{ github.event.inputs.version }}
+          tag_name: ${{ env.TAG_NAME }}
           generate_release_notes: true
           draft: false
           prerelease: false
