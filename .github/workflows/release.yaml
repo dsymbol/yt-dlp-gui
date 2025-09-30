@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           current_date=$(date +%Y.%m.%d)
-          sed -i "s/^__version__.*/__version__ = \"$version\"/" ./app.py
+          sed -i "s/^__version__.*/__version__ = \"$current_date\"/" ./app.py
           echo "TAG_NAME=$current_date" >> $GITHUB_ENV
 
       - name: Build application
