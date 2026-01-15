@@ -1,5 +1,6 @@
 [general]
 current_preset = 0
+current_quality = 2
 path = ""
 # appended to every preset (e.g "--cookies-from-browser firefox")
 global_args = ""

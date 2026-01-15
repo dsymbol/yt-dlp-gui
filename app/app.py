@@ -4,6 +4,7 @@ import sys
 import qtawesome as qta
 from worker import DownloadWorker
 from dep_dl import DepWorker
+from playlist_picker import PlaylistPickerDialog
 from PySide6 import QtCore, QtGui, QtWidgets
 from ui.main_window import Ui_MainWindow
 from utils import *
@@ -31,6 +32,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pb_clear.setIconSize(QtCore.QSize(22, 22))
         self.pb_download.setIcon(qta.icon("mdi6.download"))
         self.pb_download.setIconSize(QtCore.QSize(22, 22))
+        
+        # Add playlist picker button
+        self.pb_playlist = QtWidgets.QPushButton("Pick from Playlist")
+        self.pb_playlist.setIcon(qta.icon("mdi6.playlist-check"))
+        self.pb_playlist.setIconSize(QtCore.QSize(21, 21))
+        self.pb_playlist.setToolTip("Select specific videos from a playlist URL")
+        
+        # Insert playlist button into the bottom layout (after spacer, before clear)
+        self.horizontalLayout_2.insertWidget(1, self.pb_playlist)
+        
+        # Add quality selector dropdown (replaces the preset dropdown)
+        self.dd_quality = QtWidgets.QComboBox()
+        self.dd_quality.addItems(["Best", "1080p", "720p", "480p", "360p", "Audio Only"])
+        self.dd_quality.setToolTip("Select video quality (or Audio Only for MP3)")
+        self.dd_quality.setMinimumWidth(100)
+        
+        # Hide the preset dropdown and replace it with quality dropdown
+        self.dd_preset.hide()
+        
+        # Replace preset dropdown with quality dropdown in the same position (row 2, column 3)
+        # The grid layout already has: path_label(0), path_input(1), browse_btn(2), preset(3), add_btn(4)
+        # We put quality dropdown in column 3, and move add button to column 4 (it's already there)
+        self.gridLayout.addWidget(self.dd_quality, 2, 3)
+        
         self.te_link.setPlaceholderText(
             "https://www.youtube.com/watch?v=hTWKbfoikeg\n"
             "https://www.youtube.com/watch?v=KQetemT1sWc\n"
@@ -52,6 +77,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.to_dl = {}
         self.worker = {}
+        self.download_queue = []  # Queue for sequential downloads
+        self.current_download_id = None  # Track currently downloading item
         self.index = 0
 
         self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -63,6 +90,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pb_add.clicked.connect(self.button_add)
         self.pb_clear.clicked.connect(self.button_clear)
         self.pb_download.clicked.connect(self.button_download)
+        self.pb_playlist.clicked.connect(self.button_playlist)
 
         # menu bar
         self.action_open_bin_folder.triggered.connect(lambda: self.open_folder(BIN_DIR))
@@ -80,7 +108,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.statusBar.showMessage("")
 
     def open_folder(self, path):
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(path))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(path)))
 
     def show_about(self):
         QtWidgets.QMessageBox.about(
@@ -121,8 +149,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if worker := self.worker.get(item_id):
             worker.stop()
+            # If this was the current download, start next after removal
+            if self.current_download_id == item_id:
+                self.current_download_id = None
 
+        # Remove from to_dl if not yet started
         self.to_dl.pop(item_id, None)
+        
+        # Remove from download queue if waiting
+        self.download_queue = [(k, v) for k, v in self.download_queue if k != item_id]
+        
         self.tw.takeTopLevelItem(
             self.tw.indexOfTopLevelItem(item)
         )  # remove and return a top-level item
@@ -138,9 +174,48 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if path:
             self.le_path.setText(path)
 
+    def button_playlist(self):
+        """Open playlist picker dialog to select specific videos."""
+        url = self.te_link.toPlainText().strip()
+        path = self.le_path.text()
+        
+        if not url:
+            return QtWidgets.QMessageBox.information(
+                self,
+                "Application Message",
+                "Please enter a playlist URL first."
+            )
+        
+        if not path:
+            return QtWidgets.QMessageBox.information(
+                self,
+                "Application Message",
+                "Please select a save location first."
+            )
+        
+        # Check if it looks like a playlist URL
+        if 'list=' not in url and '/playlist' not in url:
+            return QtWidgets.QMessageBox.information(
+                self,
+                "Application Message",
+                "The URL doesn't appear to be a playlist.\n"
+                "Playlist URLs usually contain 'list=' or '/playlist'."
+            )
+        
+        # Get only the first URL if multiple are entered
+        first_url = url.split('\n')[0].strip()
+        
+        dialog = PlaylistPickerDialog(self, first_url)
+        if dialog.exec() == QtWidgets.QDialog.Accepted:
+            selected_urls = dialog.selected_urls
+            if selected_urls:
+                # Replace the text area with selected URLs
+                self.te_link.setPlainText('\n'.join(selected_urls))
+                logger.info(f"Selected {len(selected_urls)} videos from playlist")
+
     def button_add(self):
         missing = []
-        preset = self.dd_preset.currentText()
+        quality = self.dd_quality.currentText()
         links = self.te_link.toPlainText()
         path = self.le_path.text()
 
@@ -161,8 +236,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         for link in links.split("\n"):
             link = link.strip()
+            if not link:
+                continue
             item = QtWidgets.QTreeWidgetItem(
-                self.tw, [link, preset, "-", "", "Queued", "-", "-"]
+                self.tw, [link, quality, "-", "", "Queued", "-", "-"]
             )
             pb = QtWidgets.QProgressBar()
             pb.setStyleSheet("QProgressBar { margin-bottom: 3px; }")
@@ -174,22 +251,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             item.setData(0, ItemRoles.PathRole, path)
 
             self.to_dl[self.index] = DownloadWorker(
-                item, self.config, link, path, preset
+                item, self.config, link, path, quality
             )
             logger.info(f"Queued download ({self.index}) added {link}")
             self.index += 1
 
     def button_clear(self):
-        if self.worker:
+        if self.worker or self.download_queue:
             return QtWidgets.QMessageBox.critical(
                 self,
                 "Application Message",
-                "Unable to clear list because there are active downloads in progress.\n"
+                "Unable to clear list because there are active or queued downloads.\n"
                 "Remove a download by right clicking on it and selecting delete.",
             )
 
         self.worker = {}
         self.to_dl = {}
+        self.download_queue = []
+        self.current_download_id = None
         self.tw.clear()
 
     def button_download(self):
@@ -203,14 +282,46 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 "Unable to download because there are no links in the list.",
             )
 
-        for k, v in self.to_dl.items():
-            self.worker[k] = v
-            self.worker[k].finished.connect(self.worker[k].deleteLater)
-            self.worker[k].finished.connect(lambda x: self.worker.pop(x))
-            self.worker[k].progress.connect(self.on_dl_progress)
-            self.worker[k].start()
+        # Add all pending downloads to the queue in order (by index key)
+        for k in sorted(self.to_dl.keys()):
+            v = self.to_dl[k]
+            self.download_queue.append((k, v))
+            logger.info(f"Added download ({k}) to queue")
 
         self.to_dl = {}
+        
+        # Start the first download if nothing is currently downloading
+        if self.current_download_id is None:
+            self.start_next_download()
+
+    def start_next_download(self):
+        """Start the next download in the queue."""
+        if not self.download_queue:
+            self.current_download_id = None
+            logger.info("Download queue is empty, all downloads complete")
+            return
+        
+        # Get the next item from the queue
+        k, worker = self.download_queue.pop(0)
+        self.current_download_id = k
+        self.worker[k] = worker
+        
+        # Connect signals
+        self.worker[k].finished.connect(self.worker[k].deleteLater)
+        self.worker[k].finished.connect(self.on_download_finished)
+        self.worker[k].progress.connect(self.on_dl_progress)
+        
+        # Start this download
+        self.worker[k].start()
+        logger.info(f"Started download ({k}), {len(self.download_queue)} remaining in queue")
+
+    def on_download_finished(self, download_id):
+        """Handle download completion and start the next one."""
+        logger.info(f"Download ({download_id}) finished")
+        self.worker.pop(download_id, None)
+        
+        # Start the next download in queue
+        self.start_next_download()
 
     def load_config(self):
         config_path = ROOT / "config.toml"
@@ -228,12 +339,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         update_ytdlp = self.config["general"].get("update_ytdlp")
         self.config["general"]["update_ytdlp"] = update_ytdlp if update_ytdlp else True
+        
+        # Load presets into dropdown (even though we're using quality selector, we need the config)
         self.dd_preset.addItems(self.config["presets"].keys())
-        self.dd_preset.setCurrentIndex(self.config["general"]["current_preset"])
+        self.dd_preset.setCurrentIndex(self.config["general"].get("current_preset", 0))
+        
         self.le_path.setText(self.config["general"]["path"])
+        
+        # Load quality setting
+        quality_index = self.config["general"].get("current_quality", 2)  # Default to 720p
+        self.dd_quality.setCurrentIndex(quality_index)
 
     def closeEvent(self, event):
-        self.config["general"]["current_preset"] = self.dd_preset.currentIndex()
+        self.config["general"]["current_quality"] = self.dd_quality.currentIndex()
         self.config["general"]["path"] = self.le_path.text()
         save_toml(ROOT / "config.toml", self.config)
         event.accept()
