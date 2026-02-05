@@ -1,6 +1,7 @@
 [general]
 current_preset = 0
-path = ""
+current_quality = 2
+path = "/Users/tarunkumar/Downloads"
 global_args = ""
 
 [presets]
