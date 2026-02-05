@@ -9,7 +9,6 @@ from ui.main_window import Ui_MainWindow
 from utils import *
 from worker import Worker
 
-os.environ["PATH"] += os.pathsep + str(root / "bin")
 __version__ = ""
 logging.basicConfig(
     level=logging.DEBUG,

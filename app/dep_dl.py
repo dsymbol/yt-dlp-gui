@@ -4,6 +4,10 @@ import shutil
 import stat
 import zipfile
 from typing import Optional, List, Tuple
+from pathlib import Path
+import logging
+
+from platformdirs import user_data_dir
 
 import requests
 from PySide6.QtCore import QThread, QTimer, Signal
@@ -13,7 +17,11 @@ from PySide6.QtGui import QIcon
 from ui.download_widget import Ui_Download
 from utils import root
 
-BIN_DIR = root / "bin"
+logger = logging.getLogger(__name__)
+
+BIN_DIR = Path(user_data_dir("yt-dlp-gui")) # user data dir for persistence
+os.environ["PATH"] += os.pathsep + str(BIN_DIR)
+os.environ["PATH"] += os.pathsep + str(root / "bin") # old version compatibility
 
 BINARIES = {
     "Linux": {
