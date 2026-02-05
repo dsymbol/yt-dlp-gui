@@ -2,19 +2,43 @@ import os
 import platform
 import shutil
 import stat
-from io import StringIO
-from tempfile import NamedTemporaryFile
+import zipfile
+from typing import Optional, List, Tuple
 
 import requests
 from PySide6.QtCore import QThread, QTimer, Signal
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QIcon
-from tqdm import tqdm
 
 from ui.download_widget import Ui_Download
 from utils import root
 
-bin_ = root / "bin"
+BIN_DIR = root / "bin"
+
+BINARIES = {
+    "Linux": {
+        "ffmpeg": "ffmpeg-linux64-v4.1",
+        "ffprobe": "ffprobe-linux64-v4.1",
+        "yt-dlp": "yt-dlp_linux",
+        "deno": "deno-x86_64-unknown-linux-gnu.zip",
+    },
+    "Darwin": {
+        "ffmpeg": "ffmpeg-osx64-v4.1",
+        "ffprobe": "ffprobe-osx64-v4.1",
+        "yt-dlp": "yt-dlp_macos",
+        "deno": "deno-x86_64-apple-darwin.zip",
+    },
+    "Windows": {
+        "ffmpeg": "ffmpeg-win64-v4.1.exe",
+        "ffprobe": "ffprobe-win64-v4.1.exe",
+        "yt-dlp": "yt-dlp.exe",
+        "deno": "deno-x86_64-pc-windows-msvc.zip",
+    },
+}
+
+YT_DLP_BASE_URL = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/"
+FFMPEG_BASE_URL = "https://github.com/imageio/imageio-binaries/raw/183aef992339cc5a463528c75dd298db15fd346f/ffmpeg/"
+DENO_BASE_URL = "https://github.com/denoland/deno/releases/latest/download/"
 
 
 class DownloadWindow(QWidget, Ui_Download):
@@ -24,118 +48,144 @@ class DownloadWindow(QWidget, Ui_Download):
         super().__init__()
         self.setupUi(self)
         self.setWindowIcon(QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
-
         self.pb.setMaximum(100)
-        self.missing = []
-
-        self.get_missing_dep()
+        
+        self.missing: List[Tuple[str, str]] = []
+        self._check_missing_dependencies()
 
         if self.missing:
             self.show()
-            self.download_init()
+            self._start_next_download()
         else:
             QTimer.singleShot(0, self.finished.emit)
 
-    def get_missing_dep(self):
-        binaries = {
-            "Linux": {
-                "ffmpeg": "ffmpeg-linux64-v4.1",
-                "ffprobe": "ffprobe-linux64-v4.1",
-                "yt-dlp": "yt-dlp_linux",
-            },
-            "Darwin": {
-                "ffmpeg": "ffmpeg-osx64-v4.1",
-                "ffprobe": "ffprobe-osx64-v4.1",
-                "yt-dlp": "yt-dlp_macos",
-            },
-            "Windows": {
-                "ffmpeg": "ffmpeg-win64-v4.1.exe",
-                "ffprobe": "ffprobe-win64-v4.1.exe",
-                "yt-dlp": "yt-dlp.exe",
-            },
-        }
+    def _check_missing_dependencies(self):
+        system_os = platform.system()
+        if system_os not in BINARIES:
+            return
 
-        exes = [exe for exe in ["ffmpeg", "ffprobe", "yt-dlp"] if not shutil.which(exe)]
-        os_ = platform.system()
+        required_binaries = ["ffmpeg", "ffprobe", "yt-dlp", "deno"]
+        missing_exes = [
+            exe for exe in required_binaries 
+            if not shutil.which(exe) and not (BIN_DIR / (exe + (".exe" if system_os == "Windows" else ""))).exists()
+        ]
 
-        if exes:
-            if not os.path.exists(bin_):
-                os.makedirs(bin_)
-            for exe in exes:
-                if exe == "yt-dlp":
-                    url = (
-                        "https://github.com/yt-dlp/yt-dlp/releases/latest/download/"
-                        + binaries[os_][exe]
-                    )
-                else:
-                    url = (
-                        "https://github.com/imageio/imageio-binaries/raw/183aef992339cc5a463528c75dd298db15fd346f/ffmpeg/"
-                        + binaries[os_][exe]
-                    )
-                filename = os.path.join(bin_, f"{exe}.exe" if os_ == "Windows" else exe)
+        if not missing_exes:
+            return
 
-                self.missing += [[url, filename]]
+        BIN_DIR.mkdir(parents=True, exist_ok=True)
 
-    def download_init(self):
+        for exe in missing_exes:
+            binary_name = BINARIES[system_os][exe]
+            
+            if exe == "yt-dlp":
+                url = YT_DLP_BASE_URL + binary_name
+            elif exe == "deno":
+                url = DENO_BASE_URL + binary_name
+            else:
+                url = FFMPEG_BASE_URL + binary_name
+
+            target_name = f"{exe}.exe" if system_os == "Windows" else exe
+            target_path = str(BIN_DIR / target_name)
+            
+            self.missing.append((url, target_path))
+
+    def _start_next_download(self):
+        if not self.missing:
+            self.finished.emit()
+            return
+
         url, filename = self.missing[0]
-        self.downloader = _D_Worker(url, filename)
+        self.downloader = _DownloadWorker(url, filename)
         self.downloader.progress.connect(self.update_progress)
         self.downloader.finished.connect(self.downloader.deleteLater)
         self.downloader.finished.connect(self.on_download_finished)
         self.downloader.start()
 
     def on_download_finished(self):
-        url, filename = self.missing.pop(0)
-        st = os.stat(filename)
-        os.chmod(filename, st.st_mode | stat.S_IEXEC)
+        if not self.missing:
+            return
+
+        _, filename = self.missing.pop(0)
+        
+        try:
+            st = os.stat(filename)
+            os.chmod(filename, st.st_mode | stat.S_IEXEC)
+        except OSError:
+            pass
 
         if self.missing:
-            self.download_init()
+            self._start_next_download()
         else:
             self.finished.emit()
 
-    def update_progress(self, progress, data):
-        self.pb.setValue(progress)
-        self.lb_progress.setText(data)
+    def update_progress(self, percentage: int, status_text: str):
+        self.pb.setValue(percentage)
+        self.lb_progress.setText(status_text)
 
 
-class _D_Worker(QThread):
-    progress = Signal(int, str)
+class _DownloadWorker(QThread):
+    progress = Signal(int, str)  # percentage, status text
 
-    def __init__(self, url, filename=None):
+    def __init__(self, url: str, filename: str):
         super().__init__()
         self.url = url
         self.filename = filename
 
     def run(self):
-        if not self.filename:
-            self.filename = os.path.basename(self.url)
-        r = requests.get(self.url, stream=True)
-        file_size = int(r.headers.get("content-length", 0))
-        scaling_factor = 100 / file_size
-        data = StringIO()
-        chunk_size = 1024
-        read_bytes = 0
+        try:
+            self._download()
+        except Exception as e:
+            self.progress.emit(0, f"Error: {str(e)}")
 
-        with (
-            NamedTemporaryFile(mode="wb", delete=False) as temp,
-            tqdm(
-                desc=os.path.basename(self.filename),
-                total=file_size,
-                unit="iB",
-                unit_scale=True,
-                unit_divisor=1024,
-                file=data,
-                bar_format="{desc}: {n_fmt}/{total_fmt} [{elapsed}/{remaining}, {rate_fmt}{postfix}]",
-                leave=True,
-            ) as bar,
-        ):
-            for chunk in r.iter_content(chunk_size=chunk_size):
-                temp.write(chunk)
-                bar.update(chunk_size)
-                read_bytes += chunk_size
-                self.progress.emit(
-                    read_bytes * scaling_factor, data.getvalue().split("\r")[-1].strip()
-                )
-        data.close()
-        shutil.move(temp.name, self.filename)
+    def _download(self):
+        response = requests.get(self.url, stream=True)
+        response.raise_for_status()
+        
+        total_size = int(response.headers.get("content-length", 0))
+        block_size = 8192
+        downloaded = 0
+        
+        display_name = os.path.basename(self.filename)
+        temp_filename = self.filename + ".part"
+        
+        with open(temp_filename, "wb") as f:
+            for chunk in response.iter_content(chunk_size=block_size):
+                if not chunk:
+                    continue
+                f.write(chunk)
+                downloaded += len(chunk)
+                
+                if total_size > 0:
+                    percentage = int((downloaded / total_size) * 100)
+                    dl_mb = downloaded / (1024 * 1024)
+                    tot_mb = total_size / (1024 * 1024)
+                    status = f"{display_name}: {dl_mb:.2f} MB / {tot_mb:.2f} MB"
+                else:
+                    percentage = 0
+                    dl_mb = downloaded / (1024 * 1024)
+                    status = f"{display_name}: {dl_mb:.2f} MB"
+                
+                self.progress.emit(percentage, status)
+
+        if self.url.endswith(".zip"):
+            try:
+                zip_filename = temp_filename + ".zip"
+                shutil.move(temp_filename, zip_filename)
+                
+                with zipfile.ZipFile(zip_filename, 'r') as zf:
+                    target_filename = zf.namelist()[0]
+                    with zf.open(target_filename) as source, open(self.filename, 'wb') as target:
+                        shutil.copyfileobj(source, target)
+                
+                if os.path.exists(zip_filename):
+                    os.remove(zip_filename)
+                return
+            except Exception as e:
+                 if os.path.exists(zip_filename):
+                     os.remove(zip_filename)
+                 raise e
+
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+        os.rename(temp_filename, self.filename)

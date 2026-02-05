@@ -88,11 +88,14 @@ class Worker(QtCore.QThread):
                     )
                 elif line.startswith(("[Merger]", "[ExtractAudio]")):
                     self.progress.emit(self.item, [(TreeColumn.STATUS, "Converting")])
+                elif line.startswith("WARNING:"):
+                    logger.warning(f"Download ({self.id}) {line}")
 
         if p.returncode != 0:
             logger.error(f"Download ({self.id}) returncode: {p.returncode}\n{output}")
             self.progress.emit(self.item, [(TreeColumn.STATUS, "ERROR")])
         else:
+            logger.info(f"Download ({self.id}) finished.")
             self.progress.emit(
                 self.item,
                 [
