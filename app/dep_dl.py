@@ -2,26 +2,25 @@ import os
 import platform
 import shutil
 import stat
+import sys
 import zipfile
-from typing import Optional, List, Tuple
+from typing import List, Tuple
 from pathlib import Path
 import logging
 
 from platformdirs import user_data_dir
 
 import requests
-from PySide6.QtCore import QThread, QTimer, Signal
-from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import QThread, Signal
 
-from ui.download_widget import Ui_Download
 from utils import root
+import subprocess as sp
 
 logger = logging.getLogger(__name__)
 
-BIN_DIR = Path(user_data_dir("yt-dlp-gui")) # user data dir for persistence
+BIN_DIR = Path(user_data_dir("yt-dlp-gui"))  # user data dir for persistence
 os.environ["PATH"] += os.pathsep + str(BIN_DIR)
-os.environ["PATH"] += os.pathsep + str(root / "bin") # old version compatibility
+os.environ["PATH"] += os.pathsep + str(root / "bin")  # old version compatibility
 
 BINARIES = {
     "Linux": {
@@ -49,23 +48,13 @@ FFMPEG_BASE_URL = "https://github.com/imageio/imageio-binaries/raw/183aef992339c
 DENO_BASE_URL = "https://github.com/denoland/deno/releases/latest/download/"
 
 
-class DownloadWindow(QWidget, Ui_Download):
-    finished = Signal()
+class DepWorker(QThread):
+    progress = Signal(str)
 
-    def __init__(self):
+    def __init__(self, update_ytdlp: bool):
         super().__init__()
-        self.setupUi(self)
-        self.setWindowIcon(QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
-        self.pb.setMaximum(100)
-        
         self.missing: List[Tuple[str, str]] = []
-        self._check_missing_dependencies()
-
-        if self.missing:
-            self.show()
-            self._start_next_download()
-        else:
-            QTimer.singleShot(0, self.finished.emit)
+        self.update_ytdlp = update_ytdlp
 
     def _check_missing_dependencies(self):
         system_os = platform.system()
@@ -74,8 +63,12 @@ class DownloadWindow(QWidget, Ui_Download):
 
         required_binaries = ["ffmpeg", "ffprobe", "yt-dlp", "deno"]
         missing_exes = [
-            exe for exe in required_binaries 
-            if not shutil.which(exe) and not (BIN_DIR / (exe + (".exe" if system_os == "Windows" else ""))).exists()
+            exe
+            for exe in required_binaries
+            if not shutil.which(exe)
+            and not (
+                BIN_DIR / (exe + (".exe" if system_os == "Windows" else ""))
+            ).exists()
         ]
 
         if not missing_exes:
@@ -85,7 +78,7 @@ class DownloadWindow(QWidget, Ui_Download):
 
         for exe in missing_exes:
             binary_name = BINARIES[system_os][exe]
-            
+
             if exe == "yt-dlp":
                 url = YT_DLP_BASE_URL + binary_name
             elif exe == "deno":
@@ -95,104 +88,103 @@ class DownloadWindow(QWidget, Ui_Download):
 
             target_name = f"{exe}.exe" if system_os == "Windows" else exe
             target_path = str(BIN_DIR / target_name)
-            
+
             self.missing.append((url, target_path))
 
-    def _start_next_download(self):
-        if not self.missing:
-            self.finished.emit()
-            return
-
-        url, filename = self.missing[0]
-        self.downloader = _DownloadWorker(url, filename)
-        self.downloader.progress.connect(self.update_progress)
-        self.downloader.finished.connect(self.downloader.deleteLater)
-        self.downloader.finished.connect(self.on_download_finished)
-        self.downloader.start()
-
-    def on_download_finished(self):
-        if not self.missing:
-            return
-
-        _, filename = self.missing.pop(0)
-        
+    def chmod(self):
         try:
-            st = os.stat(filename)
-            os.chmod(filename, st.st_mode | stat.S_IEXEC)
+            st = os.stat(self.filename)
+            os.chmod(self.filename, st.st_mode | stat.S_IEXEC)
         except OSError:
             pass
 
-        if self.missing:
-            self._start_next_download()
-        else:
-            self.finished.emit()
-
-    def update_progress(self, percentage: int, status_text: str):
-        self.pb.setValue(percentage)
-        self.lb_progress.setText(status_text)
-
-
-class _DownloadWorker(QThread):
-    progress = Signal(int, str)  # percentage, status text
-
-    def __init__(self, url: str, filename: str):
-        super().__init__()
-        self.url = url
-        self.filename = filename
-
     def run(self):
-        try:
-            self._download()
-        except Exception as e:
-            self.progress.emit(0, f"Error: {str(e)}")
+        self._check_missing_dependencies()
+
+        if self.missing:
+            for missingexe in self.missing:
+                self.url, self.filename = missingexe
+                self._download()
+                self.chmod()
+
+        if self.update_ytdlp:
+            self.update()
+
+        self.finished.emit()
+
+    def update(self):
+        create_window = sp.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+        output = ""
+        updated = False
+
+        with sp.Popen(
+            ["yt-dlp", "-U"],
+            stdout=sp.PIPE,
+            stderr=sp.STDOUT,
+            text=True,
+            universal_newlines=True,
+            creationflags=create_window,
+        ) as p:
+            for line in p.stdout:
+                output += line
+                if line.startswith("Updating to"):
+                    updated = True
+                    self.progress.emit("Updating yt-dlp...")
+
+        if p.returncode != 0:
+            logger.error(f"yt-dlp update failed returncode: {p.returncode}\n{output}")
+        elif updated:
+            logger.info(f"yt-dlp updated\n{output}")
 
     def _download(self):
         response = requests.get(self.url, stream=True)
         response.raise_for_status()
-        
+
         total_size = int(response.headers.get("content-length", 0))
         block_size = 8192
         downloaded = 0
-        
+
         display_name = os.path.basename(self.filename)
         temp_filename = self.filename + ".part"
-        
+
         with open(temp_filename, "wb") as f:
             for chunk in response.iter_content(chunk_size=block_size):
                 if not chunk:
                     continue
                 f.write(chunk)
                 downloaded += len(chunk)
-                
+
                 if total_size > 0:
                     percentage = int((downloaded / total_size) * 100)
                     dl_mb = downloaded / (1024 * 1024)
                     tot_mb = total_size / (1024 * 1024)
-                    status = f"{display_name}: {dl_mb:.2f} MB / {tot_mb:.2f} MB"
+                    status = f"Downloading dependency: ({display_name}) {dl_mb:.2f} / {tot_mb:.2f} MB {percentage}%"
                 else:
                     percentage = 0
                     dl_mb = downloaded / (1024 * 1024)
                     status = f"{display_name}: {dl_mb:.2f} MB"
-                
-                self.progress.emit(percentage, status)
+
+                self.progress.emit(status)
 
         if self.url.endswith(".zip"):
             try:
                 zip_filename = temp_filename + ".zip"
                 shutil.move(temp_filename, zip_filename)
-                
-                with zipfile.ZipFile(zip_filename, 'r') as zf:
+
+                with zipfile.ZipFile(zip_filename, "r") as zf:
                     target_filename = zf.namelist()[0]
-                    with zf.open(target_filename) as source, open(self.filename, 'wb') as target:
+                    with zf.open(target_filename) as source, open(
+                        self.filename, "wb"
+                    ) as target:
                         shutil.copyfileobj(source, target)
-                
+
                 if os.path.exists(zip_filename):
                     os.remove(zip_filename)
                 return
             except Exception as e:
-                 if os.path.exists(zip_filename):
-                     os.remove(zip_filename)
-                 raise e
+                if os.path.exists(zip_filename):
+                    os.remove(zip_filename)
+                raise e
 
         if os.path.exists(self.filename):
             os.remove(self.filename)

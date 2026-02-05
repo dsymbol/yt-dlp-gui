@@ -1,13 +1,12 @@
 import logging
-import os
 import sys
 
 import qtawesome as qta
-from dep_dl import DownloadWindow
+from worker import DownloadWorker
+from dep_dl import DepWorker
 from PySide6 import QtCore, QtGui, QtWidgets
 from ui.main_window import Ui_MainWindow
 from utils import *
-from worker import Worker
 
 __version__ = ""
 logging.basicConfig(
@@ -43,9 +42,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.load_config()
         self.statusBar.showMessage(__version__)
 
-        self.form = DownloadWindow()
-        self.form.finished.connect(self.form.close)
-        self.form.finished.connect(self.show)
+        self.pb_download.setEnabled(False)
+        self.show()
+
+        self.dep_worker = DepWorker(self.config["general"]["update_ytdlp"])
+        self.dep_worker.finished.connect(self.on_dep_finished)
+        self.dep_worker.progress.connect(self.on_dep_progress)
+        self.dep_worker.start()
 
         self.to_dl = {}
         self.worker = {}
@@ -58,6 +61,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tw.customContextMenuRequested.connect(self.open_menu)
+
+    def on_dep_progress(self, status):
+        self.statusBar.showMessage(status)
+
+    def on_dep_finished(self):
+        self.dep_worker.deleteLater()
+        self.pb_download.setEnabled(True)
+        self.statusBar.showMessage(__version__)
 
     def open_menu(self, position):
         menu = QtWidgets.QMenu()
@@ -142,7 +153,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             item.setData(0, ItemRoles.LinkRole, link)
             item.setData(0, ItemRoles.PathRole, path)
 
-            self.to_dl[self.index] = Worker(item, self.config, link, path, preset)
+            self.to_dl[self.index] = DownloadWorker(
+                item, self.config, link, path, preset
+            )
             logger.info(f"Queued download ({self.index}) added {link}")
             self.index += 1
 
@@ -174,7 +187,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.worker[k] = v
             self.worker[k].finished.connect(self.worker[k].deleteLater)
             self.worker[k].finished.connect(lambda x: self.worker.pop(x))
-            self.worker[k].progress.connect(self.update_progress)
+            self.worker[k].progress.connect(self.on_dl_progress)
             self.worker[k].start()
 
         self.to_dl = {}
@@ -200,6 +213,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             logger.error("Config file TOML decoding failed", exc_info=True)
             QtWidgets.QApplication.exit()
 
+        update_ytdlp = self.config["general"].get("update_ytdlp")
+        self.config["general"]["update_ytdlp"] = update_ytdlp if update_ytdlp else True
         self.dd_preset.addItems(self.config["presets"].keys())
         self.dd_preset.setCurrentIndex(self.config["general"]["current_preset"])
         self.le_path.setText(self.config["general"]["path"])
@@ -210,7 +225,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         save_toml(root / "config.toml", self.config)
         event.accept()
 
-    def update_progress(self, item: QtWidgets.QTreeWidgetItem, emit_data):
+    def on_dl_progress(self, item: QtWidgets.QTreeWidgetItem, emit_data):
         try:
             for data in emit_data:
                 index, update = data

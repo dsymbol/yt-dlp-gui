@@ -9,7 +9,7 @@ from utils import ItemRoles, TreeColumn
 logger = logging.getLogger(__name__)
 
 
-class Worker(QtCore.QThread):
+class DownloadWorker(QtCore.QThread):
     finished = QtCore.Signal(int)
     progress = QtCore.Signal(object, list)
 

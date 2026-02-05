@@ -2,6 +2,7 @@
 current_preset = 0
 path = ""
 global_args = ""
+update_ytdlp = true
 
 [presets]
 best = "-f bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b"

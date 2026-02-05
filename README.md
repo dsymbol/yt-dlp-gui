@@ -11,8 +11,7 @@ There are two ways to get started, depending on your preference and system:
 
 ### Portable
 
-Download the latest [stable](https://github.com/dsymbol/yt-dlp-gui/releases/latest) or [nightly](https://github.com/dsymbol/yt-dlp-gui/releases/tag/nightly) build.  
-This is a ZIP file containing the program files and all necessary dependencies.
+Download the latest [stable](https://github.com/dsymbol/yt-dlp-gui/releases/latest) or [nightly](https://github.com/dsymbol/yt-dlp-gui/releases/tag/nightly) build. This is a ZIP file containing the program files and all necessary dependencies.
 
 *All releases are built and released using GitHub Workflow*
 
