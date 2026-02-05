@@ -11,7 +11,7 @@ There are two ways to get started, depending on your preference and system:
 
 ### Portable
 
-Download the latest portable version from the the [releases](https://github.com/dsymbol/yt-dlp-gui/releases/latest) section. 
+Download the latest [stable](https://github.com/dsymbol/yt-dlp-gui/releases/latest) or [nightly](https://github.com/dsymbol/yt-dlp-gui/releases/tag/nightly) build.  
 This is a ZIP file containing the program files and all necessary dependencies.
 
 *All releases are built and released using GitHub Workflow*
@@ -34,7 +34,7 @@ Want to create your own presets or modify existing ones? You're in the right sec
 
 **Notes:** 
 - All files mentioned are in the `yt-dlp-gui` root directory.
-- The arguments specified will be added to the [base](https://github.com/dsymbol/yt-dlp-gui/blob/main/app/worker.py#L40) `yt-dlp` arguments.
+- The arguments specified will be added to the [base](https://github.com/dsymbol/yt-dlp-gui/blob/main/app/worker.py#L28) `yt-dlp` arguments.
 - Prefer lists over strings for complex presets.
 
 ### Presets
