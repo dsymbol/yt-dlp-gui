@@ -40,21 +40,13 @@ Want to create your own presets or modify existing ones? You're in the right sec
 
 Defined in the `[presets]` table. Each preset is a key‑value pair, the value can be provided as a string or list.
 
-### Global Arguments
-
-Defined in the `[general]` table. `global_args` is appended to every preset, so you don’t have to repeat common arguments. the value can be provided as a string or list.
-
 ### Example
 
 ```toml
 [general]
 ...
-global_args = "--cookies-from-browser firefox"
 
 [presets]
 ...
-# WAV audio only (string)
-"WAV Audio" = "--extract-audio --audio-format wav --audio-quality 0"
-# MP4 with embedded thumbnail (list)
 mp4_thumbnail = ["-f", "bv*[vcodec^=avc]+ba[ext=m4a]/b", "--embed-thumbnail"]
 ```

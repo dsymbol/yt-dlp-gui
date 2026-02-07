@@ -197,20 +197,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         try:
             self.config = load_toml(config_path)
-        except FileNotFoundError:
+        except Exception:
             QtWidgets.QMessageBox.critical(
                 self,
                 "Application Message",
-                f"Config file not found at: {config_path}",
+                f"Config file error.",
             )
-            QtWidgets.QApplication.exit()
-        except toml.decoder.TomlDecodeError:
-            QtWidgets.QMessageBox.critical(
-                self,
-                "Application Message",
-                "Config file TOML decoding failed, check the log file for more info.",
-            )
-            logger.error("Config file TOML decoding failed", exc_info=True)
+            logger.error("Config file error.", exc_info=True)
             QtWidgets.QApplication.exit()
 
         update_ytdlp = self.config["general"].get("update_ytdlp")

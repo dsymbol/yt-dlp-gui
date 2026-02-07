@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import toml
+import tomlkit
 from PySide6 import QtCore
 
 root = Path(__file__).parent
@@ -8,13 +8,12 @@ root = Path(__file__).parent
 
 def load_toml(path):
     with open(path, "r", encoding="utf-8") as file:
-        data = toml.load(file)
-    return data
+        return tomlkit.parse(file.read())
 
 
-def save_toml(path, data: dict):
+def save_toml(path, data):
     with open(path, "w", encoding="utf-8") as file:
-        toml.dump(data, file)
+        file.write(tomlkit.dumps(data))
 
 
 class ItemRoles:

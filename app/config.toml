@@ -1,10 +1,15 @@
 [general]
 current_preset = 0
 path = ""
+# appended to every preset (e.g "--cookies-from-browser firefox")
 global_args = ""
+# automatically update yt-dlp on program startup.
 update_ytdlp = true
 
+# create your own presets or modify existing ones
 [presets]
 best = "-f bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b"
 mp4 = "-f bv*[vcodec^=avc]+ba[ext=m4a]/b"
 mp3 = "--extract-audio --audio-format mp3 --audio-quality 0"
+# uncomment below to add wav preset.
+# wav = "--extract-audio --audio-format wav --audio-quality 0"
