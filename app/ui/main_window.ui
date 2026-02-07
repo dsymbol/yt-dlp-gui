@@ -202,6 +202,65 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>770</width>
+     <height>33</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="action_open_bin_folder"/>
+    <addaction name="action_open_log_folder"/>
+    <addaction name="separator"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="action_about"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="action_clear_url_list"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="action_about">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="action_exit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="action_clear_url_list">
+   <property name="text">
+    <string>Clear URL List</string>
+   </property>
+  </action>
+  <action name="action_open_bin_folder">
+   <property name="text">
+    <string>Open Binaries Folder</string>
+   </property>
+  </action>
+  <action name="action_open_log_folder">
+   <property name="text">
+    <string>Open Log Folder</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>tw</tabstop>

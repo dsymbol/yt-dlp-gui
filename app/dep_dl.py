@@ -5,22 +5,19 @@ import stat
 import sys
 import zipfile
 from typing import List, Tuple
-from pathlib import Path
 import logging
 
-from platformdirs import user_data_dir
 
 import requests
 from PySide6.QtCore import QThread, Signal
 
-from utils import root
+from utils import ROOT, BIN_DIR
 import subprocess as sp
 
 logger = logging.getLogger(__name__)
 
-BIN_DIR = Path(user_data_dir("yt-dlp-gui"))  # user data dir for persistence
 os.environ["PATH"] += os.pathsep + str(BIN_DIR)
-os.environ["PATH"] += os.pathsep + str(root / "bin")  # old version compatibility
+os.environ["PATH"] += os.pathsep + str(ROOT / "bin")  # old version compatibility
 
 BINARIES = {
     "Linux": {

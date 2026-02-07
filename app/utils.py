@@ -2,8 +2,10 @@ from pathlib import Path
 
 import tomlkit
 from PySide6 import QtCore
+from platformdirs import user_data_dir
 
-root = Path(__file__).parent
+ROOT = Path(__file__).parent
+BIN_DIR = Path(user_data_dir("yt-dlp-gui"))  # user data dir for persistence
 
 
 def load_toml(path):

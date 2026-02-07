@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s %(levelname)s (%(module)s:%(lineno)d) %(message)s",
     handlers=[
-        logging.FileHandler(root / "debug.log", encoding="utf-8", delay=True),
+        logging.FileHandler(ROOT / "debug.log", encoding="utf-8", delay=True),
         logging.StreamHandler(),
     ],
 )
@@ -24,7 +24,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowIcon(QtGui.QIcon(str(root / "assets" / "yt-dlp-gui.ico")))
+        self.setWindowIcon(QtGui.QIcon(str(ROOT / "assets" / "yt-dlp-gui.ico")))
         self.pb_add.setIcon(qta.icon("mdi6.plus"))
         self.pb_add.setIconSize(QtCore.QSize(21, 21))
         self.pb_clear.setIcon(qta.icon("mdi6.trash-can-outline"))
@@ -40,8 +40,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tw.setColumnWidth(0, 200)
         self.te_link.setFocus()
         self.load_config()
-        self.statusBar.showMessage(__version__)
 
+        self.connect_ui()
         self.pb_download.setEnabled(False)
         self.show()
 
@@ -54,13 +54,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker = {}
         self.index = 0
 
+        self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tw.customContextMenuRequested.connect(self.open_menu)
+
+    def connect_ui(self):
+        # buttons
         self.pb_path.clicked.connect(self.button_path)
         self.pb_add.clicked.connect(self.button_add)
         self.pb_clear.clicked.connect(self.button_clear)
         self.pb_download.clicked.connect(self.button_download)
 
-        self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.tw.customContextMenuRequested.connect(self.open_menu)
+        # menu bar
+        self.action_open_bin_folder.triggered.connect(lambda: self.open_folder(BIN_DIR))
+        self.action_open_log_folder.triggered.connect(lambda: self.open_folder(ROOT))
+        self.action_exit.triggered.connect(self.close)
+        self.action_about.triggered.connect(self.show_about)
+        self.action_clear_url_list.triggered.connect(self.te_link.clear)
 
     def on_dep_progress(self, status):
         self.statusBar.showMessage(status)
@@ -68,7 +77,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def on_dep_finished(self):
         self.dep_worker.deleteLater()
         self.pb_download.setEnabled(True)
-        self.statusBar.showMessage(__version__)
+        self.statusBar.showMessage("")
+
+    def open_folder(self, path):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(path))
+
+    def show_about(self):
+        QtWidgets.QMessageBox.about(
+            self,
+            "About yt-dlp-gui",
+            f'<a href="https://github.com/dsymbol/yt-dlp-gui">yt-dlp-gui</a> {__version__}<br><br>'
+            "A GUI for yt-dlp written in PySide6.",
+        )
 
     def open_menu(self, position):
         menu = QtWidgets.QMenu()
@@ -90,7 +110,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 QtWidgets.QApplication.clipboard().setText(item_link)
                 logger.info(f"Copied URL to clipboard: {item_link}")
             elif action == open_folder_action:
-                QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(item_path))
+                self.open_folder(item_path)
                 logger.info(f"Opened folder: {item_path}")
 
     def remove_item(self, item, column):
@@ -193,7 +213,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.to_dl = {}
 
     def load_config(self):
-        config_path = root / "config.toml"
+        config_path = ROOT / "config.toml"
 
         try:
             self.config = load_toml(config_path)
@@ -215,7 +235,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         self.config["general"]["current_preset"] = self.dd_preset.currentIndex()
         self.config["general"]["path"] = self.le_path.text()
-        save_toml(root / "config.toml", self.config)
+        save_toml(ROOT / "config.toml", self.config)
         event.accept()
 
     def on_dl_progress(self, item: QtWidgets.QTreeWidgetItem, emit_data):

@@ -11,21 +11,32 @@
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
+    QCursor, QFont, QFontDatabase, QGradient,
+    QIcon, QImage, QKeySequence, QLinearGradient,
+    QPainter, QPalette, QPixmap, QRadialGradient,
+    QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
     QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QMainWindow, QPlainTextEdit, QPushButton, QSizePolicy,
-    QSpacerItem, QStatusBar, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget)
+    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
+    QPushButton, QSizePolicy, QSpacerItem, QStatusBar,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(770, 570)
+        self.action_about = QAction(MainWindow)
+        self.action_about.setObjectName(u"action_about")
+        self.action_exit = QAction(MainWindow)
+        self.action_exit.setObjectName(u"action_exit")
+        self.action_clear_url_list = QAction(MainWindow)
+        self.action_clear_url_list.setObjectName(u"action_clear_url_list")
+        self.action_open_bin_folder = QAction(MainWindow)
+        self.action_open_bin_folder.setObjectName(u"action_open_bin_folder")
+        self.action_open_log_folder = QAction(MainWindow)
+        self.action_open_log_folder.setObjectName(u"action_open_log_folder")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         font = QFont()
@@ -134,6 +145,26 @@ class Ui_MainWindow(object):
         self.statusBar = QStatusBar(MainWindow)
         self.statusBar.setObjectName(u"statusBar")
         MainWindow.setStatusBar(self.statusBar)
+        self.menuBar = QMenuBar(MainWindow)
+        self.menuBar.setObjectName(u"menuBar")
+        self.menuBar.setGeometry(QRect(0, 0, 770, 33))
+        self.menuFile = QMenu(self.menuBar)
+        self.menuFile.setObjectName(u"menuFile")
+        self.menuHelp = QMenu(self.menuBar)
+        self.menuHelp.setObjectName(u"menuHelp")
+        self.menuEdit = QMenu(self.menuBar)
+        self.menuEdit.setObjectName(u"menuEdit")
+        MainWindow.setMenuBar(self.menuBar)
+
+        self.menuBar.addAction(self.menuFile.menuAction())
+        self.menuBar.addAction(self.menuEdit.menuAction())
+        self.menuBar.addAction(self.menuHelp.menuAction())
+        self.menuFile.addAction(self.action_open_bin_folder)
+        self.menuFile.addAction(self.action_open_log_folder)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.action_exit)
+        self.menuHelp.addAction(self.action_about)
+        self.menuEdit.addAction(self.action_clear_url_list)
 
         self.retranslateUi(MainWindow)
 
@@ -142,6 +173,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"yt-dlp-gui", None))
+        self.action_about.setText(QCoreApplication.translate("MainWindow", u"About", None))
+        self.action_exit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
+        self.action_clear_url_list.setText(QCoreApplication.translate("MainWindow", u"Clear URL List", None))
+        self.action_open_bin_folder.setText(QCoreApplication.translate("MainWindow", u"Open Binaries Folder", None))
+        self.action_open_log_folder.setText(QCoreApplication.translate("MainWindow", u"Open Log Folder", None))
         self.gb_params.setTitle(QCoreApplication.translate("MainWindow", u"Parameters", None))
         self.lb_path.setText(QCoreApplication.translate("MainWindow", u"Save to", None))
         self.pb_path.setText(QCoreApplication.translate("MainWindow", u"Browse...", None))
@@ -163,5 +199,8 @@ class Ui_MainWindow(object):
         self.pb_download.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>Download</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.pb_download.setText("")
+        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
+        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
+        self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"Edit", None))
     # retranslateUi
 
